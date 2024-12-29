@@ -1,0 +1,18 @@
+{
+    "PLAYER": {
+        "MARCO": {
+            "IDLE": {
+                "path": "../assets/player/marco/idle/idle_",
+                "frames": 4
+            },
+            "RUN": {
+                "path": "../assets/player/marco/run/run_",
+                "frames": 11
+            },
+            "SHOOT": { 
+                "path": "../assets/player/marco/shoot/pistol/pistol_",
+                "frames": 8
+            }
+        }
+    }
+}
