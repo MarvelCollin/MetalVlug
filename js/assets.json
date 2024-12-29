@@ -11,7 +11,7 @@
             },
             "SHOOT": { 
                 "path": "../assets/player/marco/shoot/pistol/pistol_",
-                "frames": 8
+                "frames": 7
             }
         }
     }
