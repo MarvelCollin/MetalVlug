@@ -12,6 +12,10 @@
             "SHOOT": { 
                 "path": "../assets/player/marco/shoot/pistol/pistol_",
                 "frames": 7
+            },
+            "SPAWN": { 
+                "path": "../assets/player/marco/spawn/spawn_",
+                "frames": 7
             }
         }
     }
