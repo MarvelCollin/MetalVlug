@@ -1,5 +1,5 @@
 import { ctx, canvas } from './ctx.js'; 
-import loadImage from './helper/loadImage.js';
+import loadImage from './helper/drawer.js';
 import Assets from './assets.js';
 
 const backgroundImage = new Image();

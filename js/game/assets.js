@@ -2,6 +2,13 @@ class Assets {
     static instance = null;
     static assets = null;
 
+    constructor() {
+        if (Assets.instance) {
+            return Assets.instance;
+        }
+        Assets.instance = this;
+    }
+
     static async fetchAssets() {
         if (this.assets) {
             return this.assets;
@@ -50,4 +57,4 @@ Assets.getPlayerMarcoIdle().then(idle => {
 
 // ...existing code...
 
-export default Assets;
+export default new Assets();
