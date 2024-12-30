@@ -1,6 +1,7 @@
 import PlayerState from './playerState.js';
 import Drawer from '../../helper/drawer.js';
 import Assets from '../../assets.js';
+import { ctx } from '../../ctx.js';
 
 class PlayerRunState extends PlayerState {
     async enter() {
@@ -33,7 +34,20 @@ class PlayerRunState extends PlayerState {
 
     draw() {
         if (this.runImages) {
-            Drawer.drawToCanvas(this.runImages.images, this.player.x * this.player.getScaleX(), this.player.y * this.player.getScaleY(), 'run', this.runImages.delay);
+            ctx.save();
+            if (this.player.direction === 'left') {
+                ctx.translate(this.player.x + this.runImages.images[0].width / 2, this.player.y);
+                ctx.scale(-1, 1);
+                ctx.translate(-(this.player.x + this.runImages.images[0].width / 2), -this.player.y);
+            }
+            Drawer.drawToCanvas(
+                this.runImages.images,
+                this.player.x,
+                this.player.y,
+                'run',
+                this.runImages.delay
+            );
+            ctx.restore();
         }
     }
 }

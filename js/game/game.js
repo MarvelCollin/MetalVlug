@@ -1,4 +1,4 @@
-import { ctx, canvas } from './ctx.js'; 
+import { ctx, canvas, scaleX, scaleY } from './ctx.js'; 
 import Player from './player/player.js';
 import Camera from './camera/camera.js';
 import { debugConfig } from './helper/debug.js';
@@ -14,9 +14,12 @@ async function loadBackground() {
     backgroundImage.src = backgroundAsset.PATH;
     return new Promise((resolve, reject) => {
         backgroundImage.onload = () => {
-            camera.setWorldSize(backgroundImage.width, canvas.height);
-            player.y = canvas.height - 50;
-            resolve({ width: backgroundImage.width, height: canvas.height });
+            const aspectRatio = backgroundImage.width / backgroundImage.height;
+            const newHeight = canvas.height;
+            const newWidth = newHeight * aspectRatio;
+            camera.setWorldSize(newWidth, newHeight);
+            player.y = newHeight - 50;
+            resolve({ width: newWidth, height: newHeight });
         };
         backgroundImage.onerror = reject;
     });
@@ -44,6 +47,8 @@ function gameLoop() {
         const newWidth = newHeight * aspectRatio;
         ctx.drawImage(backgroundImage, 0, 0, newWidth, newHeight);
     }
+
+    ctx.scale(scaleX, scaleY);
 
     player.update();
     player.draw();

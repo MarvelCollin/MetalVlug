@@ -2,12 +2,14 @@ import PlayerIdleState from './states/playerIdleState.js';
 import PlayerRunState from './states/playerRunState.js';
 import PlayerShootState from './states/playerShootState.js';
 import PlayerSpawnState from './states/playerSpawnState.js';
-import { canvas, scaleX, scaleY } from '../ctx.js';
+import {ctx,  canvas, scaleX, scaleY } from '../ctx.js';
+
+
 class Player {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.speed = 1.5;
+        this.speed = 10;
         this.direction = null;
 
         this.idleState = new PlayerIdleState(this);
@@ -45,7 +47,12 @@ class Player {
     }
 
     draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y); 
+        ctx.scale(6, 6);
+        ctx.translate(-this.x, -this.y); 
         this.currentState.draw();
+        ctx.restore();
     }
 
     getScaleX() {

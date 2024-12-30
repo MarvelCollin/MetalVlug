@@ -4,17 +4,17 @@
             "IDLE": {
                 "PATH": "../assets/player/marco/idle/idle_",
                 "FRAMES": 4,
-                "DELAY": 100
+                "DELAY": 200
             },
             "RUN": {
                 "PATH": "../assets/player/marco/run/run_",
                 "FRAMES": 11,
-                "DELAY": 75
+                "DELAY": 100
             },
             "SHOOT": { 
                 "PATH": "../assets/player/marco/shoot/pistol/pistol_",
                 "FRAMES": 7,
-                "DELAY": 20
+                "DELAY": 50
             },
             "SPAWN": { 
                 "PATH": "../assets/player/marco/spawn/spawn_",

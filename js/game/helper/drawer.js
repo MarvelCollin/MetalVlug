@@ -1,4 +1,4 @@
-import { ctx, canvas } from '../ctx.js';
+import { ctx, canvas, scaleX, scaleY } from '../ctx.js';
 import { drawDebugBorder, debugConfig } from './debug.js';
 import Assets from '../assets.js';
 
@@ -31,11 +31,14 @@ class Drawer {
 
     static appendImage(img, x, y, width, height) {
         if (img && img.complete) {
+            ctx.save();
+            ctx.scale(scaleX, scaleY);
             if (width && height) {
-                ctx.drawImage(img, x, y, width, height); // Remove the y - height adjustment for background
+                ctx.drawImage(img, x, y, width, height);
             } else {
                 ctx.drawImage(img, x, y - img.height, img.width, img.height);
             }
+            ctx.restore();
         }
     }
 
@@ -50,7 +53,10 @@ class Drawer {
         if (images.length > 0 && images[this.currentFrames[spriteId]] && images[this.currentFrames[spriteId]].complete) {
             const now = Date.now();
             const img = images[this.currentFrames[spriteId]];
-            
+
+            ctx.save();
+            ctx.scale(scaleX, scaleY);
+
             if (now - this.frameTimers[spriteId] >= delay) {
                 this.appendImage(img, x, y, width, height);
                 this.currentFrames[spriteId] = (this.currentFrames[spriteId] + 1) % images.length;
@@ -63,6 +69,8 @@ class Drawer {
                 const finalHeight = height || img.height;
                 drawDebugBorder(ctx, x, y - finalHeight, width || img.width, finalHeight);
             }
+
+            ctx.restore();
         }
     }
 
