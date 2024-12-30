@@ -86,3 +86,12 @@ window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
 
 startAnimation();
+
+function getPlayerPosition() {
+    return player ? player.getPosition() : null;
+}
+
+export { 
+    startAnimation, 
+    getPlayerPosition 
+};

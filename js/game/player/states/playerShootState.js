@@ -1,6 +1,7 @@
 import PlayerState from './playerState.js';
 import Drawer from '../../helper/drawer.js';
 import Assets from '../../assets.js';
+import Bullet from '../components/bullet.js';
 
 class PlayerShootState extends PlayerState {
     async enter() {
@@ -9,9 +10,35 @@ class PlayerShootState extends PlayerState {
         }
         this.currentFrame = 0;
         this.frameTimer = Date.now();
+
+        if (!this.bulletAssets) {
+            this.bulletAssets = await Drawer.loadImage(Assets.getBullet());
+        }
+        
+        const bulletOffset = {
+            x: this.player.direction === 'LEFT' ? -20 : this.player.width + 200,
+            y: -140
+        };
+        
+        const bullet = new Bullet(
+            this.player.x + bulletOffset.x,
+            this.player.y + bulletOffset.y,
+            this.player.direction,
+            this.bulletAssets
+        );
+        this.player.addBullet(bullet);
     }
 
     handleInput(input) {
+        if (input === 'shoot') {
+            const now = Date.now();
+            if (now - this.player.lastShootTime >= this.player.shootCooldown) {
+                this.player.lastShootTime = now;
+                this.currentFrame = 0;
+                this.frameTimer = Date.now();
+            }
+            return;
+        }
         if (input === 'idle') {
             this.player.setState(this.player.idleState);
         } else if (input === 'runLeft' || input === 'runRight') {

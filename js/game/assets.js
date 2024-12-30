@@ -45,6 +45,13 @@ class Assets {
         const assets = await this.fetchAssets();
         return assets.PLAYER.BACKGROUND;
     }
+
+    async getBullet() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.BULLET;
+    }
+
+
 }
 
 const assetsInstance = new Assets();

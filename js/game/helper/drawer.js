@@ -54,28 +54,25 @@ class Drawer {
             const now = Date.now();
             const img = images[this.currentFrames[spriteId]];
 
-            ctx.save();
-
             if (flip) {
                 ctx.save();
-                ctx.translate(x + img.width, y);  
+                ctx.translate(x + (width || img.width), y);
                 ctx.scale(-1, 1);
-                ctx.translate(-x - img.width, -y);  
                 ctx.drawImage(
                     img,
-                    x + img.width,
-                    y - img.height,
-                    img.width,
-                    img.height
+                    x,
+                    y - (height || img.height),
+                    width || img.width,
+                    height || img.height
                 );
                 ctx.restore();
             } else {
                 ctx.drawImage(
                     img,
                     x,
-                    y - img.height,
-                    img.width,
-                    img.height
+                    y - (height || img.height),
+                    width || img.width,
+                    height || img.height
                 );
             }
 
@@ -88,8 +85,6 @@ class Drawer {
                 const finalHeight = height || img.height;
                 drawDebugBorder(ctx, x, y - finalHeight, width || img.width, finalHeight);
             }
-
-            ctx.restore();
         }
     }
 

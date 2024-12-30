@@ -14,12 +14,16 @@
             "SHOOT": { 
                 "PATH": "../assets/player/marco/shoot/pistol/pistol_",
                 "FRAMES": 7,
-                "DELAY": 50
+                "DELAY": 24
             },
             "SPAWN": { 
                 "PATH": "../assets/player/marco/spawn/spawn_",
                 "FRAMES": 7,
                 "DELAY": 100
+            },
+            "BULLET": {
+                "PATH": "../assets/player/marco/shoot/bullet_",
+                "FRAMES": 1
             }
         },
         "BACKGROUND": {

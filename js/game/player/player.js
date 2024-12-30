@@ -10,8 +10,8 @@ class Player {
     this.x = x;
     this.y = y;
     this.speed = 10;
-    this.direction = Direction.RIGHT; // Default direction
-    this.width = 50; // Define the player's width
+    this.direction = Direction.RIGHT; 
+    this.width = 50; 
 
     this.idleState = new PlayerIdleState(this);
     this.runState = new PlayerRunState(this);
@@ -20,6 +20,10 @@ class Player {
 
     this.currentState = this.spawnState;
     this.currentState.enter();
+
+    this.bullets = [];
+    this.lastShootTime = 0;
+    this.shootCooldown = 150; 
   }
 
   setState(state) {
@@ -28,14 +32,21 @@ class Player {
   }
 
   handleInput(input) {
+    if (input === "shoot") {
+      const now = Date.now();
+      if (now - this.lastShootTime >= this.shootCooldown) {
+        this.lastShootTime = now;
+        this.setState(this.shootState);
+      }
+      return;
+    }
+    
     if (input === "runLeft") {
       this.direction = Direction.LEFT;
       this.setState(this.runState);
     } else if (input === "runRight") {
       this.direction = Direction.RIGHT;
       this.setState(this.runState);
-    } else if (input === "shoot") {
-      this.setState(this.shootState);
     } else if (input === "idle") {
       this.direction = null;
       this.setState(this.idleState);
@@ -43,17 +54,28 @@ class Player {
     this.currentState.handleInput(input);
   }
 
+  addBullet(bullet) {
+    this.bullets.push(bullet);
+  }
+
   update() {
     this.currentState.update();
+
+    this.bullets = this.bullets.filter((bullet) => {
+      bullet.update();
+      return bullet.active && bullet.x > 0 && bullet.x < canvas.width;
+    });
   }
 
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.scale(6, 6);
+    ctx.scale(5.5, 5.5);
     ctx.translate(-this.x, -this.y);
     this.currentState.draw();
     ctx.restore();
+
+    this.bullets.forEach((bullet) => bullet.draw());
   }
 
   getScaleX() {
@@ -62,6 +84,10 @@ class Player {
 
   getScaleY() {
     return scaleY;
+  }
+
+  getPosition() {
+    return { x: this.x, y: this.y, direction: this.direction };
   }
 }
 
