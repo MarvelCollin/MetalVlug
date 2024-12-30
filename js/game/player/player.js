@@ -2,7 +2,7 @@ import PlayerIdleState from './state/playerIdleState.js';
 import PlayerRunState from './state/playerRunState.js';
 import PlayerShootState from './state/playerShootState.js';
 import PlayerSpawnState from './state/playerSpawnState.js';
-
+import { canvas, scaleX, scaleY } from '../ctx.js';
 class Player {
     constructor(x, y) {
         this.x = x;
@@ -46,6 +46,14 @@ class Player {
 
     draw() {
         this.currentState.draw();
+    }
+
+    getScaleX() {
+        return scaleX;
+    }
+
+    getScaleY() {
+        return scaleY;
     }
 }
 

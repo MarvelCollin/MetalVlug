@@ -37,7 +37,7 @@ class PlayerShootState extends PlayerState {
 
     draw() {
         if (this.shootImages) {
-            Drawer.drawToCanvas(this.shootImages.images, this.player.x, this.player.y, 'shoot', this.shootImages.delay);
+            Drawer.drawToCanvas(this.shootImages.images, this.player.x * this.player.getScaleX(), this.player.y * this.player.getScaleY(), 'shoot', this.shootImages.delay);
         }
     }
 }

@@ -27,8 +27,8 @@ class PlayerIdleState extends PlayerState {
     if (this.idleImages) {
       Drawer.drawToCanvas(
         this.idleImages.images,
-        this.player.x,
-        this.player.y,
+        this.player.x * this.player.getScaleX(),
+        this.player.y * this.player.getScaleY(),
         "idle",
         this.idleImages.delay
       );

@@ -35,7 +35,7 @@ class PlayerSpawnState extends PlayerState {
     draw() {
         if (this.spawnImages) {
             const img = this.spawnImages.images[this.currentFrame];
-            Drawer.drawToCanvas([img], this.player.x, this.player.y, 'spawn', this.spawnImages.delay);
+            Drawer.drawToCanvas([img], this.player.x * this.player.getScaleX(), this.player.y * this.player.getScaleY(), 'spawn', this.spawnImages.delay);
         }
     }
 }

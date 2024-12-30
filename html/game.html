@@ -8,16 +8,20 @@
         * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             overflow: hidden;
         }
-        body, html {
-            width: 100%;
-            height: 100%;
-        }
         canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            border: 3px solid green;
         }
     </style>
 </head>

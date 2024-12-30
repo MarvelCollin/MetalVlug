@@ -33,7 +33,7 @@ class PlayerRunState extends PlayerState {
 
     draw() {
         if (this.runImages) {
-            Drawer.drawToCanvas(this.runImages.images, this.player.x, this.player.y, 'run', this.runImages.delay);
+            Drawer.drawToCanvas(this.runImages.images, this.player.x * this.player.getScaleX(), this.player.y * this.player.getScaleY(), 'run', this.runImages.delay);
         }
     }
 }
