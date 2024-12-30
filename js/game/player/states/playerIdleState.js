@@ -1,6 +1,7 @@
 import PlayerState from "./playerState.js";
 import Drawer from "../../helper/drawer.js";
 import Assets from "../../assets.js";
+import { Direction } from "../components/direction.js";
 
 class PlayerIdleState extends PlayerState {
   async enter() {
@@ -25,12 +26,16 @@ class PlayerIdleState extends PlayerState {
 
   draw() {
     if (this.idleImages) {
+      const flip = this.player.direction === Direction.LEFT;
       Drawer.drawToCanvas(
         this.idleImages.images,
         this.player.x,
         this.player.y,
         "idle",
-        this.idleImages.delay
+        this.idleImages.delay,
+        undefined,
+        undefined,
+        flip
       );
     }
   }

@@ -2,6 +2,7 @@ import PlayerState from './playerState.js';
 import Drawer from '../../helper/drawer.js';
 import Assets from '../../assets.js';
 import { ctx } from '../../ctx.js';
+import { Direction } from '../components/direction.js';
 
 class PlayerRunState extends PlayerState {
     async enter() {
@@ -18,9 +19,9 @@ class PlayerRunState extends PlayerState {
             this.player.state.currentFrame = 0;
             this.player.state.frameTimer = Date.now();
         } else if (input === 'runLeft') {
-            this.player.direction = 'left';
+            this.player.direction = Direction.LEFT;
         } else if (input === 'runRight') {
-            this.player.direction = 'right';
+            this.player.direction = Direction.RIGHT;
         }
     }
 
@@ -34,20 +35,17 @@ class PlayerRunState extends PlayerState {
 
     draw() {
         if (this.runImages) {
-            ctx.save();
-            if (this.player.direction === 'left') {
-                ctx.translate(this.player.x + this.runImages.images[0].width / 2, this.player.y);
-                ctx.scale(-1, 1);
-                ctx.translate(-(this.player.x + this.runImages.images[0].width / 2), -this.player.y);
-            }
+            const flip = this.player.direction === Direction.LEFT;
             Drawer.drawToCanvas(
                 this.runImages.images,
                 this.player.x,
                 this.player.y,
                 'run',
-                this.runImages.delay
+                this.runImages.delay,
+                undefined,
+                undefined,
+                flip
             );
-            ctx.restore();
         }
     }
 }

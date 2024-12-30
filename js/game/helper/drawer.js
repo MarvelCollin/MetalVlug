@@ -42,7 +42,7 @@ class Drawer {
         }
     }
 
-    static drawToCanvas(images, x, y, spriteId, delay, width, height) {
+    static drawToCanvas(images, x, y, spriteId, delay, width, height, flip = false) {
         if (!this.currentFrames[spriteId]) {
             this.currentFrames[spriteId] = 0;
         }
@@ -55,14 +55,33 @@ class Drawer {
             const img = images[this.currentFrames[spriteId]];
 
             ctx.save();
-            ctx.scale(scaleX, scaleY);
+
+            if (flip) {
+                ctx.save();
+                ctx.translate(x + img.width, y);  
+                ctx.scale(-1, 1);
+                ctx.translate(-x - img.width, -y);  
+                ctx.drawImage(
+                    img,
+                    x + img.width,
+                    y - img.height,
+                    img.width,
+                    img.height
+                );
+                ctx.restore();
+            } else {
+                ctx.drawImage(
+                    img,
+                    x,
+                    y - img.height,
+                    img.width,
+                    img.height
+                );
+            }
 
             if (now - this.frameTimers[spriteId] >= delay) {
-                this.appendImage(img, x, y, width, height);
                 this.currentFrames[spriteId] = (this.currentFrames[spriteId] + 1) % images.length;
                 this.frameTimers[spriteId] = now;
-            } else {
-                this.appendImage(img, x, y, width, height);
             }
 
             if (debugConfig.enabled) {
