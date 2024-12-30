@@ -1,6 +1,5 @@
-export const VIEWPORT_WIDTH = 720;
-export const VIEWPORT_HEIGHT = 375;
-
+export const VIEWPORT_WIDTH = window.innerWidth;
+export const VIEWPORT_HEIGHT = window.innerHeight;
 class Camera {
     constructor(target) {
         this.x = 0;

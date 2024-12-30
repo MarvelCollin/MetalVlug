@@ -14,9 +14,9 @@ async function loadBackground() {
     backgroundImage.src = backgroundAsset.PATH;
     return new Promise((resolve, reject) => {
         backgroundImage.onload = () => {
-            camera.setWorldSize(backgroundImage.width, backgroundImage.height);
-            player.y = backgroundImage.height - 50;
-            resolve({ width: backgroundImage.width, height: backgroundImage.height });
+            camera.setWorldSize(backgroundImage.width, canvas.height);
+            player.y = canvas.height - 50;
+            resolve({ width: backgroundImage.width, height: canvas.height });
         };
         backgroundImage.onerror = reject;
     });
@@ -39,7 +39,10 @@ function gameLoop() {
     ctx.translate(-viewport.x, -viewport.y);
 
     if (backgroundImage.complete) {
-        ctx.drawImage(backgroundImage, 0, 0, backgroundImage.width, backgroundImage.height);
+        const aspectRatio = backgroundImage.width / backgroundImage.height;
+        const newHeight = canvas.height;
+        const newWidth = newHeight * aspectRatio;
+        ctx.drawImage(backgroundImage, 0, 0, newWidth, newHeight);
     }
 
     player.update();
