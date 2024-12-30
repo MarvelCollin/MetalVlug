@@ -1,8 +1,11 @@
 import { ctx, canvas } from '../ctx.js';
+import { drawDebugBorder, debugConfig } from './debug.js';
 import Assets from '../assets.js';
 
 class Drawer {
     static instance = null;
+    static currentFrames = {};
+    static frameTimers = {};
 
     constructor() {
         if (Drawer.instance) {
@@ -16,25 +19,52 @@ class Drawer {
         const images = [];
         for (let i = 0; i < asset.FRAMES; i++) {
             const img = new Image();
-            img.src = `${asset.PATH}${i}.png`;
+            img.src = `${asset.PATH}${i + 1}.png`;
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+            });
             images.push(img);
         }
-        return images;
+        return { images, delay: asset.DELAY };
     }
 
-    static drawToCanvas(image, x, y, width, height) {
-        ctx.drawImage(image, x, y, width, height);
+    static drawToCanvas(images, x, y, spriteId, delay) {
+        if (!this.currentFrames[spriteId]) {
+            this.currentFrames[spriteId] = 0;
+        }
+        if (!this.frameTimers[spriteId]) {
+            this.frameTimers[spriteId] = Date.now();
+        }
+
+        if (images.length > 0 && images[this.currentFrames[spriteId]] && images[this.currentFrames[spriteId]].complete) {
+            const now = Date.now();
+            const img = images[this.currentFrames[spriteId]];
+            const drawY = y - img.height;
+            if (now - this.frameTimers[spriteId] >= delay) {
+                ctx.drawImage(img, x, drawY);
+                this.currentFrames[spriteId] = (this.currentFrames[spriteId] + 1) % images.length;
+                this.frameTimers[spriteId] = now;
+            } else {
+                ctx.drawImage(img, x, drawY);
+            }
+
+            console.log(debugConfig.enabled);
+            if (debugConfig.enabled) {
+                drawDebugBorder(ctx, x, drawY, img.width, img.height);
+            }
+        }
+    }
+
+    static drawMultiple(sprites) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        sprites.forEach((sprite, index) => {
+            if (sprite.images.length > 0) {
+                this.drawToCanvas(sprite.images, sprite.x, sprite.y, index, sprite.delay);
+            }
+        });
+        requestAnimationFrame(() => this.drawMultiple(sprites));
     }
 }
 
-// Example usage:
-(async () => {
-    try {
-        let marcoImages = await Drawer.loadImage(Assets.getPlayerMarcoIdle());
-        Drawer.drawToCanvas(marcoImages[0], 100, 100, 50, 50); // Draw the first frame
-    } catch (error) {
-        console.error('There was a problem loading the images:', error);
-    }
-})();
-
-export default new Drawer();
+export default Drawer;
