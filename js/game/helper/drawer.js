@@ -29,7 +29,17 @@ class Drawer {
         return { images, delay: asset.DELAY };
     }
 
-    static drawToCanvas(images, x, y, spriteId, delay) {
+    static appendImage(img, x, y, width, height) {
+        if (img && img.complete) {
+            if (width && height) {
+                ctx.drawImage(img, x, y, width, height); // Remove the y - height adjustment for background
+            } else {
+                ctx.drawImage(img, x, y - img.height, img.width, img.height);
+            }
+        }
+    }
+
+    static drawToCanvas(images, x, y, spriteId, delay, width, height) {
         if (!this.currentFrames[spriteId]) {
             this.currentFrames[spriteId] = 0;
         }
@@ -40,17 +50,18 @@ class Drawer {
         if (images.length > 0 && images[this.currentFrames[spriteId]] && images[this.currentFrames[spriteId]].complete) {
             const now = Date.now();
             const img = images[this.currentFrames[spriteId]];
-            const drawY = y - img.height;
+            
             if (now - this.frameTimers[spriteId] >= delay) {
-                ctx.drawImage(img, x, drawY);
+                this.appendImage(img, x, y, width, height);
                 this.currentFrames[spriteId] = (this.currentFrames[spriteId] + 1) % images.length;
                 this.frameTimers[spriteId] = now;
             } else {
-                ctx.drawImage(img, x, drawY);
+                this.appendImage(img, x, y, width, height);
             }
 
             if (debugConfig.enabled) {
-                drawDebugBorder(ctx, x, drawY, img.width, img.height);
+                const finalHeight = height || img.height;
+                drawDebugBorder(ctx, x, y - finalHeight, width || img.width, finalHeight);
             }
         }
     }

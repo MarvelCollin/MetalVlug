@@ -1,7 +1,7 @@
-import PlayerIdleState from './state/playerIdleState.js';
-import PlayerRunState from './state/playerRunState.js';
-import PlayerShootState from './state/playerShootState.js';
-import PlayerSpawnState from './state/playerSpawnState.js';
+import PlayerIdleState from './states/playerIdleState.js';
+import PlayerRunState from './states/playerRunState.js';
+import PlayerShootState from './states/playerShootState.js';
+import PlayerSpawnState from './states/playerSpawnState.js';
 import { canvas, scaleX, scaleY } from '../ctx.js';
 class Player {
     constructor(x, y) {

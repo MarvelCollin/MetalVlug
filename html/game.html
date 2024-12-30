@@ -11,7 +11,6 @@
             box-sizing: border-box;
         }
         body {
-            background: black;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -19,8 +18,12 @@
             overflow: hidden;
         }
         canvas {
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            -ms-interpolation-mode: nearest-neighbor;
+            -webkit-font-smoothing: none;
             border: 3px solid green;
         }
     </style>
