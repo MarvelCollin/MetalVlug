@@ -1,29 +1,30 @@
-import Player from './player/player.js';
+import { ctx, canvas } from './ctx.js'; 
+import loadImage from './helper/loadImage.js';
+import Assets from './assets.js';
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+const backgroundImage = new Image();
+let assetsLoaded = false;
+let marcoImages = [];
+let currentFrame = 0;
 
-canvas.width = 800;
-canvas.height = 600;
-
-const player = new Player(ctx, canvas);
-
-fetch('../../assets/assets.json')
-    .then(response => response.json())
-    .then(assets => {
-        player.loadAssets(assets, startAnimation);
-    });
-
-function startAnimation() {
+async function startAnimation() {
+    marcoImages = await loadImage(Assets.getPlayerMarcoIdle());
     requestAnimationFrame(gameLoop);
 }
 
 function gameLoop() {
-    player.update();
-    player.draw();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (backgroundImage.complete) {
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    }
+
+    if (marcoImages.length > 0) {
+        ctx.drawImage(marcoImages[currentFrame], 100, 100); 
+        currentFrame = (currentFrame + 1) % marcoImages.length;
+    }
 
     requestAnimationFrame(gameLoop);
 }
 
-window.addEventListener('keydown', (event) => player.handleKeyDown(event));
-window.addEventListener('keyup', (event) => player.handleKeyUp(event));
+startAnimation();

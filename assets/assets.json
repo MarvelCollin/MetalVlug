@@ -2,21 +2,24 @@
     "PLAYER": {
         "MARCO": {
             "IDLE": {
-                "path": "../assets/player/marco/idle/idle_",
-                "frames": 4
+                "PATH": "../assets/player/marco/idle/idle_",
+                "FRAMES": 4
             },
             "RUN": {
-                "path": "../assets/player/marco/run/run_",
-                "frames": 11
+                "PATH": "../assets/player/marco/run/run_",
+                "FRAMES": 11
             },
             "SHOOT": { 
-                "path": "../assets/player/marco/shoot/pistol/pistol_",
-                "frames": 7
+                "PATH": "../assets/player/marco/shoot/pistol/pistol_",
+                "FRAMES": 7
             },
             "SPAWN": { 
-                "path": "../assets/player/marco/spawn/spawn_",
-                "frames": 7
+                "PATH": "../assets/player/marco/spawn/spawn_",
+                "FRAMES": 7
             }
+        },
+        "BACKGROUND": {
+            "PATH": "../assets/background/mission_5/background.png"
         }
     }
 }
