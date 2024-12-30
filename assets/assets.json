@@ -9,12 +9,12 @@
             "RUN": {
                 "PATH": "../assets/player/marco/run/run_",
                 "FRAMES": 11,
-                "DELAY": 50
+                "DELAY": 75
             },
             "SHOOT": { 
                 "PATH": "../assets/player/marco/shoot/pistol/pistol_",
                 "FRAMES": 7,
-                "DELAY": 75
+                "DELAY": 20
             },
             "SPAWN": { 
                 "PATH": "../assets/player/marco/spawn/spawn_",

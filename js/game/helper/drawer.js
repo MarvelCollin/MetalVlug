@@ -49,7 +49,6 @@ class Drawer {
                 ctx.drawImage(img, x, drawY);
             }
 
-            console.log(debugConfig.enabled);
             if (debugConfig.enabled) {
                 drawDebugBorder(ctx, x, drawY, img.width, img.height);
             }

@@ -1,37 +1,52 @@
 import { ctx, canvas } from './ctx.js'; 
-import Drawer from './helper/drawer.js';
-import Assets from './assets.js';
+import Player from './player/player.js';
 import { debugConfig } from './helper/debug.js';
 
 const backgroundImage = new Image();
-let assetsLoaded = false;
-
+let player;
 
 async function startAnimation() {
-    const marcoIdle = await Drawer.loadImage(Assets.getPlayerMarcoIdle());
-    const marcoRun = await Drawer.loadImage(Assets.getPlayerMarcoRun());
-    const marcoShoot = await Drawer.loadImage(Assets.getPlayerMarcoShoot());
-
-    const sprites = [
-        { images: marcoIdle.images, x: 100, y: canvas.height - 100, delay: marcoIdle.delay },
-        { images: marcoRun.images, x: 200, y: canvas.height - 100, delay: marcoRun.delay }
-    ];
-
-    requestAnimationFrame(() => gameLoop(sprites, marcoShoot));
+    player = new Player(100, canvas.height - 100);
+    requestAnimationFrame(gameLoop);
 }
 
-function gameLoop(sprites, marcoShoot) {
+function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (backgroundImage.complete) {
         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
     }
 
-    Drawer.drawMultiple(sprites);
+    player.update();
+    player.draw();
 
-    Drawer.drawToCanvas(marcoShoot.images, 300, canvas.height - 100, 'shoot', marcoShoot.delay);
-
-    requestAnimationFrame(() => gameLoop(sprites, marcoShoot));
+    requestAnimationFrame(gameLoop);
 }
+
+function handleKeyDown(event) {
+    switch (event.key) {
+        case 'ArrowLeft':
+            player.handleInput('runLeft');
+            break;
+        case 'ArrowRight':
+            player.handleInput('runRight');
+            break;
+        case 'Control':
+            player.handleInput('shoot');
+            break;
+    }
+}
+
+function handleKeyUp(event) {
+    switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            player.handleInput('idle');
+            break;
+    }
+}
+
+window.addEventListener('keydown', handleKeyDown);
+window.addEventListener('keyup', handleKeyUp);
 
 startAnimation();
