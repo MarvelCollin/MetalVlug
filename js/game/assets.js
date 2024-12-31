@@ -15,48 +15,101 @@ class Assets {
         }
         const response = await fetch('../assets/assets.json');
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            throw new Error('bang gabisa bang ga konek bang bang bang capek bang bang bang capek' + response.statusText);
         }
         Assets.assets = await response.json();
         return Assets.assets;
     }
 
-    async getPlayerMarcoIdle() {
+    async getPlayerMarcoExplode() {
         const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.IDLE;
+        return assets.PLAYER.MARCO.EXPLODE;
     }
 
-    async getPlayerMarcoRun() {
+    async getPlayerMarcoMachinegunWin() {
         const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.RUN;
+        return assets.PLAYER.MARCO.MACHINEGUN.WIN;
     }
 
-    async getPlayerMarcoShoot() {
+    async getPlayerMarcoPistolDashIdle() {
         const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.SHOOT;
+        return assets.PLAYER.MARCO.PISTOL.DASH.IDLE;
     }
 
-    async getPlayerMarcoSpawn() {
+    async getPlayerMarcoPistolDashShoot() {
         const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.SPAWN;
+        return assets.PLAYER.MARCO.PISTOL.DASH.SHOOT;
     }
 
-    async getBackground() {
+    async getPlayerMarcoPistolJumpIdle() {
         const assets = await this.fetchAssets();
-        return assets.PLAYER.BACKGROUND;
+        return assets.PLAYER.MARCO.PISTOL.JUMP.IDLE;
     }
 
-    async getBullet() {
+    async getPlayerMarcoPistolJumpShoot() {
         const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.BULLET;
-    }
-    
-    async getJump() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.JUMP;
+        return assets.PLAYER.MARCO.PISTOL.JUMP.SHOOT;
     }
 
-    
+    async getPlayerMarcoPistolSneakIdle() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.SNEAK.IDLE;
+    }
+
+    async getPlayerMarcoPistolSneakMelee() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.SNEAK.MELEE;
+    }
+
+    async getPlayerMarcoPistolSneakMove() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.SNEAK.MOVE;
+    }
+
+    async getPlayerMarcoPistolSneakShoot() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.SNEAK.SHOOT;
+    }
+
+    async getPlayerMarcoPistolSneakThrow() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.SNEAK.THROW;
+    }
+
+    async getPlayerMarcoPistolSpawn() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.SPAWN;
+    }
+
+    async getPlayerMarcoPistolStandIdleNormal() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.STAND.IDLE.NORMAL;
+    }
+
+    async getPlayerMarcoPistolStandIdleSleep() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.STAND.IDLE.SLEEP;
+    }
+
+    async getPlayerMarcoPistolStandMelee() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.STAND.MELEE;
+    }
+
+    async getPlayerMarcoPistolStandRun() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.STAND.RUN;
+    }
+
+    async getPlayerMarcoPistolStandShoot() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.PISTOL.STAND.SHOOT;
+    }
+
+    async getPlayerOther() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.OTHER;
+    }
 
 }
 
