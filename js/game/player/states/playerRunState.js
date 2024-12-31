@@ -7,7 +7,7 @@ import { Direction } from '../components/direction.js';
 class PlayerRunState extends PlayerState {
     async enter() {
         if (!this.runImages) {
-            this.runImages = await Drawer.loadImage(Assets.getPlayerMarcoRun());
+            this.runImages = await Drawer.loadImage(Assets.getPlayerMarcoPistolStandRun());
         }
     }
 

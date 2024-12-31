@@ -1,3 +1,4 @@
+// filepath: ../js/game/assets.js
 class Assets {
     static instance = null;
     static assets = null;
@@ -15,10 +16,15 @@ class Assets {
         }
         const response = await fetch('../assets/assets.json');
         if (!response.ok) {
-            throw new Error('bang gabisa bang ga konek bang bang bang capek bang bang bang capek' + response.statusText);
+            throw new Error('bang gabisa bang ga konek bang bang bang capek bang bang bang capek ' + response.statusText);
         }
         Assets.assets = await response.json();
         return Assets.assets;
+    }
+
+    async getBackground() {
+        const assets = await this.fetchAssets();
+        return assets.BACKGROUND;
     }
 
     async getPlayerMarcoExplode() {
@@ -106,9 +112,49 @@ class Assets {
         return assets.PLAYER.MARCO.PISTOL.STAND.SHOOT;
     }
 
-    async getPlayerOther() {
+    async getPlayerOtherBullet() {
         const assets = await this.fetchAssets();
-        return assets.PLAYER.OTHER;
+        return assets.PLAYER.OTHER.BULLET;
+    }
+
+    async getPlayerOtherGrenade() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.OTHER.GRENADE;
+    }
+
+    async getSoldierNormalDie() {
+        const assets = await this.fetchAssets();
+        return assets.SOLDIER.NORMAL.DIE;
+    }
+
+    async getSoldierNormalExplode() {
+        const assets = await this.fetchAssets();
+        return assets.SOLDIER.NORMAL.EXPLODE;
+    }
+
+    async getSoldierNormalGrenade() {
+        const assets = await this.fetchAssets();
+        return assets.SOLDIER.NORMAL.GRENADE;
+    }
+
+    async getSoldierNormalIdle() {
+        const assets = await this.fetchAssets();
+        return assets.SOLDIER.NORMAL.IDLE;
+    }
+
+    async getSoldierNormalMeleeMelee() {
+        const assets = await this.fetchAssets();
+        return assets.SOLDIER.NORMAL.MELEE.MELEE;
+    }
+
+    async getSoldierNormalRun() {
+        const assets = await this.fetchAssets();
+        return assets.SOLDIER.NORMAL.RUN;
+    }
+
+    async getSoldierNormalThrow() {
+        const assets = await this.fetchAssets();
+        return assets.SOLDIER.NORMAL.THROW;
     }
 
 }

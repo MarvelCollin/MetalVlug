@@ -6,7 +6,7 @@ import { Direction } from "../components/direction.js";
 class PlayerIdleState extends PlayerState {
   async enter() {
     if (!this.idleImages) {
-      this.idleImages = await Drawer.loadImage(Assets.getPlayerMarcoIdle());
+      this.idleImages = await Drawer.loadImage(Assets.getPlayerMarcoPistolStandIdleNormal());
     }
   }
 

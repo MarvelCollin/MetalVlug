@@ -2,15 +2,15 @@ import json
 import os
 
 def generate_getter_name(path_parts):
-    """Membuat nama getter dari path"""
+    """Bikin nama getter dari path yang ada"""
     return "get" + "".join(part.capitalize() for part in path_parts)
 
 def generate_getter_path(path_parts):
-    """Membuat path untuk mengakses JSON"""
+    """Bikin path buat akses JSON nya"""
     return ".".join(path_parts)
 
 def process_json_structure(data, current_path=None, getters=None):
-    """Scan JSON dan bikin getter methodnya"""
+    """Scan JSON terus bikin getter methodnya"""
     if getters is None:
         getters = []
     if current_path is None:
@@ -19,12 +19,12 @@ def process_json_structure(data, current_path=None, getters=None):
     for key, value in data.items():
         path = current_path + [key]
         
-        # Kalo ketemu PATH, berarti ini animation entry
+        # Kalo nemu PATH, berarti ini data animasi
         if isinstance(value, dict) and "PATH" in value:
             getter_name = generate_getter_name(path)
             getter_path = generate_getter_path(path)
             
-            # Bikin getter methodnya
+            # Bikin method getternya
             getter = f"""
     async {getter_name}() {{
         const assets = await this.fetchAssets();
@@ -32,22 +32,22 @@ def process_json_structure(data, current_path=None, getters=None):
     }}"""
             getters.append(getter)
         
-        # Recursive kalo masih ada nested object
+        # Kalo masih ada folder dalam folder, lanjut scan
         elif isinstance(value, dict):
             process_json_structure(value, path, getters)
     
     return getters
 
 def generate_assets_class(json_file_path, output_file_path):
-    """Generate assets.js class"""
-    # Baca JSON file
+    """Bikin file assets.js"""
+    # Baca file JSON nya
     with open(json_file_path, 'r') as f:
         data = json.load(f)
     
-    # Generate semua getter methods
+    # Generate semua method getter
     getters = process_json_structure(data)
     
-    # Bikin class template dengan relative path
+    # Template buat class nya
     class_code = """// filepath: ../js/game/assets.js
 class Assets {
     static instance = null;
@@ -66,7 +66,7 @@ class Assets {
         }
         const response = await fetch('../assets/assets.json');
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            throw new Error('Waduh error nih: ' + response.statusText);
         }
         Assets.assets = await response.json();
         return Assets.assets;
@@ -79,10 +79,10 @@ const assetsInstance = new Assets();
 export default assetsInstance;
 """
     
-    # Gabungin semua getters
+    # Gabungin semua getter nya
     final_code = class_code % "\n".join(getters)
     
-    # Simpan ke file
+    # Simpen ke file
     with open(output_file_path, 'w') as f:
         f.write(final_code)
 
@@ -91,4 +91,4 @@ if __name__ == "__main__":
     js_output_path = "../js/game/assets.js"
     
     generate_assets_class(json_path, js_output_path)
-    print(f"Assets class telah digenerate di: {js_output_path}")
+    print(f"File assets.js udah jadi di: {js_output_path}")

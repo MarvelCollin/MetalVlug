@@ -1,114 +1,162 @@
 {
+    "BACKGROUND": {
+        "PATH": "../assets/background/background",
+        "FRAMES": 1,
+        "TYPE": "ONCE"
+    },
     "PLAYER": {
         "MARCO": {
             "EXPLODE": {
-                "PATH": "player/marco/explode/explode_",
+                "PATH": "../assets/player/marco/explode/explode_",
                 "FRAMES": 17,
-                "TYPE": "ONCE"
+                "TYPE": "LOOP"
             },
             "MACHINEGUN": {
                 "WIN": {
-                    "PATH": "player/marco/machinegun/win/win_",
+                    "PATH": "../assets/player/marco/machinegun/win/win_",
                     "FRAMES": 4,
-                    "TYPE": "ONCE"
+                    "TYPE": "LOOP"
                 }
             },
             "PISTOL": {
                 "DASH": {
                     "IDLE": {
-                        "PATH": "player/marco/pistol/dash/idle/idle_",
+                        "PATH": "../assets/player/marco/pistol/dash/idle/idle_",
                         "FRAMES": 5,
                         "TYPE": "LOOP"
                     },
                     "SHOOT": {
-                        "PATH": "player/marco/pistol/dash/shoot/shoot_",
+                        "PATH": "../assets/player/marco/pistol/dash/shoot/shoot_",
                         "FRAMES": 4,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     }
                 },
                 "JUMP": {
                     "IDLE": {
-                        "PATH": "player/marco/pistol/jump/idle/idle_",
+                        "PATH": "../assets/player/marco/pistol/jump/idle/idle_",
                         "FRAMES": 6,
                         "TYPE": "LOOP"
                     },
                     "SHOOT": {
-                        "PATH": "player/marco/pistol/jump/shoot/shoot_",
+                        "PATH": "../assets/player/marco/pistol/jump/shoot/shoot_",
                         "FRAMES": 8,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     }
                 },
                 "SNEAK": {
                     "IDLE": {
-                        "PATH": "player/marco/pistol/sneak/idle/idle_",
+                        "PATH": "../assets/player/marco/pistol/sneak/idle/idle_",
                         "FRAMES": 4,
                         "TYPE": "LOOP"
                     },
                     "MELEE": {
-                        "PATH": "player/marco/pistol/sneak/melee/melee_",
+                        "PATH": "../assets/player/marco/pistol/sneak/melee/melee_",
                         "FRAMES": 7,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     },
                     "MOVE": {
-                        "PATH": "player/marco/pistol/sneak/move/move_",
+                        "PATH": "../assets/player/marco/pistol/sneak/move/move_",
                         "FRAMES": 7,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     },
                     "SHOOT": {
-                        "PATH": "player/marco/pistol/sneak/shoot/shoot_",
+                        "PATH": "../assets/player/marco/pistol/sneak/shoot/shoot_",
                         "FRAMES": 9,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     },
                     "THROW": {
-                        "PATH": "player/marco/pistol/sneak/throw/throw_",
+                        "PATH": "../assets/player/marco/pistol/sneak/throw/throw_",
                         "FRAMES": 6,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     }
                 },
                 "SPAWN": {
-                    "PATH": "player/marco/pistol/spawn/spawn_",
+                    "PATH": "../assets/player/marco/pistol/spawn/spawn_",
                     "FRAMES": 7,
-                    "TYPE": "ONCE"
+                    "TYPE": "LOOP"
                 },
                 "STAND": {
                     "IDLE": {
                         "NORMAL": {
-                            "PATH": "player/marco/pistol/stand/idle/normal/normal_",
+                            "PATH": "../assets/player/marco/pistol/stand/idle/normal/normal_",
                             "FRAMES": 4,
-                            "TYPE": "ONCE"
+                            "TYPE": "LOOP"
                         },
                         "SLEEP": {
-                            "PATH": "player/marco/pistol/stand/idle/sleep/sleep_",
+                            "PATH": "../assets/player/marco/pistol/stand/idle/sleep/sleep_",
                             "FRAMES": 6,
-                            "TYPE": "ONCE"
+                            "TYPE": "LOOP"
                         }
                     },
                     "MELEE": {
-                        "PATH": "player/marco/pistol/stand/melee/melee_",
+                        "PATH": "../assets/player/marco/pistol/stand/melee/melee_",
                         "FRAMES": 6,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     },
                     "RUN": {
-                        "PATH": "player/marco/pistol/stand/run/run_",
+                        "PATH": "../assets/player/marco/pistol/stand/run/run_",
                         "FRAMES": 11,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     },
                     "SHOOT": {
-                        "PATH": "player/marco/pistol/stand/shoot/shoot_",
+                        "PATH": "../assets/player/marco/pistol/stand/shoot/shoot_",
                         "FRAMES": 7,
-                        "TYPE": "ONCE"
+                        "TYPE": "LOOP"
                     }
                 }
             }
         },
         "OTHER": {
-            "PATH": "player/other/other_",
-            "FRAMES": 1,
-            "TYPE": "ONCE",
-            "GRENADE": {
-                "PATH": "player/other/grenade/grenade_",
-                "FRAMES": 19,
+            "BULLET": {
+                "PATH": "../assets/player/other/bullet/bullet",
+                "FRAMES": 1,
                 "TYPE": "ONCE"
+            },
+            "GRENADE": {
+                "PATH": "../assets/player/other/grenade/grenade_",
+                "FRAMES": 19,
+                "TYPE": "LOOP"
+            }
+        }
+    },
+    "SOLDIER": {
+        "NORMAL": {
+            "DIE": {
+                "PATH": "../assets/soldier/normal/die/die_",
+                "FRAMES": 16,
+                "TYPE": "LOOP"
+            },
+            "EXPLODE": {
+                "PATH": "../assets/soldier/normal/explode/explode_",
+                "FRAMES": 8,
+                "TYPE": "LOOP"
+            },
+            "GRENADE": {
+                "PATH": "../assets/soldier/normal/grenade/grenade_",
+                "FRAMES": 2,
+                "TYPE": "LOOP"
+            },
+            "IDLE": {
+                "PATH": "../assets/soldier/normal/idle/idle_",
+                "FRAMES": 4,
+                "TYPE": "LOOP"
+            },
+            "MELEE": {
+                "MELEE": {
+                    "PATH": "../assets/soldier/normal/melee/stab/melee_",
+                    "FRAMES": 6,
+                    "TYPE": "LOOP"
+                }
+            },
+            "RUN": {
+                "PATH": "../assets/soldier/normal/run/run_",
+                "FRAMES": 10,
+                "TYPE": "LOOP"
+            },
+            "THROW": {
+                "PATH": "../assets/soldier/normal/throw_grenade/throw_",
+                "FRAMES": 13,
+                "TYPE": "LOOP"
             }
         }
     }

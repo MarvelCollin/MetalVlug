@@ -5,7 +5,7 @@ import Assets from '../../assets.js';
 class PlayerJumpState extends PlayerState {
     async enter() {
         if (!this.jumpImages) {
-            this.jumpImages = await Drawer.loadImage(Assets.getJump());
+            this.jumpImages = await Drawer.loadImage(Assets.getPlayerMarcoPistolJumpIdle());
         }
         this.currentFrame = 0;
         this.frameTimer = Date.now();
