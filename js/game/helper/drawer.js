@@ -15,39 +15,45 @@ class Drawer {
         Drawer.instance = this;
     }
 
-    static async loadImage(assetPromise) {
-        const asset = await assetPromise;
-        const images = [];
-        for (let i = 0; i < asset.FRAMES; i++) {
-            const img = new Image();
-            img.src = `${asset.PATH}${i + 1}.png`;
-            await new Promise((resolve, reject) => {
-                img.onload = resolve;
-                img.onerror = reject;
-            });
-            images.push(img);
-        }
-        return { 
-            images, 
-            delay: asset.DELAY,
-            type: asset.TYPE || 'LOOP' 
-        };
-    }
+    static async loadImage(assetGetter) {
+        try {
+            const assetData = await assetGetter();
+            if (!assetData?.PATH) return null;
 
-    static appendImage(img, x, y, width, height) {
-        if (img && img.complete) {
-            ctx.save();
-            ctx.scale(scaleX, scaleY);
-            if (width && height) {
-                ctx.drawImage(img, x, y, width, height);
+            const totalFrames = assetData.FRAMES || 1;
+            const images = [];
+
+            if (assetData.TYPE === 'SINGLE') {
+                const img = new Image();
+                await this.loadSingleImage(img, `${assetData.PATH}.png`);
+                images.push(img);
             } else {
-                ctx.drawImage(img, x, y - img.height, img.width, img.height);
+                for (let i = 1; i <= totalFrames; i++) {
+                    const img = new Image();
+                    await this.loadSingleImage(img, `${assetData.PATH}${i}.png`);
+                    images.push(img);
+                }
             }
-            ctx.restore();
+
+            return { images, delay: assetData.DELAY || 100 };
+        } catch (error) {
+            console.error('Failed to load assets:', error);
+            return null;
         }
     }
 
-    static drawToCanvas(images, x, y, spriteId, delay, width, height, flip = false) {
+    static loadSingleImage(img, path) {
+        return new Promise((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = () => {
+                console.error(`Failed to load image: ${path}`);
+                reject(new Error(`Failed to load image: ${path}`));
+            };
+            img.src = path;
+        });
+    }
+
+    static drawToCanvas(images, x, y, spriteId, delay, width, height, flip = false, type = 'LOOP') {
         if (!this.currentFrames[spriteId]) {
             this.currentFrames[spriteId] = 0;
             this.isReversing[spriteId] = false;
@@ -56,20 +62,16 @@ class Drawer {
             this.frameTimers[spriteId] = Date.now();
         }
 
-        // Get the current frame (ensure it's within bounds for HOLD type)
-        const frameIndex = this.currentFrames[spriteId];
-        const img = images[frameIndex];
+        const frameIndex = type === 'ONCE' ? 0 : this.currentFrames[spriteId];
+        const img = Array.isArray(images) ? images[frameIndex] : images;
 
-        if (images.length > 0 && img && img.complete) {
-            const now = Date.now();
-
+        if ((Array.isArray(images) && images.length > 0 && img) || (!Array.isArray(images) && img)) {
             if (flip) {
                 ctx.save();
-                ctx.translate(x + (width || img.width), y);
                 ctx.scale(-1, 1);
                 ctx.drawImage(
                     img,
-                    x,
+                    - x - (width || img.width),
                     y - (height || img.height),
                     width || img.width,
                     height || img.height
@@ -85,40 +87,43 @@ class Drawer {
                 );
             }
 
-            if (now - this.frameTimers[spriteId] >= delay) {
-                const type = images.type || 'LOOP';
-                
-                switch(type) {
-                    case 'LOOP':
-                        this.currentFrames[spriteId] = (frameIndex + 1) % images.length;
-                        break;
+            if (type !== 'ONCE') {
+                const now = Date.now();
+                if (now - this.frameTimers[spriteId] >= delay) {
+                    const type = images.type || 'LOOP';
                     
-                    case 'HOLD':
-                        if (frameIndex < images.length - 1) {
-                            this.currentFrames[spriteId] = frameIndex + 1;
-                        }
-                        break;
+                    switch(type) {
+                        case 'LOOP':
+                            this.currentFrames[spriteId] = (frameIndex + 1) % images.length;
+                            break;
+                        
+                        case 'HOLD':
+                            if (frameIndex < images.length - 1) {
+                                this.currentFrames[spriteId] = frameIndex + 1;
+                            }
+                            break;
+                        
+                        case 'BACK':
+                            if (!this.isReversing[spriteId]) {
+                                if (this.currentFrames[spriteId] >= images.length - 1) {
+                                    this.isReversing[spriteId] = true;
+                                    this.currentFrames[spriteId]--;
+                                } else {
+                                    this.currentFrames[spriteId]++;
+                                }
+                            } else {
+                                if (this.currentFrames[spriteId] <= 0) {
+                                    this.isReversing[spriteId] = false;
+                                    this.currentFrames[spriteId]++;
+                                } else {
+                                    this.currentFrames[spriteId]--;
+                                }
+                            }
+                            break;
+                    }
                     
-                    case 'BACK':
-                        if (!this.isReversing[spriteId]) {
-                            if (this.currentFrames[spriteId] >= images.length - 1) {
-                                this.isReversing[spriteId] = true;
-                                this.currentFrames[spriteId]--;
-                            } else {
-                                this.currentFrames[spriteId]++;
-                            }
-                        } else {
-                            if (this.currentFrames[spriteId] <= 0) {
-                                this.isReversing[spriteId] = false;
-                                this.currentFrames[spriteId]++;
-                            } else {
-                                this.currentFrames[spriteId]--;
-                            }
-                        }
-                        break;
+                    this.frameTimers[spriteId] = now;
                 }
-                
-                this.frameTimers[spriteId] = now;
             }
 
             if (debugConfig.enabled) {

@@ -4,17 +4,19 @@ import Assets from '../../assets.js';
 
 class PlayerJumpState extends PlayerState {
     async enter() {
-        if (!this.jumpImages) {
-            this.jumpImages = await Drawer.loadImage(Assets.getPlayerMarcoPistolJumpIdle());
+        try {
+            this.jumpImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpIdle());
+            this.currentFrame = 0;
+            this.frameTimer = Date.now();
+            this.jumpForce = -22;  
+            this.gravity = 0.6;     
+            this.velocityY = this.jumpForce;
+            this.isJumping = true;
+            this.groundLevel = this.player.initialY;
+            this.maxJumpHeight = 500; 
+        } catch (error) {
+            console.error('Failed to load jump state assets:', error);
         }
-        this.currentFrame = 0;
-        this.frameTimer = Date.now();
-        this.jumpForce = -22;  
-        this.gravity = 0.6;     
-        this.velocityY = this.jumpForce;
-        this.isJumping = true;
-        this.groundLevel = this.player.initialY;
-        this.maxJumpHeight = 500; 
     }
 
     handleInput(input) {

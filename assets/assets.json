@@ -2,7 +2,7 @@
     "BACKGROUND": {
         "PATH": "../assets/background/background",
         "FRAMES": 1,
-        "TYPE": "ONCE"
+        "TYPE": "SINGLE"
     },
     "PLAYER": {
         "MARCO": {
@@ -110,7 +110,7 @@
             "BULLET": {
                 "PATH": "../assets/player/other/bullet/bullet",
                 "FRAMES": 1,
-                "TYPE": "ONCE"
+                "TYPE": "SINGLE"
             },
             "GRENADE": {
                 "PATH": "../assets/player/other/grenade/grenade_",

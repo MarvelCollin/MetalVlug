@@ -4,9 +4,7 @@ import Assets from '../../assets.js';
 
 class PlayerSpawnState extends PlayerState {
     async enter() {
-        if (!this.spawnImages) {
-            this.spawnImages = await Drawer.loadImage(Assets.getPlayerMarcoPistolSpawn());
-        }
+        this.spawnImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolSpawn());
         this.currentFrame = 0;
         this.frameTimer = Date.now();
     }

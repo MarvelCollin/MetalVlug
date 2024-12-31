@@ -5,16 +5,12 @@ import Bullet from '../components/bullet.js';
 
 class PlayerShootState extends PlayerState {
     async enter() {
-        if (!this.shootImages) {
-            this.shootImages = await Drawer.loadImage(Assets.getPlayerMarcoPistolStandShoot());
-        }
+        this.shootImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandShoot());
+        this.bulletAssets = await Drawer.loadImage(() => Assets.getPlayerOtherBullet());
         this.currentFrame = 0;
         this.frameTimer = Date.now();
 
-        if (!this.bulletAssets) {
-            this.bulletAssets = await Drawer.loadImage(Assets.getPlayerOther());
-        }
-        
+        // Create bullet
         const bulletOffset = {
             x: this.player.direction === 'LEFT' ? -20 : this.player.width + 200,
             y: -140

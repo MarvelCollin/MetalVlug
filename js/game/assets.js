@@ -1,4 +1,3 @@
-// filepath: ../js/game/assets.js
 class Assets {
     static instance = null;
     static assets = null;
@@ -16,7 +15,7 @@ class Assets {
         }
         const response = await fetch('../assets/assets.json');
         if (!response.ok) {
-            throw new Error('bang gabisa bang ga konek bang bang bang capek bang bang bang capek ' + response.statusText);
+            throw new Error('Waduh error nih: ' + response.statusText);
         }
         Assets.assets = await response.json();
         return Assets.assets;
