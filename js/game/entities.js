@@ -1,4 +1,5 @@
 import { Direction } from './player/components/direction.js';
+import { ctx, canvas, scaleX, scaleY } from "./ctx.js";
 
 class Entities {
     constructor(x, y, width, height) {
@@ -9,12 +10,14 @@ class Entities {
         this.velocityX = 0;
         this.velocityY = 0;
         
-        // Add common properties
         this.direction = null;
         this.speed = 10;
         this.initialY = y;
         this.grounded = true;
         this.lastUpdateTime = Date.now();
+
+        this.scaleX = 5.5;
+        this.scaleY = 5.5;
     }
 
     setDirection(direction) {
@@ -42,6 +45,15 @@ class Entities {
     }
 
     update(obstacles) {
+        const now = Date.now();
+        const deltaTime = (now - this.lastUpdateTime) / 1000;
+        this.lastUpdateTime = now;
+
+        if (this.state && this.state.canMove && !(this.state.constructor.name === 'PlayerSpawnState')) {
+            this.velocityX = this.direction === Direction.LEFT ? -this.speed : 
+                            this.direction === Direction.RIGHT ? this.speed : 0;
+        }
+
         const nextX = this.x + this.velocityX;
         const nextY = this.y + this.velocityY;
 
@@ -61,7 +73,30 @@ class Entities {
             this.y = nextY;
         }
 
+        if (this.state) {
+            this.state.update(deltaTime);
+        }
+
         return !wouldCollide;
+    }
+
+    draw() {
+        if (this.state) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.translate(-this.x, -this.y);
+            this.state.draw();
+            ctx.restore();
+        }
+    }
+
+    getScaleX() {
+        return scaleX;
+    }
+
+    getScaleY() {
+        return scaleY;
     }
 
     getPosition() {

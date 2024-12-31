@@ -4,7 +4,13 @@ import Assets from "../../assets.js";
 import { Direction } from "../components/direction.js";
 
 class PlayerIdleState extends PlayerState {
+  constructor(player) {
+    super(player);
+    this.canMove = false;  // Add this to prevent movement in idle state
+  }
+
   async enter() {
+    this.player.resetVelocity(); // Reset velocity when entering idle state
     this.idleImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandIdleNormal());
   }
 
@@ -19,7 +25,6 @@ class PlayerIdleState extends PlayerState {
   }
 
   update() {
-    // Update logic for idle state
   }
 
   draw() {
