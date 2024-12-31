@@ -1,33 +1,115 @@
 {
     "PLAYER": {
         "MARCO": {
-            "IDLE": {
-                "PATH": "../assets/player/marco/idle/idle_",
-                "FRAMES": 4,
-                "DELAY": 200
+            "EXPLODE": {
+                "PATH": "player/marco/explode/explode_",
+                "FRAMES": 17,
+                "TYPE": "ONCE"
             },
-            "RUN": {
-                "PATH": "../assets/player/marco/run/run_",
-                "FRAMES": 11,
-                "DELAY": 100
+            "MACHINEGUN": {
+                "WIN": {
+                    "PATH": "player/marco/machinegun/win/win_",
+                    "FRAMES": 4,
+                    "TYPE": "ONCE"
+                }
             },
-            "SHOOT": { 
-                "PATH": "../assets/player/marco/shoot/pistol/pistol_",
-                "FRAMES": 7,
-                "DELAY": 24
-            },
-            "SPAWN": { 
-                "PATH": "../assets/player/marco/spawn/spawn_",
-                "FRAMES": 7,
-                "DELAY": 100
-            },
-            "BULLET": {
-                "PATH": "../assets/player/marco/shoot/bullet_",
-                "FRAMES": 1
+            "PISTOL": {
+                "DASH": {
+                    "IDLE": {
+                        "PATH": "player/marco/pistol/dash/idle/idle_",
+                        "FRAMES": 5,
+                        "TYPE": "LOOP"
+                    },
+                    "SHOOT": {
+                        "PATH": "player/marco/pistol/dash/shoot/shoot_",
+                        "FRAMES": 4,
+                        "TYPE": "ONCE"
+                    }
+                },
+                "JUMP": {
+                    "IDLE": {
+                        "PATH": "player/marco/pistol/jump/idle/idle_",
+                        "FRAMES": 6,
+                        "TYPE": "LOOP"
+                    },
+                    "SHOOT": {
+                        "PATH": "player/marco/pistol/jump/shoot/shoot_",
+                        "FRAMES": 8,
+                        "TYPE": "ONCE"
+                    }
+                },
+                "SNEAK": {
+                    "IDLE": {
+                        "PATH": "player/marco/pistol/sneak/idle/idle_",
+                        "FRAMES": 4,
+                        "TYPE": "LOOP"
+                    },
+                    "MELEE": {
+                        "PATH": "player/marco/pistol/sneak/melee/melee_",
+                        "FRAMES": 7,
+                        "TYPE": "ONCE"
+                    },
+                    "MOVE": {
+                        "PATH": "player/marco/pistol/sneak/move/move_",
+                        "FRAMES": 7,
+                        "TYPE": "ONCE"
+                    },
+                    "SHOOT": {
+                        "PATH": "player/marco/pistol/sneak/shoot/shoot_",
+                        "FRAMES": 9,
+                        "TYPE": "ONCE"
+                    },
+                    "THROW": {
+                        "PATH": "player/marco/pistol/sneak/throw/throw_",
+                        "FRAMES": 6,
+                        "TYPE": "ONCE"
+                    }
+                },
+                "SPAWN": {
+                    "PATH": "player/marco/pistol/spawn/spawn_",
+                    "FRAMES": 7,
+                    "TYPE": "ONCE"
+                },
+                "STAND": {
+                    "IDLE": {
+                        "NORMAL": {
+                            "PATH": "player/marco/pistol/stand/idle/normal/normal_",
+                            "FRAMES": 4,
+                            "TYPE": "ONCE"
+                        },
+                        "SLEEP": {
+                            "PATH": "player/marco/pistol/stand/idle/sleep/sleep_",
+                            "FRAMES": 6,
+                            "TYPE": "ONCE"
+                        }
+                    },
+                    "MELEE": {
+                        "PATH": "player/marco/pistol/stand/melee/melee_",
+                        "FRAMES": 6,
+                        "TYPE": "ONCE"
+                    },
+                    "RUN": {
+                        "PATH": "player/marco/pistol/stand/run/run_",
+                        "FRAMES": 11,
+                        "TYPE": "ONCE"
+                    },
+                    "SHOOT": {
+                        "PATH": "player/marco/pistol/stand/shoot/shoot_",
+                        "FRAMES": 7,
+                        "TYPE": "ONCE"
+                    }
+                }
             }
         },
-        "BACKGROUND": {
-            "PATH": "../assets/background/mission_5/background.png"
+        "OTHER": {
+            "PATH": "player/other/other_",
+            "FRAMES": 1,
+            "TYPE": "ONCE",
+            "GRENADE": {
+                "PATH": "player/other/grenade/grenade_",
+                "FRAMES": 19,
+                "TYPE": "ONCE"
+            }
         }
     }
 }

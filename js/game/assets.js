@@ -50,7 +50,13 @@ class Assets {
         const assets = await this.fetchAssets();
         return assets.PLAYER.MARCO.BULLET;
     }
+    
+    async getJump() {
+        const assets = await this.fetchAssets();
+        return assets.PLAYER.MARCO.JUMP;
+    }
 
+    
 
 }
 

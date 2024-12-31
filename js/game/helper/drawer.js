@@ -6,6 +6,7 @@ class Drawer {
     static instance = null;
     static currentFrames = {};
     static frameTimers = {};
+    static isReversing = {};
 
     constructor() {
         if (Drawer.instance) {
@@ -26,7 +27,11 @@ class Drawer {
             });
             images.push(img);
         }
-        return { images, delay: asset.DELAY };
+        return { 
+            images, 
+            delay: asset.DELAY,
+            type: asset.TYPE || 'LOOP' 
+        };
     }
 
     static appendImage(img, x, y, width, height) {
@@ -45,14 +50,18 @@ class Drawer {
     static drawToCanvas(images, x, y, spriteId, delay, width, height, flip = false) {
         if (!this.currentFrames[spriteId]) {
             this.currentFrames[spriteId] = 0;
+            this.isReversing[spriteId] = false;
         }
         if (!this.frameTimers[spriteId]) {
             this.frameTimers[spriteId] = Date.now();
         }
 
-        if (images.length > 0 && images[this.currentFrames[spriteId]] && images[this.currentFrames[spriteId]].complete) {
+        // Get the current frame (ensure it's within bounds for HOLD type)
+        const frameIndex = this.currentFrames[spriteId];
+        const img = images[frameIndex];
+
+        if (images.length > 0 && img && img.complete) {
             const now = Date.now();
-            const img = images[this.currentFrames[spriteId]];
 
             if (flip) {
                 ctx.save();
@@ -77,7 +86,38 @@ class Drawer {
             }
 
             if (now - this.frameTimers[spriteId] >= delay) {
-                this.currentFrames[spriteId] = (this.currentFrames[spriteId] + 1) % images.length;
+                const type = images.type || 'LOOP';
+                
+                switch(type) {
+                    case 'LOOP':
+                        this.currentFrames[spriteId] = (frameIndex + 1) % images.length;
+                        break;
+                    
+                    case 'HOLD':
+                        if (frameIndex < images.length - 1) {
+                            this.currentFrames[spriteId] = frameIndex + 1;
+                        }
+                        break;
+                    
+                    case 'BACK':
+                        if (!this.isReversing[spriteId]) {
+                            if (this.currentFrames[spriteId] >= images.length - 1) {
+                                this.isReversing[spriteId] = true;
+                                this.currentFrames[spriteId]--;
+                            } else {
+                                this.currentFrames[spriteId]++;
+                            }
+                        } else {
+                            if (this.currentFrames[spriteId] <= 0) {
+                                this.isReversing[spriteId] = false;
+                                this.currentFrames[spriteId]++;
+                            } else {
+                                this.currentFrames[spriteId]--;
+                            }
+                        }
+                        break;
+                }
+                
                 this.frameTimers[spriteId] = now;
             }
 

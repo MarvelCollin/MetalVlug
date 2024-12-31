@@ -18,7 +18,9 @@ async function loadBackground() {
             const newHeight = canvas.height;
             const newWidth = newHeight * aspectRatio;
             camera.setWorldSize(newWidth, newHeight);
-            player.y = newHeight - 50;
+            const groundY = newHeight - 50;
+            player.y = groundY;
+            player.initialY = groundY; // Set initial Y position
             resolve({ width: newWidth, height: newHeight });
         };
         backgroundImage.onerror = reject;
@@ -60,21 +62,25 @@ function gameLoop() {
 }
 
 function handleKeyDown(event) {
-    switch (event.key) {
+    switch (event.code) {  
         case 'ArrowLeft':
             player.handleInput('runLeft');
             break;
         case 'ArrowRight':
             player.handleInput('runRight');
             break;
-        case 'Control':
+        case 'ControlLeft':
+        case 'ControlRight':
             player.handleInput('shoot');
+            break;
+        case 'Space':  
+            player.handleInput('jump');
             break;
     }
 }
 
 function handleKeyUp(event) {
-    switch (event.key) {
+    switch (event.code) {
         case 'ArrowLeft':
         case 'ArrowRight':
             player.handleInput('idle');
