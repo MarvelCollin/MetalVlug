@@ -1,5 +1,6 @@
 import { Direction } from './player/components/direction.js';
 import { ctx, canvas, scaleX, scaleY } from "./ctx.js";
+import { defaultObstacles } from "./world/obstacle.js";
 
 class Entities {
     constructor(x, y, width, height) {
@@ -18,6 +19,10 @@ class Entities {
 
         this.scaleX = 5.5;
         this.scaleY = 5.5;
+
+        this.gravity = 0.6;            
+        this.terminalVelocity = 10;     
+        this.jumpForce = -15;
     }
 
     setDirection(direction) {
@@ -31,53 +36,75 @@ class Entities {
         this.velocityY = 0;
     }
 
-    checkCollision(obstacle) {
+    checkCollision(nextX, nextY, obstacle) {
         return (
-            this.x < obstacle.x + obstacle.width &&
-            this.x + this.width > obstacle.x &&
-            this.y < obstacle.y + obstacle.height &&
-            this.y + this.height > obstacle.y
+            nextX < obstacle.x + obstacle.width &&
+            nextX + this.width > obstacle.x &&
+            nextY < obstacle.y + obstacle.height &&
+            nextY + this.height > obstacle.y
         );
     }
 
-    isColliding(obstacles) {
-        return obstacles.some(obstacle => this.checkCollision(obstacle));
-    }
-
-    update(obstacles) {
+    update(obstacles = defaultObstacles) {
         const now = Date.now();
         const deltaTime = (now - this.lastUpdateTime) / 1000;
         this.lastUpdateTime = now;
 
-        if (this.state && this.state.canMove && !(this.state.constructor.name === 'PlayerSpawnState')) {
-            this.velocityX = this.direction === Direction.LEFT ? -this.speed : 
-                            this.direction === Direction.RIGHT ? this.speed : 0;
+        if (!this.grounded) {
+            this.velocityY = Math.min(this.velocityY + this.gravity, this.terminalVelocity);
         }
 
-        const nextX = this.x + this.velocityX;
-        const nextY = this.y + this.velocityY;
+        let nextY = this.y + this.velocityY;
+        let verticalCollision = false;
 
-        const testPosition = {
-            x: nextX,
-            y: nextY,
-            width: this.width,
-            height: this.height
-        };
+        for (const obstacle of obstacles) {
+            if (this.checkCollision(this.x, nextY, obstacle)) {
+                if (this.velocityY > 0) {  
+                    this.y = obstacle.y - this.height;
+                    this.velocityY = 0;
+                    this.grounded = true;
+                } else if (this.velocityY < 0) { 
+                    this.y = obstacle.y + obstacle.height;
+                    this.velocityY = 0;
+                }
+                verticalCollision = true;
+                break;
+            }
+        }
 
-        const wouldCollide = obstacles.some(obstacle => 
-            this.checkCollision.call(testPosition, obstacle)
-        );
-
-        if (!wouldCollide) {
-            this.x = nextX;
+        if (!verticalCollision) {
             this.y = nextY;
+            this.grounded = false;
+        }
+
+        if (this.state?.canMove && !(this.state.constructor.name === 'PlayerSpawnState')) {
+            this.velocityX = this.direction === Direction.LEFT ? -this.speed : 
+                            this.direction === Direction.RIGHT ? this.speed : 0;
+            
+            let nextX = this.x + this.velocityX;
+            let horizontalCollision = false;
+
+            for (const obstacle of obstacles) {
+                if (this.checkCollision(nextX, this.y, obstacle)) {
+                    if (this.velocityX > 0) {  // Moving right
+                        this.x = obstacle.x - this.width;
+                    } else if (this.velocityX < 0) { // Moving left
+                        this.x = obstacle.x + obstacle.width;
+                    }
+                    this.velocityX = 0;
+                    horizontalCollision = true;
+                    break;
+                }
+            }
+
+            if (!horizontalCollision) {
+                this.x = nextX;
+            }
         }
 
         if (this.state) {
             this.state.update(deltaTime);
         }
-
-        return !wouldCollide;
     }
 
     draw() {

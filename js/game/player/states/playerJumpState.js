@@ -9,11 +9,8 @@ class PlayerJumpState extends PlayerState {
             this.currentFrame = 0;
             this.frameTimer = Date.now();
             this.jumpForce = -22;  
-            this.gravity = 0.6;     
-            this.velocityY = this.jumpForce;
-            this.isJumping = true;
-            this.groundLevel = this.player.initialY;
-            this.maxJumpHeight = 500; 
+            this.player.velocityY = this.jumpForce;  
+            this.player.grounded = false;          
         } catch (error) {
             console.error('Failed to load jump state assets:', error);
         }
@@ -25,38 +22,17 @@ class PlayerJumpState extends PlayerState {
             bulletState.previousState = this; 
             this.player.setState(bulletState);
         } else if (input === 'runLeft') {
-            this.player.direction = 'LEFT';
-            this.player.x -= this.player.speed * 0.8;
+            this.player.setDirection(Direction.LEFT);
         } else if (input === 'runRight') {
-            this.player.direction = 'RIGHT';
-            this.player.x += this.player.speed * 0.8;
+            this.player.setDirection(Direction.RIGHT);
         }
     }
 
     update() {
-        if (!this.isJumping) return;
-
-        const deltaTime = 1/60;
-        this.velocityY += this.gravity;
-
-        if (this.player.y <= this.groundLevel - this.maxJumpHeight) {
-            this.velocityY = Math.max(this.velocityY, 0);
-        }
-
-        this.player.y += this.velocityY;
-
-        if (this.player.y >= this.groundLevel) {
-            this.player.y = this.groundLevel;
-            this.velocityY = 0;
-            this.isJumping = false;
-            this.player.grounded = true;
-            this.player.setState(this.player.idleState);
-        }
-
         if (this.jumpImages) {
             const now = Date.now();
             if (now - this.frameTimer >= this.jumpImages.delay) {
-                if (this.velocityY < 0) {
+                if (this.player.velocityY < 0) {
                     this.currentFrame = 0;
                 } else {
                     this.currentFrame = Math.min(4, this.jumpImages.images.length - 1);

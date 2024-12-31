@@ -6,11 +6,11 @@ import { Direction } from "../components/direction.js";
 class PlayerIdleState extends PlayerState {
   constructor(player) {
     super(player);
-    this.canMove = false;  // Add this to prevent movement in idle state
+    this.canMove = false;  
   }
 
   async enter() {
-    this.player.resetVelocity(); // Reset velocity when entering idle state
+    this.player.resetVelocity(); 
     this.idleImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandIdleNormal());
   }
 
@@ -30,7 +30,7 @@ class PlayerIdleState extends PlayerState {
   draw() {
     if (this.idleImages) {
       const flip = this.player.direction === Direction.LEFT;
-      console.log(flip)
+      // console.log("Debug: isFlip : ", flip)
       Drawer.drawToCanvas(
         this.idleImages.images,
         this.player.x,

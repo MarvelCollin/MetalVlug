@@ -5,6 +5,11 @@ import { ctx } from "../../ctx.js";
 import { Direction } from "../components/direction.js";
 
 class PlayerRunState extends PlayerState {
+  constructor(player) {
+    super(player);
+    this.canMove = true;  // Allow movement in run state
+  }
+
   async enter() {
     this.runImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandRun());
   }
@@ -17,18 +22,15 @@ class PlayerRunState extends PlayerState {
       this.player.state.currentFrame = 0;
       this.player.state.frameTimer = Date.now();
     } else if (input === "runLeft") {
-      this.player.direction = Direction.LEFT;
+      this.player.setDirection(Direction.LEFT);
     } else if (input === "runRight") {
-      this.player.direction = Direction.RIGHT;
+      this.player.setDirection(Direction.RIGHT);
     }
   }
 
   update() {
-    if (this.player.direction === "left") {
-      this.player.x -= this.player.speed;
-    } else if (this.player.direction === "right") {
-      this.player.x += this.player.speed;
-    }
+    // Remove direct position modification
+    // Movement is now handled by the Entities class
   }
 
   draw() {

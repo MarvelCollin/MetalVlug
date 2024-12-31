@@ -24,11 +24,16 @@ def process_json_structure(data, current_path=None, getters=None):
             getter_name = generate_getter_name(path)
             getter_path = generate_getter_path(path)
             
+            # Check if there is only one frame
+            type_field = ""
+            if "frames" in value and len(value["frames"]) == 1:
+                type_field = "\n        assets.%s.TYPE = 'SINGLE';" % getter_path
+
             # Bikin method getternya
             getter = f"""
     async {getter_name}() {{
         const assets = await this.fetchAssets();
-        return assets.{getter_path};
+        return assets.{getter_path};{type_field}
     }}"""
             getters.append(getter)
         

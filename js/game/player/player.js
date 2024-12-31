@@ -9,12 +9,13 @@ import Entities from "../entities.js";
 
 class Player extends Entities {
     constructor(x, y) {
-        super(x, y, 50, 100);
+        const spawnHeight = 300;
+        super(x, 0, 50, 100); // Start from the top of the canvas
 
         this.idleState = new PlayerIdleState(this);
         this.runState = new PlayerRunState(this);
         this.shootState = new PlayerShootState(this);
-        this.spawnState = new PlayerSpawnState(this);
+        this.spawnState = new PlayerSpawnState(this, spawnHeight); // Pass spawnHeight to spawnState
         this.jumpState = new PlayerJumpState(this);
 
         this.state = this.spawnState;
@@ -23,6 +24,10 @@ class Player extends Entities {
         this.bullets = [];
         this.lastShootTime = 0;
         this.shootCooldown = 150;
+
+        this.gravity = 0.5;
+        this.terminalVelocity = 10;
+        this.grounded = false;
     }
 
     setState(state) {
@@ -47,7 +52,7 @@ class Player extends Entities {
             this.setState(this.runState);
         } else if (input === "idle") {
             this.setState(this.idleState);
-        } else if (input === "jump" && this.grounded) {
+        } else if (input === "jump" && this.grounded) { 
             this.grounded = false;
             this.setState(this.jumpState);
             return;
@@ -59,9 +64,10 @@ class Player extends Entities {
         this.bullets.push(bullet);
     }
 
-    update(deltaTime, obstacles = []) {
-        super.update(obstacles);
-        
+    update(deltaTime) {
+        super.update();  
+        console.log(this.x, this.y)
+
         this.bullets = this.bullets.filter((bullet) => {
             bullet.update();
             return bullet.active && bullet.x > 0 && bullet.x < canvas.width;
