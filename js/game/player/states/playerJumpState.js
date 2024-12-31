@@ -21,7 +21,9 @@ class PlayerJumpState extends PlayerState {
 
     handleInput(input) {
         if (input === 'shoot') {
-            this.player.setState(this.player.shootState);
+            const bulletState = new PlayerShootState(this.player);
+            bulletState.previousState = this; 
+            this.player.setState(bulletState);
         } else if (input === 'runLeft') {
             this.player.direction = 'LEFT';
             this.player.x -= this.player.speed * 0.8;

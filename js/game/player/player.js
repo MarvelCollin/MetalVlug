@@ -5,13 +5,13 @@ import PlayerSpawnState from "./states/playerSpawnState.js";
 import PlayerJumpState from "./states/playerJumpState.js";
 import { ctx, canvas, scaleX, scaleY } from "../ctx.js";
 import { Direction } from "./components/direction.js";
+import Entities from '../entities.js';
 
-class Player {
+class Player extends Entities {
   constructor(x, y) {
-    this.x = x;
-    this.y = y;
+    super(x, y, 50, 100); 
     this.speed = 10;
-    this.direction = Direction.RIGHT; 
+    this.direction = null; 
     this.width = 50; 
 
     this.idleState = new PlayerIdleState(this);
@@ -27,10 +27,11 @@ class Player {
     this.lastShootTime = 0;
     this.shootCooldown = 150; 
 
-    this.initialY = y;    // Store initial Y position
-    this.grounded = true; // Add grounded state
-    this.velocityY = 0;    // Add velocity property
-    this.lastUpdateTime = Date.now(); // For delta time calculation
+    this.initialY = y;    
+    this.grounded = true;
+    this.velocityY = 0;   
+    this.velocityX = 0;
+    this.lastUpdateTime = Date.now(); 
   }
 
   setState(state) {
@@ -43,7 +44,9 @@ class Player {
       const now = Date.now();
       if (now - this.lastShootTime >= this.shootCooldown) {
         this.lastShootTime = now;
-        this.setState(this.shootState);
+        const shootState = new PlayerShootState(this);
+        shootState.previousState = this.currentState;
+        this.setState(shootState);
       }
       return;
     }
@@ -55,11 +58,11 @@ class Player {
       this.direction = Direction.RIGHT;
       this.setState(this.runState);
     } else if (input === "idle") {
-      this.direction = null;
-      this.setState(this.idleState);
+        this.setState(this.idleState);
     } else if (input === "jump" && this.grounded) {
       this.grounded = false;
-      this.setState(this.jumpState);
+      const jumpState = new PlayerJumpState(this);
+      this.setState(jumpState);
       return;
     }
     this.currentState.handleInput(input);
@@ -69,9 +72,17 @@ class Player {
     this.bullets.push(bullet);
   }
 
-  update() {
+  update(deltaTime, obstacles = []) {
+    // Only update velocity if not in spawn state
+    if (!(this.currentState instanceof PlayerSpawnState)) {
+      this.velocityX = this.direction === Direction.LEFT ? -this.speed : 
+                      this.direction === Direction.RIGHT ? this.speed : 0;
+    }
+
+    const moved = super.update(obstacles);
+
     const now = Date.now();
-    const deltaTime = (now - this.lastUpdateTime) / 1000; // Convert to seconds
+    deltaTime = (now - this.lastUpdateTime) / 1000;
     this.lastUpdateTime = now;
 
     this.currentState.update(deltaTime);
@@ -80,6 +91,8 @@ class Player {
       bullet.update();
       return bullet.active && bullet.x > 0 && bullet.x < canvas.width;
     });
+
+    return moved;
   }
 
   draw() {

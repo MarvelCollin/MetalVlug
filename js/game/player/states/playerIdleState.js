@@ -25,6 +25,7 @@ class PlayerIdleState extends PlayerState {
   draw() {
     if (this.idleImages) {
       const flip = this.player.direction === Direction.LEFT;
+      console.log(flip)
       Drawer.drawToCanvas(
         this.idleImages.images,
         this.player.x,

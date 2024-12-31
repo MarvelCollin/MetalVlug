@@ -4,17 +4,16 @@ import Assets from '../../assets.js';
 
 class PlayerSpawnState extends PlayerState {
     async enter() {
+        this.player.direction = null;
+        this.player.velocityX = 0;
+        this.player.velocityY = 0;
         this.spawnImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolSpawn());
         this.currentFrame = 0;
         this.frameTimer = Date.now();
     }
 
     handleInput(input) {
-        if (input === 'runLeft' || input === 'runRight') {
-            this.player.setState(this.player.runState);
-        } else if (input === 'shoot') {
-            this.player.setState(this.player.shootState);
-        }
+        return;
     }
 
     update() {
