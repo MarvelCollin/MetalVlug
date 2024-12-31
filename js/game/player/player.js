@@ -52,12 +52,13 @@ class Player extends Entities {
     }
     
     if (input === "runLeft") {
-      this.direction = Direction.LEFT;
+      this.setDirection(Direction.LEFT);
       this.setState(this.runState);
     } else if (input === "runRight") {
-      this.direction = Direction.RIGHT;
+      this.setDirection(Direction.RIGHT);
       this.setState(this.runState);
     } else if (input === "idle") {
+        this.setDirection(null);
         this.setState(this.idleState);
     } else if (input === "jump" && this.grounded) {
       this.grounded = false;

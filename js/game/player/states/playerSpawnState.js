@@ -4,9 +4,8 @@ import Assets from '../../assets.js';
 
 class PlayerSpawnState extends PlayerState {
     async enter() {
-        this.player.direction = null;
-        this.player.velocityX = 0;
-        this.player.velocityY = 0;
+        this.player.setDirection(null);
+        this.player.resetVelocity();
         this.spawnImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolSpawn());
         this.currentFrame = 0;
         this.frameTimer = Date.now();

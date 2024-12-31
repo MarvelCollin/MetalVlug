@@ -1,9 +1,29 @@
+import { Direction } from './player/components/direction.js';
+
 class Entities {
     constructor(x, y, width, height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.velocityX = 0;
+        this.velocityY = 0;
+        
+        // Add common properties
+        this.direction = null;
+        this.speed = 10;
+        this.initialY = y;
+        this.grounded = true;
+        this.lastUpdateTime = Date.now();
+    }
+
+    setDirection(direction) {
+        this.direction = direction;
+        this.velocityX = direction === Direction.LEFT ? -this.speed : 
+                        direction === Direction.RIGHT ? this.speed : 0;
+    }
+
+    resetVelocity() {
         this.velocityX = 0;
         this.velocityY = 0;
     }
@@ -42,6 +62,10 @@ class Entities {
         }
 
         return !wouldCollide;
+    }
+
+    getPosition() {
+        return { x: this.x, y: this.y, direction: this.direction };
     }
 }
 
