@@ -40,14 +40,17 @@ class Obstacle {
     draw(ctx) {
         if(debugConfig.enabled) {
             ctx.fillStyle = 'rgba(255, 0, 255, 0.5)';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.fillRect(this.x, this.y - 100, this.width, this.height);  // Draw at y - 100
             
             if (this.startX !== this.targetX || this.startY !== this.targetY) {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.setLineDash([5, 5]);
                 ctx.beginPath();
-                ctx.moveTo(this.startX + this.width/2, this.startY + this.height/2);
-                ctx.lineTo(this.targetX + this.width/2, this.targetY + this.height/2);
+                ctx.moveTo(this.startX + this.width/2, this.startY + this.height/2 - 100);  // Adjust line start
+                ctx.lineTo(
+                  this.targetX + this.width / 2,
+                  this.targetY  + this.height / 2 - 100 
+                );
                 ctx.stroke();
                 ctx.setLineDash([]);
             }

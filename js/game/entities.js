@@ -37,6 +37,7 @@ class Entities {
     }
 
     checkCollision(nextX, nextY, obstacle) {
+        // Check if the entity's next position collides with the obstacle
         return (
             nextX < obstacle.x + obstacle.width &&
             nextX + this.width > obstacle.x &&
@@ -57,13 +58,16 @@ class Entities {
         let nextY = this.y + this.velocityY;
         let verticalCollision = false;
 
+        // Check for vertical collisions
         for (const obstacle of obstacles) {
             if (this.checkCollision(this.x, nextY, obstacle)) {
                 if (this.velocityY > 0) {  
+                    // If falling, stop at the top of the obstacle
                     this.y = obstacle.y - this.height;
                     this.velocityY = 0;
                     this.grounded = true;
                 } else if (this.velocityY < 0) { 
+                    // If jumping, stop at the bottom of the obstacle
                     this.y = obstacle.y + obstacle.height;
                     this.velocityY = 0;
                 }
@@ -84,11 +88,14 @@ class Entities {
             let nextX = this.x + this.velocityX;
             let horizontalCollision = false;
 
+            // Check for horizontal collisions
             for (const obstacle of obstacles) {
                 if (this.checkCollision(nextX, this.y, obstacle)) {
-                    if (this.velocityX > 0) {  // Moving right
+                    if (this.velocityX > 0) {  
+                        // If moving right, stop at the left side of the obstacle
                         this.x = obstacle.x - this.width;
-                    } else if (this.velocityX < 0) { // Moving left
+                    } else if (this.velocityX < 0) { 
+                        // If moving left, stop at the right side of the obstacle
                         this.x = obstacle.x + obstacle.width;
                     }
                     this.velocityX = 0;
