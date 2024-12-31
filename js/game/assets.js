@@ -1,3 +1,4 @@
+// filepath: ../js/game/assets.js
 class Assets {
     static instance = null;
     static assets = null;

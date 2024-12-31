@@ -41,8 +41,10 @@ def scan_folder(base_path):
             current_dict[base_pattern] = {
                 "PATH": path,
                 "FRAMES": len(frames),
-                "TYPE": "ONCE" if len(frames) == 1 else "LOOP"  # Kalo cuma 1 frame, jadiin ONCE
+                "TYPE": "SINGLE" if len(frames) == 1 else "LOOP"  # Kalo cuma 1 frame, jadiin SINGLE
             }
+            if len(frames) > 1:
+                current_dict[base_pattern]["DELAY"] = 100  # Tambahin DELAY kalo lebih dari 1 frame
 
     return animation_data
 
