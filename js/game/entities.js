@@ -51,6 +51,7 @@ class Entities {
         const deltaTime = (now - this.lastUpdateTime) / 1000;
         this.lastUpdateTime = now;
 
+        // Handle vertical movement
         if (!this.grounded) {
             this.velocityY = Math.min(this.velocityY + this.gravity, this.terminalVelocity);
         }
@@ -58,18 +59,21 @@ class Entities {
         let nextY = this.y + this.velocityY;
         let verticalCollision = false;
 
+        // Check vertical collisions without affecting X position
         for (const obstacle of obstacles) {
             const middleX = this.x + this.width / 2;
             if (this.checkCollision(middleX, nextY - this.height * leftPercentage, obstacle) ||
                 this.checkCollision(middleX, nextY + this.height * rightPercentage, obstacle)) {
                 
                 if (this.velocityY > 0) {
+                    // Only adjust Y position when landing
                     this.y = obstacle.y - this.height;
                     this.velocityY = 0;
                     this.grounded = true;
                     verticalCollision = true;
                 } 
                 else if (this.velocityY < 0 && !obstacle.passable) {
+                    // Only adjust Y position when hitting ceiling
                     this.y = obstacle.y + obstacle.height;
                     this.velocityY = 0;
                     verticalCollision = true;
@@ -83,32 +87,11 @@ class Entities {
             this.grounded = false;
         }
 
+        // Handle horizontal movement
         if (this.state?.canMove && !(this.state.constructor.name === 'PlayerSpawnState')) {
             this.velocityX = this.direction === Direction.LEFT ? -this.speed : 
                             this.direction === Direction.RIGHT ? this.speed : 0;
-            
-            let nextX = this.x + this.velocityX;
-            let horizontalCollision = false;
-
-            // Check for horizontal collisions
-            for (const obstacle of obstacles) {
-                if (this.checkCollision(nextX, this.y, obstacle)) {
-                    if (this.velocityX > 0) {  
-                        // If moving right, stop at the left side of the obstacle
-                        this.x = obstacle.x - this.width;
-                    } else if (this.velocityX < 0) { 
-                        // If moving left, stop at the right side of the obstacle
-                        this.x = obstacle.x + obstacle.width;
-                    }
-                    this.velocityX = 0;
-                    horizontalCollision = true;
-                    break;
-                }
-            }
-
-            if (!horizontalCollision) {
-                this.x = nextX;
-            }
+            this.x += this.velocityX;
         }
 
         if (this.state) {

@@ -28,6 +28,8 @@ class Player extends Entities {
         this.gravity = 0.5;
         this.terminalVelocity = 10;
         this.grounded = false;
+
+        this.currentInputs = new Set();  // Add this to track current inputs
     }
 
     setState(state) {
@@ -36,7 +38,9 @@ class Player extends Entities {
     }
 
     handleInput(input) {
-        if (input === "shoot") {
+        this.currentInputs.add(input);
+
+        if (this.currentInputs.has('shoot')) {
             const now = Date.now();
             if (now - this.lastShootTime >= this.shootCooldown) {
                 this.lastShootTime = now;
@@ -44,19 +48,21 @@ class Player extends Entities {
                 shootState.previousState = this.state;
                 this.setState(shootState);
             }
-            return;
         }
         
-        if (input === "runLeft" || input === "runRight") {
-            this.setDirection(input === "runLeft" ? Direction.LEFT : Direction.RIGHT);
-            this.setState(this.runState);
-        } else if (input === "idle") {
+        if (input === 'idle') {
+            this.currentInputs.clear();
             this.setState(this.idleState);
-        } else if (input === "jump" && this.grounded) { 
+        } else if (this.currentInputs.has('jump') && this.grounded) {
             this.grounded = false;
             this.setState(this.jumpState);
-            return;
+        } else if (this.currentInputs.has('runLeft') || this.currentInputs.has('runRight')) {
+            this.setDirection(this.currentInputs.has('runLeft') ? Direction.LEFT : Direction.RIGHT);
+            if (!(this.state instanceof PlayerJumpState)) {
+                this.setState(this.runState);
+            }
         }
+
         this.state.handleInput(input);
     }
 

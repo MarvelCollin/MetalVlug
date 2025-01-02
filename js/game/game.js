@@ -9,6 +9,7 @@ import { Obstacle, defaultObstacles } from './world/obstacle.js';
 let player;
 let camera;
 let obstacles = [];
+const activeKeys = new Set();  // Add this to track active keys
 
 async function loadBackground() {
     const background = await Drawer.loadImage(() => Assets.getBackground());
@@ -85,28 +86,33 @@ function gameLoop() {
 }
 
 function handleKeyDown(event) {
-    switch (event.key) {  
-        case 'a':
-            player.handleInput('runLeft');
-            break;
-        case 'd':
-            player.handleInput('runRight');
-            break;
-        case 'Control':
-            player.handleInput('shoot');
-            break;
-        case ' ':
-            player.handleInput('jump');
-            break;
+    activeKeys.add(event.key);
+    
+    // Handle all active keys
+    if (activeKeys.has('a')) {
+        player.handleInput('runLeft');
+    }
+    if (activeKeys.has('d')) {
+        player.handleInput('runRight');
+    }
+    if (activeKeys.has('Control')) {
+        player.handleInput('shoot');
+    }
+    if (activeKeys.has(' ')) {
+        player.handleInput('jump');
     }
 }
 
 function handleKeyUp(event) {
-    switch (event.key) {
-        case 'a':
-        case 'd':
-            player.handleInput('idle');
-            break;
+    activeKeys.delete(event.key);
+    
+    // Only set to idle if no movement keys are pressed
+    if (!activeKeys.has('a') && !activeKeys.has('d')) {
+        player.handleInput('idle');
+    } else if (activeKeys.has('a')) {
+        player.handleInput('runLeft');
+    } else if (activeKeys.has('d')) {
+        player.handleInput('runRight');
     }
 }
 
