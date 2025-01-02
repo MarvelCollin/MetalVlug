@@ -85,27 +85,26 @@ function gameLoop() {
 }
 
 function handleKeyDown(event) {
-    switch (event.code) {  
-        case 'ArrowLeft':
+    switch (event.key) {  
+        case 'a':
             player.handleInput('runLeft');
             break;
-        case 'ArrowRight':
+        case 'd':
             player.handleInput('runRight');
             break;
-        case 'ControlLeft':
-        case 'ControlRight':
+        case 'Control':
             player.handleInput('shoot');
             break;
-        case 'Space':  
+        case ' ':
             player.handleInput('jump');
             break;
     }
 }
 
 function handleKeyUp(event) {
-    switch (event.code) {
-        case 'ArrowLeft':
-        case 'ArrowRight':
+    switch (event.key) {
+        case 'a':
+        case 'd':
             player.handleInput('idle');
             break;
     }

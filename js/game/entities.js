@@ -46,7 +46,7 @@ class Entities {
         );
     }
 
-    update(obstacles = defaultObstacles) {
+    update(obstacles = defaultObstacles, leftPercentage = 0.5, rightPercentage = 0.3) {
         const now = Date.now();
         const deltaTime = (now - this.lastUpdateTime) / 1000;
         this.lastUpdateTime = now;
@@ -58,21 +58,23 @@ class Entities {
         let nextY = this.y + this.velocityY;
         let verticalCollision = false;
 
-        // Check for vertical collisions
         for (const obstacle of obstacles) {
-            if (this.checkCollision(this.x, nextY, obstacle)) {
-                if (this.velocityY > 0) {  
-                    // If falling, stop at the top of the obstacle
+            const middleX = this.x + this.width / 2;
+            if (this.checkCollision(middleX, nextY - this.height * leftPercentage, obstacle) ||
+                this.checkCollision(middleX, nextY + this.height * rightPercentage, obstacle)) {
+                
+                if (this.velocityY > 0) {
                     this.y = obstacle.y - this.height;
                     this.velocityY = 0;
                     this.grounded = true;
-                } else if (this.velocityY < 0) { 
-                    // If jumping, stop at the bottom of the obstacle
+                    verticalCollision = true;
+                } 
+                else if (this.velocityY < 0 && !obstacle.passable) {
                     this.y = obstacle.y + obstacle.height;
                     this.velocityY = 0;
+                    verticalCollision = true;
                 }
-                verticalCollision = true;
-                break;
+                if (verticalCollision) break;
             }
         }
 

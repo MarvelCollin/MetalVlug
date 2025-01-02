@@ -10,12 +10,12 @@ import Entities from "../entities.js";
 class Player extends Entities {
     constructor(x, y) {
         const spawnHeight = 300;
-        super(x, 0, 50, 100); // Start from the top of the canvas
+        super(x, 0, 100, 100);
 
         this.idleState = new PlayerIdleState(this);
         this.runState = new PlayerRunState(this);
         this.shootState = new PlayerShootState(this);
-        this.spawnState = new PlayerSpawnState(this, spawnHeight); // Pass spawnHeight to spawnState
+        this.spawnState = new PlayerSpawnState(this, spawnHeight)
         this.jumpState = new PlayerJumpState(this);
 
         this.state = this.spawnState;
@@ -66,7 +66,7 @@ class Player extends Entities {
 
     update(deltaTime) {
         super.update();  
-        console.log(this.x, this.y)
+        // console.log(this.x, this.y)
 
         this.bullets = this.bullets.filter((bullet) => {
             bullet.update();

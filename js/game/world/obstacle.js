@@ -2,11 +2,12 @@ import { debugConfig } from "../helper/debug.js";
 import { canvas } from "../ctx.js";
 
 class Obstacle {
-    constructor(x, y, width, height, targetX = x, targetY = y) {
+    constructor(x, y, width, height, targetX = x, targetY = y, passable = true) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.passable = passable;
         
         this.startX = x;
         this.startY = y;
@@ -39,14 +40,15 @@ class Obstacle {
 
     draw(ctx) {
         if(debugConfig.enabled) {
-            ctx.fillStyle = 'rgba(255, 0, 255, 0.5)';
-            ctx.fillRect(this.x, this.y - 100, this.width, this.height);  // Draw at y - 100
+            // Change color based on passable status
+            ctx.fillStyle = this.passable ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)';
+            ctx.fillRect(this.x, this.y - 100, this.width, this.height);  
             
             if (this.startX !== this.targetX || this.startY !== this.targetY) {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.setLineDash([5, 5]);
                 ctx.beginPath();
-                ctx.moveTo(this.startX + this.width/2, this.startY + this.height/2 - 100);  // Adjust line start
+                ctx.moveTo(this.startX + this.width/2, this.startY + this.height/2 - 100); 
                 ctx.lineTo(
                   this.targetX + this.width / 2,
                   this.targetY  + this.height / 2 - 100 
@@ -59,18 +61,10 @@ class Obstacle {
 }
 
 const obstacles = [
-    
-    new Obstacle(100, 500, 100, 20),   // Adjusted y=700 to y=500
-    new Obstacle(100, 800, 100, 20),   // Adjusted y=700 to y=500
-    new Obstacle(250, 400, 100, 20),
-    
-    // Middle platforms
-    new Obstacle(400, 450, 100, 20),
-    new Obstacle(550, 350, 100, 20),
-    
-    // Right side platforms
-    new Obstacle(700, 400, 100, 20),
-    new Obstacle(850, 300, 100, 20)
+    // Ground is not passable
+    new Obstacle(0, 970, 3000, 20, undefined, undefined, true),
+    // Platforms are passable
+    new Obstacle(300, 700, 300, 20, undefined, undefined, true)
 ];
 
 export { Obstacle, obstacles as defaultObstacles };

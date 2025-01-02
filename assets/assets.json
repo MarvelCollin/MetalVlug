@@ -118,7 +118,7 @@
                         "PATH": "../assets/player/marco/pistol/stand/shoot/shoot_",
                         "FRAMES": 7,
                         "TYPE": "LOOP",
-                        "DELAY": 100
+                        "DELAY": 20
                     }
                 }
             }
