@@ -53,7 +53,7 @@ def generate_assets_class(json_file_path, output_file_path):
     getters = process_json_structure(data)
     
     # Template buat class nya
-    class_code = """// filepath: ../js/game/assets.js
+    class_code = """
 class Assets {
     static instance = null;
     static assets = null;
@@ -93,7 +93,7 @@ export default assetsInstance;
 
 if __name__ == "__main__":
     json_path = "../assets/assets.json"
-    js_output_path = "../js/game/assets.js"
+    js_output_path = "../js/game/helper/assets.js"
     
     generate_assets_class(json_path, js_output_path)
     print(f"File assets.js udah jadi di: {js_output_path}")

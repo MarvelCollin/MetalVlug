@@ -1,7 +1,7 @@
 import PlayerState from './playerState.js';
 import PlayerJumpState from './playerJumpState.js';
 import Drawer from '../../helper/drawer.js';
-import Assets from '../../assets.js';
+import Assets from '../../helper/assets.js';
 import Bullet from '../components/bullet.js';
 import { Direction } from '../components/direction.js';
 

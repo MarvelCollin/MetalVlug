@@ -2,7 +2,7 @@ import { ctx, canvas, scaleX, scaleY } from './ctx.js';
 import Player from './player/player.js';
 import Camera from './camera/camera.js';
 import { debugConfig } from './helper/debug.js';
-import Assets from './assets.js';
+import Assets from './helper/assets.js';
 import Drawer from './helper/drawer.js';
 import { Obstacle, defaultObstacles } from './world/obstacle.js';
 

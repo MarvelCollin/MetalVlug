@@ -1,6 +1,6 @@
 import PlayerState from "./playerState.js";
 import Drawer from "../../helper/drawer.js";
-import Assets from "../../assets.js";
+import Assets from "../../helper/assets.js";
 import { Direction } from "../components/direction.js";
 
 class PlayerIdleState extends PlayerState {

@@ -1,6 +1,6 @@
 import { ctx, canvas, scaleX, scaleY } from '../ctx.js';
 import { drawDebugBorder, debugConfig } from './debug.js';
-import Assets from '../assets.js';
+import Assets from './assets.js';
 
 class Drawer {
     static instance = null;

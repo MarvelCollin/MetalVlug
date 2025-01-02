@@ -1,6 +1,6 @@
 import PlayerState from './playerState.js';
 import Drawer from '../../helper/drawer.js';
-import Assets from '../../assets.js';
+import Assets from '../../helper/assets.js';
 
 class PlayerSpawnState extends PlayerState {
     constructor(player, spawnHeight) {

@@ -2,7 +2,7 @@ import PlayerState from './playerState.js';
 import PlayerShootState from './playerShootState.js';
 import { Direction } from '../components/direction.js';
 import Drawer from '../../helper/drawer.js';
-import Assets from '../../assets.js';
+import Assets from '../../helper/assets.js';
 import PlayerIdleState from './playerIdleState.js';
 
 class PlayerJumpState extends PlayerState {

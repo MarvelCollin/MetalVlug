@@ -1,6 +1,6 @@
 import PlayerState from "./playerState.js";
 import Drawer from "../../helper/drawer.js";
-import Assets from "../../assets.js";
+import Assets from "../../helper/assets.js";
 import { ctx } from "../../ctx.js";
 import { Direction } from "../components/direction.js";
 
