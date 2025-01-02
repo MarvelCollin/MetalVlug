@@ -40,7 +40,6 @@ class Obstacle {
 
     draw(ctx) {
         if(debugConfig.enabled) {
-            // Change color based on passable status
             ctx.fillStyle = this.passable ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)';
             ctx.fillRect(this.x, this.y - 100, this.width, this.height);  
             
@@ -61,9 +60,7 @@ class Obstacle {
 }
 
 const obstacles = [
-    // Ground is not passable
     new Obstacle(0, 970, 3000, 20, undefined, undefined, true),
-    // Platforms are passable
     new Obstacle(300, 700, 300, 20, undefined, undefined, true)
 ];
 

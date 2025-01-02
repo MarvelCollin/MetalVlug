@@ -1,8 +1,9 @@
 import PlayerState from './playerState.js';
-import PlayerJumpState from './playerJumpState.js';  // Add this import
+import PlayerJumpState from './playerJumpState.js';
 import Drawer from '../../helper/drawer.js';
 import Assets from '../../assets.js';
 import Bullet from '../components/bullet.js';
+import { Direction } from '../components/direction.js';
 
 class PlayerShootState extends PlayerState {
     previousState = null;
@@ -18,12 +19,11 @@ class PlayerShootState extends PlayerState {
             this.currentFrame = 0;
             this.frameTimer = Date.now();
 
-            // Create bullet
             const bulletOffset = {
                 x: this.player.direction === 'LEFT' ? -20 : this.player.width + 200,
                 y: -140
             };
-            
+            console.log(this.player.direction)
             const bullet = new Bullet(
                 this.player.x + bulletOffset.x,
                 this.player.y + bulletOffset.y,
@@ -57,7 +57,6 @@ class PlayerShootState extends PlayerState {
     }
 
     update() {
-        // First update shooting animation
         if (this.shootImages) {
             const now = Date.now();
             if (now - this.frameTimer >= this.shootImages.delay) {
@@ -69,16 +68,24 @@ class PlayerShootState extends PlayerState {
             }
         }
 
-        // Then update jump physics if we're in a jump
         if (this.previousState instanceof PlayerJumpState) {
-            // Call update on the previous state's prototype to avoid "this" binding issues
             PlayerJumpState.prototype.update.call(this.previousState);
         }
     }
 
     draw() {
         if (this.shootImages) {
-            Drawer.drawToCanvas(this.shootImages.images, this.player.x * this.player.getScaleX(), this.player.y * this.player.getScaleY(), 'shoot', this.shootImages.delay);
+            const flip = this.player.direction === Direction.LEFT;
+            Drawer.drawToCanvas(
+                this.shootImages.images,
+                this.player.x * this.player.getScaleX(),
+                this.player.y * this.player.getScaleY(),
+                'shoot',
+                this.shootImages.delay,
+                undefined,
+                undefined,
+                flip
+            );
         }
     }
 }

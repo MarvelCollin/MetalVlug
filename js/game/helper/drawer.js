@@ -66,33 +66,39 @@ class Drawer {
         const img = Array.isArray(images) ? images[frameIndex] : images;
 
         if ((Array.isArray(images) && images.length > 0 && img) || (!Array.isArray(images) && img)) {
+            const imgWidth = width || img.width;
+            const imgHeight = height || img.height;
+
             if (flip) {
+                console.log(x)
                 ctx.save();
+                ctx.translate(x, y);
                 ctx.scale(-1, 1);
                 ctx.drawImage(
                     img,
-                    - x - (width || img.width),
-                    y - (height || img.height),
-                    width || img.width,
-                    height || img.height
+                    -30,
+                    -imgHeight,
+                    imgWidth,
+                    imgHeight
                 );
+                ctx.scale(1,1)
                 ctx.restore();
             } else {
                 ctx.drawImage(
                     img,
                     x,
-                    y - (height || img.height),
-                    width || img.width,
-                    height || img.height
+                    y - imgHeight,
+                    imgWidth,
+                    imgHeight
                 );
             }
 
             if (type !== 'ONCE') {
                 const now = Date.now();
                 if (now - this.frameTimers[spriteId] >= delay) {
-                    const type = images.type || 'LOOP';
+                    const animationType = images.type || 'LOOP';
                     
-                    switch(type) {
+                    switch(animationType) {
                         case 'LOOP':
                             this.currentFrames[spriteId] = (frameIndex + 1) % images.length;
                             break;
@@ -127,8 +133,8 @@ class Drawer {
             }
 
             if (debugConfig.enabled) {
-                const finalHeight = height || img.height;
-                drawDebugBorder(ctx, x, y - finalHeight, width || img.width, finalHeight);
+                const debugX = flip ? x : x;
+                drawDebugBorder(ctx, debugX, y - imgHeight, imgWidth, imgHeight);
             }
         }
     }

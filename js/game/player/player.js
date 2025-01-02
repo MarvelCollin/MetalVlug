@@ -29,7 +29,8 @@ class Player extends Entities {
         this.terminalVelocity = 10;
         this.grounded = false;
 
-        this.currentInputs = new Set();  // Add this to track current inputs
+        this.currentInputs = new Set();
+        this.lastDirection = null;
     }
 
     setState(state) {
@@ -38,28 +39,36 @@ class Player extends Entities {
     }
 
     handleInput(input) {
-        this.currentInputs.add(input);
-
-        if (this.currentInputs.has('shoot')) {
+        if (input === 'runLeft' || input === 'runRight') {
+            this.lastDirection = input;
+            this.setDirection(input === 'runLeft' ? Direction.LEFT : Direction.RIGHT);
+            if (!(this.state instanceof PlayerJumpState)) {
+                this.setState(this.runState);
+            }
+        } 
+        else if (input === 'idle') {
+            this.lastDirection = null;
+            if (!(this.state instanceof PlayerJumpState)) {
+                this.setState(this.idleState);
+            }
+            this.velocityX = 0;
+        }
+        else if (input === 'jump' && this.grounded) {
+            const currentDirection = this.lastDirection;
+            this.grounded = false;
+            this.setState(this.jumpState);
+            if (currentDirection) {
+                this.lastDirection = currentDirection;
+                this.setDirection(currentDirection === 'runLeft' ? Direction.LEFT : Direction.RIGHT);
+            }
+        }
+        else if (input === 'shoot') {
             const now = Date.now();
             if (now - this.lastShootTime >= this.shootCooldown) {
                 this.lastShootTime = now;
                 const shootState = new PlayerShootState(this);
                 shootState.previousState = this.state;
                 this.setState(shootState);
-            }
-        }
-        
-        if (input === 'idle') {
-            this.currentInputs.clear();
-            this.setState(this.idleState);
-        } else if (this.currentInputs.has('jump') && this.grounded) {
-            this.grounded = false;
-            this.setState(this.jumpState);
-        } else if (this.currentInputs.has('runLeft') || this.currentInputs.has('runRight')) {
-            this.setDirection(this.currentInputs.has('runLeft') ? Direction.LEFT : Direction.RIGHT);
-            if (!(this.state instanceof PlayerJumpState)) {
-                this.setState(this.runState);
             }
         }
 
@@ -71,9 +80,7 @@ class Player extends Entities {
     }
 
     update(deltaTime) {
-        super.update();  
-        // console.log(this.x, this.y)
-
+        super.update();
         this.bullets = this.bullets.filter((bullet) => {
             bullet.update();
             return bullet.active && bullet.x > 0 && bullet.x < canvas.width;

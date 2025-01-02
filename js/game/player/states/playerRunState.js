@@ -7,7 +7,7 @@ import { Direction } from "../components/direction.js";
 class PlayerRunState extends PlayerState {
   constructor(player) {
     super(player);
-    this.canMove = true;  // Allow movement in run state
+    this.canMove = true;
   }
 
   async enter() {
@@ -29,8 +29,6 @@ class PlayerRunState extends PlayerState {
   }
 
   update() {
-    // Remove direct position modification
-    // Movement is now handled by the Entities class
   }
 
   draw() {

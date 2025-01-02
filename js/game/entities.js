@@ -37,7 +37,6 @@ class Entities {
     }
 
     checkCollision(nextX, nextY, obstacle) {
-        // Check if the entity's next position collides with the obstacle
         return (
             nextX < obstacle.x + obstacle.width &&
             nextX + this.width > obstacle.x &&
@@ -51,7 +50,10 @@ class Entities {
         const deltaTime = (now - this.lastUpdateTime) / 1000;
         this.lastUpdateTime = now;
 
-        // Handle vertical movement
+        if (this.state?.canMove) {
+            this.x += this.velocityX;
+        }
+
         if (!this.grounded) {
             this.velocityY = Math.min(this.velocityY + this.gravity, this.terminalVelocity);
         }
@@ -59,21 +61,18 @@ class Entities {
         let nextY = this.y + this.velocityY;
         let verticalCollision = false;
 
-        // Check vertical collisions without affecting X position
         for (const obstacle of obstacles) {
             const middleX = this.x + this.width / 2;
             if (this.checkCollision(middleX, nextY - this.height * leftPercentage, obstacle) ||
                 this.checkCollision(middleX, nextY + this.height * rightPercentage, obstacle)) {
                 
                 if (this.velocityY > 0) {
-                    // Only adjust Y position when landing
                     this.y = obstacle.y - this.height;
                     this.velocityY = 0;
                     this.grounded = true;
                     verticalCollision = true;
                 } 
                 else if (this.velocityY < 0 && !obstacle.passable) {
-                    // Only adjust Y position when hitting ceiling
                     this.y = obstacle.y + obstacle.height;
                     this.velocityY = 0;
                     verticalCollision = true;
@@ -85,13 +84,6 @@ class Entities {
         if (!verticalCollision) {
             this.y = nextY;
             this.grounded = false;
-        }
-
-        // Handle horizontal movement
-        if (this.state?.canMove && !(this.state.constructor.name === 'PlayerSpawnState')) {
-            this.velocityX = this.direction === Direction.LEFT ? -this.speed : 
-                            this.direction === Direction.RIGHT ? this.speed : 0;
-            this.x += this.velocityX;
         }
 
         if (this.state) {

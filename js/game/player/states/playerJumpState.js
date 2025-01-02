@@ -8,9 +8,9 @@ import PlayerIdleState from './playerIdleState.js';
 class PlayerJumpState extends PlayerState {
     async enter() {
         try {
-            this.canMove = true;  // Allow movement while jumping
-            this.idle = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpIdle());
-            this.shoot = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpShoot());
+            this.canMove = true;
+            this.jumpIdle = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpIdle());
+            this.jumpShoot = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpShoot());
             this.currentFrame = 0;
             this.frameTimer = Date.now();
             this.jumpForce = -22;
@@ -18,9 +18,10 @@ class PlayerJumpState extends PlayerState {
             this.player.grounded = false;
             this.isShooting = false;
             
-            // Reset horizontal velocity unless already moving
-            if (!this.player.direction) {
-                this.player.velocityX = 0;
+            if (this.player.lastDirection) {
+                this.player.setDirection(
+                    this.player.lastDirection === 'runLeft' ? Direction.LEFT : Direction.RIGHT
+                );
             }
         } catch (error) {
             console.error('Failed to load jump state assets:', error);
@@ -35,44 +36,52 @@ class PlayerJumpState extends PlayerState {
             }, 200); 
         } else if (input === 'runLeft') {
             this.player.setDirection(Direction.LEFT);
+            this.player.lastDirection = 'runLeft';
+            this.player.velocityX = -this.player.speed;
         } else if (input === 'runRight') {
             this.player.setDirection(Direction.RIGHT);
+            this.player.lastDirection = 'runRight';
+            this.player.velocityX = this.player.speed;
         } else if (input === 'idle') {
-            this.player.setDirection(null);
+            this.player.lastDirection = null;
             this.player.velocityX = 0;
         }
     }
 
     update(deltaTime) {
-        const images = this.isShooting ? this.shoot : this.idle;
-        this.player.setDirection(null);
-        if (images) {
+        const currentAnimation = this.isShooting ? this.jumpShoot : this.jumpIdle;
+        
+        if (currentAnimation) {
             const now = Date.now();
-            if (now - this.frameTimer >= images.delay) {
+            if (now - this.frameTimer >= currentAnimation.delay) {
                 if (this.player.velocityY < 0) {
                     this.currentFrame = 0;
                 } else if (this.player.velocityY > 0) {
-                    this.currentFrame = Math.min(4, images.images.length - 1);
+                    this.currentFrame = Math.min(4, currentAnimation.images.length - 1);
                 }
                 this.frameTimer = now;
             }
 
             if (this.player.grounded) {
+                const currentDirection = this.player.lastDirection;
                 this.player.setState(new PlayerIdleState(this.player));
+                if (currentDirection) {
+                    this.player.handleInput(currentDirection);
+                }
             }
         }
     }
 
     draw() {
-        const images = this.isShooting ? this.shoot : this.idle;
-        if (images) {
+        const currentAnimation = this.isShooting ? this.jumpShoot : this.jumpIdle;
+        if (currentAnimation) {
             const flip = this.player.direction === Direction.LEFT;
             Drawer.drawToCanvas(
-                images.images,
+                currentAnimation.images,
                 this.player.x,
                 this.player.y,
                 'jump',
-                images.delay,
+                currentAnimation.delay,
                 undefined,
                 undefined,
                 flip,

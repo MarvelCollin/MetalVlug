@@ -93,7 +93,7 @@
                             "PATH": "../assets/player/marco/pistol/stand/idle/normal/normal_",
                             "FRAMES": 4,
                             "TYPE": "LOOP",
-                            "DELAY": 200
+                            "DELAY": 100
                         },
                         "SLEEP": {
                             "PATH": "../assets/player/marco/pistol/stand/idle/sleep/sleep_",
@@ -118,7 +118,7 @@
                         "PATH": "../assets/player/marco/pistol/stand/shoot/shoot_",
                         "FRAMES": 7,
                         "TYPE": "LOOP",
-                        "DELAY": 20
+                        "DELAY": 39
                     }
                 }
             }

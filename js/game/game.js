@@ -9,14 +9,13 @@ import { Obstacle, defaultObstacles } from './world/obstacle.js';
 let player;
 let camera;
 let obstacles = [];
-const activeKeys = new Set();  // Add this to track active keys
+const activeKeys = new Set();
 
 async function loadBackground() {
     const background = await Drawer.loadImage(() => Assets.getBackground());
     return new Promise((resolve, reject) => {
         if (background && background.images && background.images[0]) {
             const img = background.images[0];
-            // Calculate scaled width to maintain aspect ratio
             const aspectRatio = img.width / img.height;
             const scaledWidth = canvas.height * aspectRatio;
             
@@ -64,7 +63,7 @@ function gameLoop() {
             canvas.height,
             'background',
             0,
-            scaledWidth,  // Use scaled width
+            scaledWidth,
             canvas.height,
             false,
             'ONCE'
@@ -76,7 +75,6 @@ function gameLoop() {
     player.update();
     player.draw();
 
-    // Draw obstacles
     obstacles.forEach(obstacle => obstacle.draw(ctx));
 
     ctx.restore();
@@ -86,33 +84,30 @@ function gameLoop() {
 }
 
 function handleKeyDown(event) {
+    if (event.repeat) return;
     activeKeys.add(event.key);
-    
-    // Handle all active keys
-    if (activeKeys.has('a')) {
-        player.handleInput('runLeft');
-    }
-    if (activeKeys.has('d')) {
-        player.handleInput('runRight');
-    }
-    if (activeKeys.has('Control')) {
-        player.handleInput('shoot');
-    }
-    if (activeKeys.has(' ')) {
-        player.handleInput('jump');
-    }
+    updatePlayerFromKeys();
 }
 
 function handleKeyUp(event) {
     activeKeys.delete(event.key);
-    
-    // Only set to idle if no movement keys are pressed
-    if (!activeKeys.has('a') && !activeKeys.has('d')) {
+    updatePlayerFromKeys();
+}
+
+function updatePlayerFromKeys() {
+    if (activeKeys.has('a') || activeKeys.has('d')) {
+        const direction = activeKeys.has('a') ? 'runLeft' : 'runRight';
+        player.handleInput(direction);
+    } else {
         player.handleInput('idle');
-    } else if (activeKeys.has('a')) {
-        player.handleInput('runLeft');
-    } else if (activeKeys.has('d')) {
-        player.handleInput('runRight');
+    }
+
+    if (activeKeys.has(' ')) {
+        player.handleInput('jump');
+    }
+
+    if (activeKeys.has('Control')) {
+        player.handleInput('shoot');
     }
 }
 
