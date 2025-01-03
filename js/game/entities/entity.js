@@ -4,7 +4,7 @@ import { defaultObstacles } from "../world/obstacle.js";
 import Movement from './components/movement.js';
 import Collision from './components/collision.js';
 import Renderer from './components/renderer.js';
-import StateManager from './components/state-manager.js';
+import StateManager from './components/stateManager.js';
 
 class Entity {
     constructor(x, y, width, height) {

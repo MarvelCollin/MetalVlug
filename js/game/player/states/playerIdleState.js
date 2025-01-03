@@ -7,6 +7,7 @@ class PlayerIdleState extends PlayerState {
   constructor(player) {
     super(player);
     this.canMove = false;
+    this.frameAccumulator = 0; // Initialize accumulator
   }
 
   async enter() {
@@ -21,10 +22,20 @@ class PlayerIdleState extends PlayerState {
       this.player.setState(this.player.shootState);
       this.player.state.currentFrame = 0;
       this.player.state.frameTimer = Date.now();
+    } else if (input === "jump" && this.player.canJump) { // Allow jump from idle state
+      // Directly set the state to jumpState to prevent recursion
+      this.player.setState(this.player.jumpState);
     }
   }
 
-  update() {
+  update(deltaTime) {
+    if (this.idleImages) {
+      this.frameAccumulator += deltaTime;
+      if (this.frameAccumulator >= this.idleImages.delay) {
+        this.currentFrame = (this.currentFrame + 1) % this.idleImages.images.length;
+        this.frameAccumulator = 0;
+      }
+    }
   }
 
   draw() {
@@ -45,3 +56,4 @@ class PlayerIdleState extends PlayerState {
 }
 
 export default PlayerIdleState;
+

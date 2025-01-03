@@ -28,6 +28,7 @@ class Player extends Entity {
     this.gravity = 0.5;
     this.terminalVelocity = 10;
     this.grounded = false;
+    this.canJump = true; // Initialize canJump flag to true to allow the first jump
 
     this.currentInputs = new Set();
     this.lastDirection = null;
@@ -39,21 +40,26 @@ class Player extends Entity {
   }
 
   handleInput(input) {
+    let handled = false; // Flag to check if input was handled here
+
     if (input === "runLeft" || input === "runRight") {
       this.lastDirection = input;
       this.setDirection(input === "runLeft" ? Direction.LEFT : Direction.RIGHT);
       if (!(this.state instanceof PlayerJumpState)) {
         this.setState(this.runState);
+        handled = true;
       }
     } else if (input === "idle") {
       this.lastDirection = null;
       if (!(this.state instanceof PlayerJumpState)) {
         this.setState(this.idleState);
+        handled = true;
       }
       this.velocityX = 0;
-    } else if (input === "jump" && this.grounded) {
+    } else if (input === "jump" && this.grounded && this.canJump) { // Updated condition
       const currentDirection = this.lastDirection;
       this.grounded = false;
+      this.canJump = false; // Reset jump ability
       this.setState(this.jumpState);
       if (currentDirection) {
         this.lastDirection = currentDirection;
@@ -61,6 +67,7 @@ class Player extends Entity {
           currentDirection === "runLeft" ? Direction.LEFT : Direction.RIGHT
         );
       }
+      handled = true;
     } else if (input === "shoot") {
       const now = Date.now();
       if (now - this.lastShootTime >= this.shootCooldown) {
@@ -68,10 +75,14 @@ class Player extends Entity {
         const shootState = new PlayerShootState(this);
         shootState.previousState = this.state;
         this.setState(shootState);
+        handled = true;
       }
     }
 
-    this.state.handleInput(input);
+    // Only call handleInput if the input wasn't handled above
+    if (!handled) {
+      this.state.handleInput(input);
+    }
   }
 
   addBullet(bullet) {
@@ -80,11 +91,28 @@ class Player extends Entity {
 
   update(deltaTime) {
     super.update();
+    this.state.update(deltaTime); // Pass deltaTime to current state
+
+    // Update grounded status immediately after position update
+    if (this.y >= this.initialY) {
+      this.y = this.initialY;
+      this.velocityY = 0;
+      if (!this.grounded) {
+        this.grounded = true;
+        // Allow jump immediately upon landing
+        this.canJump = true;
+      }
+    } else {
+      this.grounded = false;
+    }
+
+
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();
       return bullet.active && bullet.x > 0 && bullet.x < canvas.width;
     });
   }
+
 
   draw() {
     super.draw();

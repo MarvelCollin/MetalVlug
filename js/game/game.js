@@ -10,6 +10,7 @@ let player;
 let camera;
 let obstacles = [];
 const activeKeys = new Set();
+let lastTimestamp = 0;
 
 async function loadBackground() {
     const background = await Drawer.loadImage(() => Assets.getBackground());
@@ -43,7 +44,10 @@ async function startAnimation() {
     requestAnimationFrame(gameLoop);
 }
 
-function gameLoop() {
+function gameLoop(timestamp) {
+    const deltaTime = timestamp - lastTimestamp;
+    lastTimestamp = timestamp;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     camera.follow();
@@ -72,7 +76,7 @@ function gameLoop() {
 
     ctx.scale(scaleX, scaleY);
 
-    player.update();
+    player.update(deltaTime); // Pass deltaTime
     player.draw();
 
     obstacles.forEach(obstacle => obstacle.draw(ctx));
@@ -80,7 +84,6 @@ function gameLoop() {
     ctx.restore();
 
     requestAnimationFrame(gameLoop);
- 
 }
 
 function handleKeyDown(event) {

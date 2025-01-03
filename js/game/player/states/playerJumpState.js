@@ -6,6 +6,11 @@ import Assets from '../../helper/assets.js';
 import PlayerIdleState from './playerIdleState.js';
 
 class PlayerJumpState extends PlayerState {
+    constructor(player) {
+        super(player);
+        this.frameAccumulator = 0; // Initialize accumulator
+    }
+
     async enter() {
         try {
             this.canMove = true;
@@ -52,19 +57,21 @@ class PlayerJumpState extends PlayerState {
         const currentAnimation = this.isShooting ? this.jumpShoot : this.jumpIdle;
         
         if (currentAnimation) {
-            const now = Date.now();
-            if (now - this.frameTimer >= currentAnimation.delay) {
+            this.frameAccumulator += deltaTime;
+            if (this.frameAccumulator >= currentAnimation.delay) {
                 if (this.player.velocityY < 0) {
                     this.currentFrame = 0;
                 } else if (this.player.velocityY > 0) {
                     this.currentFrame = Math.min(4, currentAnimation.images.length - 1);
                 }
-                this.frameTimer = now;
+                this.frameAccumulator = 0;
             }
 
+            // Check if player has landed
             if (this.player.grounded) {
                 const currentDirection = this.player.lastDirection;
                 this.player.setState(new PlayerIdleState(this.player));
+                this.player.canJump = true; // Reset canJump flag
                 if (currentDirection) {
                     this.player.handleInput(currentDirection);
                 }

@@ -7,6 +7,7 @@ class PlayerSpawnState extends PlayerState {
         super(player);
         this.spawnHeight = spawnHeight;
         this.startY = 0; 
+        this.frameAccumulator = 0;
     }
 
     async enter() {
@@ -21,12 +22,12 @@ class PlayerSpawnState extends PlayerState {
         return;
     }
 
-    update() {
+    update(deltaTime) {
         if (this.spawnImages) {
-            const now = Date.now();
-            if (now - this.frameTimer >= this.spawnImages.delay) {
+            this.frameAccumulator += deltaTime;
+            if (this.frameAccumulator >= this.spawnImages.delay) {
                 this.currentFrame++;
-                this.frameTimer = now;
+                this.frameAccumulator = 0;
                 if (this.currentFrame >= this.spawnImages.images.length) {
                     this.player.y = this.spawnHeight; 
                     this.player.setState(this.player.idleState);

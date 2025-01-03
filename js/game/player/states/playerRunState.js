@@ -8,6 +8,7 @@ class PlayerRunState extends PlayerState {
   constructor(player) {
     super(player);
     this.canMove = true;
+    this.frameAccumulator = 0; // Initialize accumulator
   }
 
   async enter() {
@@ -25,10 +26,19 @@ class PlayerRunState extends PlayerState {
       this.player.setDirection(Direction.LEFT);
     } else if (input === "runRight") {
       this.player.setDirection(Direction.RIGHT);
+    } else if (input === "jump" && this.player.canJump) { // Added condition for jump
+      this.player.setState(this.player.jumpState); // Directly set the state to prevent recursion
     }
   }
 
-  update() {
+  update(deltaTime) {
+    if (this.runImages) {
+      this.frameAccumulator += deltaTime;
+      if (this.frameAccumulator >= this.runImages.delay) {
+        this.currentFrame = (this.currentFrame + 1) % this.runImages.images.length;
+        this.frameAccumulator = 0;
+      }
+    }
   }
 
   draw() {
@@ -49,3 +59,4 @@ class PlayerRunState extends PlayerState {
 }
 
 export default PlayerRunState;
+
