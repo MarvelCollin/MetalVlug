@@ -86,14 +86,15 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
+// Modify handleKeyDown to convert key to lowercase
 function handleKeyDown(event) {
     if (event.repeat) return;
-    activeKeys.add(event.key);
+    activeKeys.add(event.key.toLowerCase()); // Convert to lowercase
     updatePlayerFromKeys();
 }
 
 function handleKeyUp(event) {
-    activeKeys.delete(event.key);
+    activeKeys.delete(event.key.toLowerCase());
     updatePlayerFromKeys();
 }
 
@@ -109,8 +110,9 @@ function updatePlayerFromKeys() {
         player.handleInput('jump');
     }
 
-    if (activeKeys.has('Control')) {
+    if (activeKeys.has('control')) { 
         player.handleInput('shoot');
+        activeKeys.delete('control'); 
     }
 }
 

@@ -9,10 +9,13 @@ class PlayerRunState extends PlayerState {
     super(player);
     this.canMove = true;
     this.frameAccumulator = 0; // Initialize accumulator
+    this.currentFrame = 0; // Initialize currentFrame
   }
 
   async enter() {
     this.runImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandRun());
+    this.currentFrame = 0; // Initialize currentFrame
+    this.frameAccumulator = 0; // Reset frameAccumulator
   }
 
   handleInput(input) {
@@ -26,8 +29,8 @@ class PlayerRunState extends PlayerState {
       this.player.setDirection(Direction.LEFT);
     } else if (input === "runRight") {
       this.player.setDirection(Direction.RIGHT);
-    } else if (input === "jump" && this.player.canJump) { // Added condition for jump
-      this.player.setState(this.player.jumpState); // Directly set the state to prevent recursion
+    } else if (input === "jump" && this.player.canJump) {   
+      this.player.setState(this.player.jumpState); 
     }
   }
 

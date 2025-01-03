@@ -9,7 +9,7 @@ import Entity from "../entities/entity.js";
 
 class Player extends Entity {
   constructor(x, y) {
-    const spawnHeight = 300;
+    const spawnHeight = 800;
     super(x, 0, 100, 100);
 
     this.idleState = new PlayerIdleState(this);
@@ -28,10 +28,10 @@ class Player extends Entity {
     this.gravity = 0.5;
     this.terminalVelocity = 10;
     this.grounded = false;
-    this.canJump = true; // Initialize canJump flag to true to allow the first jump
+    this.canJump = true; 
 
     this.currentInputs = new Set();
-    this.lastDirection = null;
+    this.lastDirection = Direction.RIGHT;
   }
 
   setState(state) {
@@ -40,7 +40,7 @@ class Player extends Entity {
   }
 
   handleInput(input) {
-    let handled = false; // Flag to check if input was handled here
+    let handled = false;
 
     if (input === "runLeft" || input === "runRight") {
       this.lastDirection = input;

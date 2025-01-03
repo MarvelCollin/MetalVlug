@@ -85,7 +85,7 @@
                     "PATH": "../assets/player/marco/pistol/spawn/spawn_",
                     "FRAMES": 7,
                     "TYPE": "LOOP",
-                    "DELAY": 100
+                    "DELAY": 120
                 },
                 "STAND": {
                     "IDLE": {

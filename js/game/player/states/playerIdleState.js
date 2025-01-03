@@ -12,6 +12,8 @@ class PlayerIdleState extends PlayerState {
 
   async enter() {
     this.player.resetVelocity();
+    this.currentFrame = 0; // Initialize currentFrame
+    this.frameAccumulator = 0; // Reset frameAccumulator
     this.idleImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandIdleNormal());
   }
 

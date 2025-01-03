@@ -10,10 +10,12 @@ class PlayerShootState extends PlayerState {
 
     constructor(player) {
         super(player);
-        this.frameAccumulator = 0; // Initialize accumulator
+        this.frameAccumulator = 0; 
     }
 
     async enter() {
+        if(this.player.direction === null) this.player.direction = Direction.RIGHT;
+
         try {
             if (!this.shootImages) {
                 if (this.player.isJumping) {
@@ -25,8 +27,8 @@ class PlayerShootState extends PlayerState {
             if (!this.bulletAssets) {
                 this.bulletAssets = await Drawer.loadImage(() => Assets.getPlayerOtherBullet());
             }
-            this.currentFrame = 0;
-            this.frameAccumulator = 0;
+            this.currentFrame = 0; 
+            this.frameAccumulator = 0; 
 
             const bulletOffset = {
                 x: this.player.direction === 'LEFT' ? -20 : this.player.width + 200,

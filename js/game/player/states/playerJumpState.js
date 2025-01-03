@@ -16,7 +16,8 @@ class PlayerJumpState extends PlayerState {
             this.canMove = true;
             this.jumpIdle = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpIdle());
             this.jumpShoot = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpShoot());
-            this.currentFrame = 0;
+            this.currentFrame = 0; // Initialize currentFrame
+            this.frameAccumulator = 0; // Reset frameAccumulator
             this.frameTimer = Date.now();
             this.jumpForce = -22;
             this.player.velocityY = this.jumpForce;
