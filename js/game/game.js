@@ -21,9 +21,6 @@ async function loadBackground() {
             const scaledWidth = canvas.height * aspectRatio;
             
             camera.setWorldSize(scaledWidth, canvas.height);
-            const groundY = canvas.height - 50;
-            player.y = groundY;
-            player.initialY = groundY;
             resolve({ width: scaledWidth, height: canvas.height, background });
         } else {
             reject(new Error('Failed to load background'));
@@ -36,7 +33,7 @@ function initializeObstacles() {
 }
 
 async function startAnimation() {
-    player = new Player(100, 300);
+    player = new Player(100,0);
     camera = new Camera(player);
     initializeObstacles();
     const bgData = await loadBackground();
@@ -76,7 +73,7 @@ function gameLoop(timestamp) {
 
     ctx.scale(scaleX, scaleY);
 
-    player.update(deltaTime); // Pass deltaTime
+    player.update(deltaTime); 
     player.draw();
 
     obstacles.forEach(obstacle => obstacle.draw(ctx));
@@ -86,10 +83,9 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-// Modify handleKeyDown to convert key to lowercase
 function handleKeyDown(event) {
     if (event.repeat) return;
-    activeKeys.add(event.key.toLowerCase()); // Convert to lowercase
+    activeKeys.add(event.key.toLowerCase()); 
     updatePlayerFromKeys();
 }
 

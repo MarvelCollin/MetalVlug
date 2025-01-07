@@ -9,13 +9,12 @@ import Entity from "../entities/entity.js";
 
 class Player extends Entity {
   constructor(x, y) {
-    const spawnHeight = 800;
     super(x, 0, 100, 100);
 
     this.idleState = new PlayerIdleState(this);
     this.runState = new PlayerRunState(this);
     this.shootState = new PlayerShootState(this);
-    this.spawnState = new PlayerSpawnState(this, spawnHeight);
+    this.spawnState = new PlayerSpawnState(this); 
     this.jumpState = new PlayerJumpState(this);
 
     this.state = this.spawnState;
@@ -27,7 +26,6 @@ class Player extends Entity {
 
     this.gravity = 0.5;
     this.terminalVelocity = 10;
-    this.grounded = false;
     this.canJump = true; 
 
     this.currentInputs = new Set();
@@ -59,7 +57,7 @@ class Player extends Entity {
     } else if (input === "jump" && this.grounded && this.canJump) { // Updated condition
       const currentDirection = this.lastDirection;
       this.grounded = false;
-      this.canJump = false; // Reset jump ability
+      this.canJump = false; 
       this.setState(this.jumpState);
       if (currentDirection) {
         this.lastDirection = currentDirection;
@@ -79,7 +77,6 @@ class Player extends Entity {
       }
     }
 
-    // Only call handleInput if the input wasn't handled above
     if (!handled) {
       this.state.handleInput(input);
     }
@@ -91,15 +88,13 @@ class Player extends Entity {
 
   update(deltaTime) {
     super.update();
-    this.state.update(deltaTime); // Pass deltaTime to current state
+    this.state.update(deltaTime); 
 
-    // Update grounded status immediately after position update
     if (this.y >= this.initialY) {
       this.y = this.initialY;
       this.velocityY = 0;
       if (!this.grounded) {
         this.grounded = true;
-        // Allow jump immediately upon landing
         this.canJump = true;
       }
     } else {

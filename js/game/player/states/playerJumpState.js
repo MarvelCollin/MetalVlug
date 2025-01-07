@@ -8,7 +8,7 @@ import PlayerIdleState from './playerIdleState.js';
 class PlayerJumpState extends PlayerState {
     constructor(player) {
         super(player);
-        this.frameAccumulator = 0; // Initialize accumulator
+        this.frameAccumulator = 0; 
     }
 
     async enter() {
@@ -16,10 +16,10 @@ class PlayerJumpState extends PlayerState {
             this.canMove = true;
             this.jumpIdle = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpIdle());
             this.jumpShoot = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpShoot());
-            this.currentFrame = 0; // Initialize currentFrame
-            this.frameAccumulator = 0; // Reset frameAccumulator
+            this.currentFrame = 0;
+            this.frameAccumulator = 0; 
             this.frameTimer = Date.now();
-            this.jumpForce = -22;
+            this.jumpForce = -16;
             this.player.velocityY = this.jumpForce;
             this.player.grounded = false;
             this.isShooting = false;

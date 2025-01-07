@@ -17,7 +17,7 @@ class Entity {
         
         this.direction = null;
         this.speed = 10;
-        this.initialY = y;
+        this.initialY = 0;
         this.grounded = true;
         this.lastUpdateTime = Date.now();
 
@@ -52,7 +52,7 @@ class Entity {
         );
     }
 
-    update(obstacles = defaultObstacles, leftPercentage = 0.5, rightPercentage = 0.3) {
+update(obstacles = defaultObstacles, leftPercentage = 0.5, rightPercentage = 0.3) {
         this.movement.update();
         this.collision.handleCollision(obstacles, leftPercentage, rightPercentage);
         this.stateManager.update();

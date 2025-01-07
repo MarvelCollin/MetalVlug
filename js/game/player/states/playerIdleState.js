@@ -7,13 +7,13 @@ class PlayerIdleState extends PlayerState {
   constructor(player) {
     super(player);
     this.canMove = false;
-    this.frameAccumulator = 0; // Initialize accumulator
+    this.frameAccumulator = 0;
   }
 
   async enter() {
     this.player.resetVelocity();
-    this.currentFrame = 0; // Initialize currentFrame
-    this.frameAccumulator = 0; // Reset frameAccumulator
+    this.currentFrame = 0;
+    this.frameAccumulator = 0; 
     this.idleImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandIdleNormal());
   }
 
@@ -24,8 +24,7 @@ class PlayerIdleState extends PlayerState {
       this.player.setState(this.player.shootState);
       this.player.state.currentFrame = 0;
       this.player.state.frameTimer = Date.now();
-    } else if (input === "jump" && this.player.canJump) { // Allow jump from idle state
-      // Directly set the state to jumpState to prevent recursion
+    } else if (input === "jump" && this.player.canJump) { 
       this.player.setState(this.player.jumpState);
     }
   }

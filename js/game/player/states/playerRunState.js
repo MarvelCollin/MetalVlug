@@ -8,14 +8,14 @@ class PlayerRunState extends PlayerState {
   constructor(player) {
     super(player);
     this.canMove = true;
-    this.frameAccumulator = 0; // Initialize accumulator
-    this.currentFrame = 0; // Initialize currentFrame
+    this.frameAccumulator = 0; 
+    this.currentFrame = 0; 
   }
 
   async enter() {
     this.runImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandRun());
-    this.currentFrame = 0; // Initialize currentFrame
-    this.frameAccumulator = 0; // Reset frameAccumulator
+    this.currentFrame = 0; 
+    this.frameAccumulator = 0;
   }
 
   handleInput(input) {
