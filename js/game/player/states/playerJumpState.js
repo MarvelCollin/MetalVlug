@@ -20,6 +20,7 @@ class PlayerJumpState extends PlayerState {
     this.player.velocityY = this.jumpForce;
     this.player.grounded = false;
     this.isShooting = false;
+    this.player.setSprite(Assets.getPlayerMarcoPistolJumpIdle());
 
     if (this.player.lastDirection) {
       this.player.setDirection(
@@ -31,13 +32,13 @@ class PlayerJumpState extends PlayerState {
   }
 
   update(deltaTime) {
-    if (this.currentSprite) {
+    if (this.player.currentSprite) {
       this.frameAccumulator += deltaTime;
-      if (this.frameAccumulator >= this.currentSprite.delay) {
+      if (this.frameAccumulator >= this.player.currentSprite.delay) {
         if (this.player.velocityY < 0) {
           this.currentFrame = 0;
         } else if (this.player.velocityY > 0) {
-          this.currentFrame = Math.min(4, this.currentSprite.images.length - 1);
+          this.currentFrame = Math.min(4, this.player.currentSprite.images.length - 1);
         }
         this.frameAccumulator = 0;
       }
@@ -51,14 +52,14 @@ class PlayerJumpState extends PlayerState {
   }
 
   draw() {
-    if (this.currentSprite) {
+    if (this.player.currentSprite) {
       const flip = this.player.direction === DIRECTION.LEFT;
       Drawer.drawToCanvas(
-        this.currentSprite.images,
+        this.player.currentSprite.images,
         this.player.x,
         this.player.y,
         "jump",
-        this.currentSprite.delay,
+        this.player.currentSprite.delay,
         undefined,
         undefined,
         flip,
