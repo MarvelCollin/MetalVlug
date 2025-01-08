@@ -1,6 +1,5 @@
 import { DIRECTION } from "../../entities/components/actions.js";
 import Assets from "../../helper/assets.js";
-import PlayerJumpState from "../states/playerJumpState.js";
 
 class PlayerInputHandler {
   constructor(player) {
@@ -26,15 +25,20 @@ class PlayerInputHandler {
     const { player } = this;
     if (activeKeys.has("a") || activeKeys.has("d")) {
       const direction = activeKeys.has("a") ? DIRECTION.LEFT : DIRECTION.RIGHT;
-      player.setDirection(direction);
-      player.setState(player.moveState, sprite);
+      player.movement.move(direction);
+      player.setSprite(sprite);
+    } else {
+      player.resetVelocity();
+      player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
     }
   }
 
   handleJump(activeKeys, sprite) {
     const { player } = this;
-    if (activeKeys.has(" ") && player.grounded && player.canJump) {
-      player.setState(player.jumpState, sprite);
+    if (activeKeys.has(" ") && player.grounded) {
+      player.movement.jump();
+      player.setSprite(sprite);
+      player.grounded = false;
     }
   }
 
@@ -58,13 +62,8 @@ class PlayerInputHandler {
     this.handleJump(activeKeys, Assets.getPlayerMarcoPistolJumpIdle());
     this.handleShoot(activeKeys, Assets.getPlayerMarcoPistolStandShoot());
 
-    if (player.grounded && !(player.state instanceof PlayerJumpState)) {
-      if (activeKeys.has("a") || activeKeys.has("d")) {
-        this.handleMove(activeKeys, Assets.getPlayerMarcoPistolStandRun());
-      } else {
-        player.setState(player.idleState, Assets.getPlayerMarcoPistolStandIdleNormal());
-        player.velocityX = 0;
-      }
+    if (player.grounded) {
+      this.handleMove(activeKeys, Assets.getPlayerMarcoPistolStandRun());
     }
   }
 }

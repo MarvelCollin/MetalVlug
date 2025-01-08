@@ -1,5 +1,4 @@
 import PlayerState from './playerState.js';
-import PlayerJumpState from './playerJumpState.js';
 import Drawer from '../../helper/drawer.js';
 import Assets from '../../helper/assets.js';
 import Bullet from '../components/bullet.js';
@@ -46,14 +45,6 @@ class PlayerShootState extends PlayerState {
                     this.player.setState(this.previousState || this.player.idleState);
                 }
             }
-        }
-
-        if (this.previousState instanceof PlayerJumpState) {
-            this.previousState.update(deltaTime); 
-        }
-
-        if (this.player.grounded) {
-            this.player.canJump = true;
         }
     }
 

@@ -10,7 +10,6 @@ class PlayerSpawnState extends PlayerState {
   }
 
   async enter() {
-    this.player.setDirection(null);
     this.player.resetVelocity();
     this.player.y = 300;
     this.player.setSprite(Assets.getPlayerMarcoPistolSpawn());

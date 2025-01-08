@@ -47,10 +47,10 @@ class Obstacle {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.setLineDash([5, 5]);
                 ctx.beginPath();
-                ctx.moveTo(this.startX + this.width/2, this.startY + this.height/2 - 100); 
+                ctx.moveTo(this.startX + this.width/2, this.startY + this.height/2); 
                 ctx.lineTo(
                   this.targetX + this.width / 2,
-                  this.targetY  + this.height / 2 - 100 
+                  this.targetY  + this.height / 2 
                 );
                 ctx.stroke();
                 ctx.setLineDash([]);
@@ -60,8 +60,8 @@ class Obstacle {
 }
 
 const obstacles = [
-    new Obstacle(0, 970, 3000, 20, undefined, undefined, true),
-    new Obstacle(300, 700, 300, 20, undefined, undefined, true)
+    new Obstacle(0, canvas.height, 3000, 20, undefined, undefined, true),
+    new Obstacle(300, 800, 300, 20, undefined, undefined, true)
 ];
 
 export { Obstacle, obstacles as defaultObstacles };

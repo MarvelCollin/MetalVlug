@@ -1,7 +1,6 @@
 import { DIRECTION } from "./components/actions.js";
 import { ctx, canvas, scaleX, scaleY } from "../ctx.js";
 import { defaultObstacles } from "../world/obstacle.js";
-import Movement from "./components/movement.js";
 import Collision from "./components/collision.js";
 import Renderer from "./components/renderer.js";
 import StateManager from "./components/stateManager.js";
@@ -11,31 +10,26 @@ class Entity {
   constructor(x, y, width, height) {
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.width = this.height = height;
     this.velocityX = 0;
     this.velocityY = 0;
 
     this.direction = DIRECTION.RIGHT;
-    this.speed = 10;
+    this.speed = 8;
     this.grounded = true;
     this.lastUpdateTime = Date.now();
     this.currentSprite = null;
     this.scaleX = 5.5;
     this.scaleY = 5.5;
 
-    this.gravity = 0.6;
-    this.terminalVelocity = 10;
-    this.jumpForce = -15;
+    this.jumpSpeed = 6;
+    this.gravity = 7;
+    this.terminalVelocity = 15;
+    this.jumpForce = -10;
 
-    this.movement = new Movement(this);
     this.collision = new Collision(this);
     this.renderer = new Renderer(this, ctx);
     this.stateManager = new StateManager(this);
-  }
-
-  setDirection(direction) {
-    this.movement.setDirection(direction);
   }
 
   resetVelocity() {
@@ -57,9 +51,12 @@ class Entity {
     leftPercentage = 0.5,
     rightPercentage = 0.3
   ) {
-    this.movement.update();
     this.collision.handleCollision(obstacles, leftPercentage, rightPercentage);
     this.stateManager.update();
+
+    this.grounded = obstacles.some(obstacle => 
+      this.checkCollision(this.x, this.y , obstacle)
+    );
   }
 
   draw() {
@@ -82,4 +79,5 @@ class Entity {
     this.currentSprite = await Drawer.loadImage(() => sprite);
   }
 }
+
 export default Entity;
