@@ -11,7 +11,7 @@ import Assets from "../helper/assets.js";
 
 class Player extends Entity {
   constructor(x, y) {
-    super(x, 0, 100, 100);
+    super(x, 0, 100, 100); // Assuming y is not used anymore
 
     this.idleState = new PlayerIdleState(this);
     this.moveState = new PlayerMoveState(this);
@@ -49,16 +49,18 @@ class Player extends Entity {
     super.update();
     this.state.update(deltaTime); 
 
-    if (this.y >= this.initialY) {
-      this.y = this.initialY;
-      this.velocityY = 0;
-      if (!this.grounded) {
-        this.grounded = true;
-        this.canJump = true;
-      }
-    } else {
-      this.grounded = false;
-    }
+    // Removed ground level handling
+    // const groundLevel = canvas.height - this.height; // Define ground level
+    // if (this.y >= groundLevel) {
+    //   this.y = groundLevel;
+    //   this.velocityY = 0;
+    //   if (!this.grounded) {
+    //     this.grounded = true;
+    //     this.canJump = true;
+    //   }
+    // } else {
+    //   this.grounded = false;
+    // }
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

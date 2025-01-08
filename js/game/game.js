@@ -21,9 +21,6 @@ async function loadBackground() {
             const scaledWidth = canvas.height * aspectRatio;
             
             camera.setWorldSize(scaledWidth, canvas.height);
-            const groundY = canvas.height - 50;
-            player.y = groundY;
-            player.initialY = groundY;
             resolve({ width: scaledWidth, height: canvas.height, background });
         } else {
             reject(new Error('Failed to load background'));

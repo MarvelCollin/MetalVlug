@@ -14,7 +14,7 @@ class PlayerIdleState extends PlayerState {
     this.player.resetVelocity();
     this.currentFrame = 0;
     this.frameAccumulator = 0; 
-    this.player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
+    // Sprite is now managed by PlayerInputHandler
   }
 
   draw() {

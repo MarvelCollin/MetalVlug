@@ -18,7 +18,6 @@ class Entity {
 
     this.direction = DIRECTION.RIGHT;
     this.speed = 10;
-    this.initialY = 0;
     this.grounded = true;
     this.lastUpdateTime = Date.now();
     this.currentSprite = null;
@@ -83,5 +82,4 @@ class Entity {
     this.currentSprite = await Drawer.loadImage(() => sprite);
   }
 }
-
 export default Entity;

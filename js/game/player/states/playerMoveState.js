@@ -13,7 +13,6 @@ class PlayerMoveState extends PlayerState {
   }
 
   async enter() {
-    this.player.setSprite(Assets.getPlayerMarcoPistolStandRun());
     this.currentFrame = 0;
     this.frameAccumulator = 0;
   }

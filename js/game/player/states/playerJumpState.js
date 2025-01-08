@@ -20,7 +20,6 @@ class PlayerJumpState extends PlayerState {
     this.player.velocityY = this.jumpForce;
     this.player.grounded = false;
     this.isShooting = false;
-    this.player.setSprite(Assets.getPlayerMarcoPistolJumpIdle());
 
     if (this.player.lastDirection) {
       this.player.setDirection(
@@ -46,7 +45,7 @@ class PlayerJumpState extends PlayerState {
       if (this.player.grounded) {
         const currentDirection = this.player.lastDirection;
         this.player.setState(new PlayerIdleState(this.player));
-        this.player.canJump = true;
+        this.player.canJump = true; 
       }
     }
   }
