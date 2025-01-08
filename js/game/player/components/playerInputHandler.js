@@ -30,9 +30,10 @@ class PlayerInputHandler {
       if (!(player.state instanceof player.jumpState.constructor)) {
         player.setState(player.moveState);
       }
-      
-      player.setDirection(null);
-      player.setState(player.idleState);
+    } else {
+      if (!(player.state instanceof player.jumpState.constructor)) {
+        player.setState(player.idleState);
+      }
     }
 
     if (activeKeys.has(" ")) {
@@ -49,8 +50,6 @@ class PlayerInputHandler {
       this.activeKeys.delete("control");
     }
   }
-
-
 }
 
 export default PlayerInputHandler;

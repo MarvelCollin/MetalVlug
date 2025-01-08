@@ -8,21 +8,13 @@ class PlayerIdleState extends PlayerState {
     super(player);
     this.canMove = false;
     this.frameAccumulator = 0;
-    this.player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
   }
-
+  
   async enter() {
-    try {
-      this.player.resetVelocity();
-      this.currentFrame = 0;
-      this.frameAccumulator = 0; 
-    } catch (error) {
-      console.error('Error in PlayerIdleState.enter:', error);
-      this.player.setState(this.player.spawnState);
-    }
-  }
-
-  update(deltaTime) {
+    this.player.resetVelocity();
+    this.currentFrame = 0;
+    this.frameAccumulator = 0; 
+    this.player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
   }
 
   draw() {

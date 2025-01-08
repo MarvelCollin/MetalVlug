@@ -16,13 +16,6 @@ class PlayerShootState extends PlayerState {
     async enter() {
         if(this.player.direction === null) this.player.direction = DIRECTION.RIGHT;
 
-            if (!this.currentSprite) {
-                if (this.player.isJumping) {
-                    this.currentSprite = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpShoot());
-                } else {
-                    this.currentSprite = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandShoot());
-                }
-            }
             if (!this.bulletAssets) {
                 this.bulletAssets = await Drawer.loadImage(() => Assets.getPlayerOtherBullet());
             }
@@ -44,12 +37,12 @@ class PlayerShootState extends PlayerState {
     }
 
     update(deltaTime) {
-        if (this.currentSprite) {
+        if (this.player.currentSprite) {
             this.frameAccumulator += deltaTime;
-            if (this.frameAccumulator >= this.currentSprite.delay) {
+            if (this.frameAccumulator >= this.player.currentSprite.delay) {
                 this.currentFrame++;
                 this.frameAccumulator = 0;
-                if (this.currentFrame >= this.currentSprite.images.length) {
+                if (this.currentFrame >= this.player.currentSprite.images.length) {
                     this.player.setState(this.previousState || this.player.idleState);
                 }
             }
@@ -66,14 +59,14 @@ class PlayerShootState extends PlayerState {
     }
 
     draw() {
-        if (this.currentSprite) {
+        if (this.player.currentSprite) {
             const flip = this.player.direction === DIRECTION.LEFT;
             Drawer.drawToCanvas(
-                this.currentSprite.images,
+                this.player.currentSprite.images,
                 this.player.x * this.player.getScaleX(),
                 this.player.y * this.player.getScaleY(),
                 'shoot',
-                this.currentSprite.delay,
+                this.player.currentSprite.delay,
                 undefined,
                 undefined,
                 flip

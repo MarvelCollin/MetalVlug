@@ -20,12 +20,11 @@ class PlayerMoveState extends PlayerState {
 
   update(deltaTime) {
     if (this.player.currentSprite) {
-      this.frameAccumulator += deltaTime;
-      if (this.frameAccumulator >= this.player.currentSprite.delay) {
-        this.currentFrame =
-          (this.currentFrame + 1) % this.player.currentSprite.images.length;
-        this.frameAccumulator = 0;
-      }
+        this.frameAccumulator += deltaTime;
+        if (this.frameAccumulator >= this.player.currentSprite.delay) {
+            this.currentFrame = (this.currentFrame + 1) % this.player.currentSprite.images.length;
+            this.frameAccumulator = 0;
+        }
     }
   }
 
