@@ -11,7 +11,8 @@ class PlayerJumpState extends PlayerState {
     this.frameAccumulator = 0;
   }
 
-  async enter() {
+  async enter(sprite) {
+    this.player.setSprite(sprite);
     this.canMove = true;
     this.currentFrame = 0;
     this.frameAccumulator = 0;
@@ -20,6 +21,13 @@ class PlayerJumpState extends PlayerState {
     this.player.velocityY = this.jumpForce;
     this.player.grounded = false;
     this.isShooting = false;
+
+    if (
+      !this.player.currentInputs.has("a") &&
+      !this.player.currentInputs.has("d")
+    ) {
+      this.player.velocityX = 0;
+    }
 
     if (this.player.lastDirection) {
       this.player.setDirection(
@@ -37,15 +45,32 @@ class PlayerJumpState extends PlayerState {
         if (this.player.velocityY < 0) {
           this.currentFrame = 0;
         } else if (this.player.velocityY > 0) {
-          this.currentFrame = Math.min(4, this.player.currentSprite.images.length - 1);
+          this.currentFrame = Math.min(
+            4,
+            this.player.currentSprite.images.length - 1
+          );
         }
         this.frameAccumulator = 0;
       }
 
+      if (this.player.currentInputs.has("a")) {
+        this.player.velocityX = -this.player.speed;
+      } else if (this.player.currentInputs.has("d")) {
+        this.player.velocityX = this.player.speed;
+      } else {
+        this.player.velocityX = 0;
+      }
+
       if (this.player.grounded) {
-        const currentDirection = this.player.lastDirection;
-        this.player.setState(new PlayerIdleState(this.player));
-        this.player.canJump = true; 
+        console.log("jatuh");
+        this.player.canJump = true;
+        console.log(Assets.getPlayerMarcoPistolStandIdleNormal());
+        this.player.setState(
+          this.player.idleState,
+          Assets.getPlayerMarcoPistolStandIdleNormal()
+        );
+        this.player.inputHandler.updatePlayerFromKeys();
+        // this.player.goPreviousState();
       }
     }
   }

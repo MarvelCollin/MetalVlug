@@ -22,42 +22,49 @@ class PlayerInputHandler {
     this.updatePlayerFromKeys();
   }
 
+  handleMove(activeKeys, sprite) {
+    const { player } = this;
+    if (activeKeys.has("a") || activeKeys.has("d")) {
+      const direction = activeKeys.has("a") ? DIRECTION.LEFT : DIRECTION.RIGHT;
+      player.setDirection(direction);
+      player.setState(player.moveState, sprite);
+    }
+  }
+
+  handleJump(activeKeys, sprite) {
+    const { player } = this;
+    if (activeKeys.has(" ") && player.grounded && player.canJump) {
+      player.setState(player.jumpState, sprite);
+    }
+  }
+
+  handleShoot(activeKeys, sprite) {
+    const { player } = this;
+    if (activeKeys.has("control")) {
+      player.setState(player.shootState, sprite);
+      this.activeKeys.delete("control");
+    }
+  }
+
+  isMove(activeKeys) {
+    return activeKeys.has("a") || activeKeys.has("d");
+  }
+
   updatePlayerFromKeys() {
     const { player } = this;
     const { activeKeys } = this;
+    player.currentInputs = new Set(activeKeys);
 
-    if (!(player.state instanceof PlayerJumpState)) {
+    this.handleJump(activeKeys, Assets.getPlayerMarcoPistolJumpIdle());
+    this.handleShoot(activeKeys, Assets.getPlayerMarcoPistolStandShoot());
+
+    if (player.grounded && !(player.state instanceof PlayerJumpState)) {
       if (activeKeys.has("a") || activeKeys.has("d")) {
-        const direction = activeKeys.has("a") ? DIRECTION.LEFT : DIRECTION.RIGHT;
-        player.setDirection(direction);
-        if (!(player.state instanceof player.jumpState.constructor)) {
-          player.setState(player.moveState);
-        }
-        player.setSprite(Assets.getPlayerMarcoPistolStandRun());
+        this.handleMove(activeKeys, Assets.getPlayerMarcoPistolStandRun());
       } else {
-        if (!(player.state instanceof player.jumpState.constructor)) {
-          player.setState(player.idleState);
-          player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
-          player.setDirection(null);
-        }
+        player.setState(player.idleState, Assets.getPlayerMarcoPistolStandIdleNormal());
+        player.velocityX = 0;
       }
-    }
-
-    if (activeKeys.has(" ")) {
-      if (player.grounded && player.canJump) {
-        player.setState(player.jumpState);
-        player.setSprite(Assets.getPlayerMarcoPistolJumpIdle());
-      }
-    }
-
-    if (activeKeys.has(" ") && (activeKeys.has("a") || activeKeys.has("d"))) {
-      // ...existing code...
-    }
-
-    if (activeKeys.has("control")) {
-      player.setState(player.shootState);
-      player.setSprite(Assets.getPlayerMarcoPistolStandShoot());
-      this.activeKeys.delete("control");
     }
   }
 }

@@ -12,18 +12,34 @@ class PlayerMoveState extends PlayerState {
     this.currentFrame = 0;
   }
 
-  async enter() {
+  async enter(sprite) {
     this.currentFrame = 0;
     this.frameAccumulator = 0;
+    this.player.setSprite(sprite);
   }
 
   update(deltaTime) {
+    this.player.inputHandler.updatePlayerFromKeys();
+
+    if (this.player.inputHandler.isMove(this.player.currentInputs)) {
+      this.player.inputHandler.handleShoot(this.player.currentInputs, Assets.getPlayerMarcoPistolSneakShoot());
+      this.player.inputHandler.handleJump(this.player.currentInputs, Assets.getPlayerMarcoPistolJumpShoot());
+    }
+
+    if (this.player.state !== this) return;
+
+    if (this.player.direction === DIRECTION.LEFT) {
+      this.player.velocityX = -this.player.speed;
+    } else {
+      this.player.velocityX = this.player.speed;
+    }
+
     if (this.player.currentSprite) {
-        this.frameAccumulator += deltaTime;
-        if (this.frameAccumulator >= this.player.currentSprite.delay) {
-            this.currentFrame = (this.currentFrame + 1) % this.player.currentSprite.images.length;
-            this.frameAccumulator = 0;
-        }
+      this.frameAccumulator += deltaTime;
+      if (this.frameAccumulator >= this.player.currentSprite.delay) {
+        this.currentFrame = (this.currentFrame + 1) % this.player.currentSprite.images.length;
+        this.frameAccumulator = 0;
+      }
     }
   }
 

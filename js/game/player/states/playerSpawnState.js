@@ -21,8 +21,10 @@ class PlayerSpawnState extends PlayerState {
       const currentFrame = Drawer.currentFrames["spawn"];
       if (currentFrame >= this.player.currentSprite.images.length - 1) {
         console.log("a");
-        this.player.setState(this.player.idleState);
-        this.player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
+        this.player.setState(
+          this.player.idleState,
+          Assets.getPlayerMarcoPistolStandIdleNormal()
+        );
       }
     }
   }

@@ -10,13 +10,18 @@ class PlayerIdleState extends PlayerState {
     this.frameAccumulator = 0;
   }
   
-  async enter() {
+  async enter(sprite) {
     this.player.resetVelocity();
     this.currentFrame = 0;
     this.frameAccumulator = 0; 
-    // Sprite is now managed by PlayerInputHandler
-  }
+    this.player.setSprite(sprite);
 
+    if(this.player.inputHandler.isMove(this.player.currentInputs)){
+      console.log("a")
+      this.player.setState(this.player.moveState, Assets.getPlayerMarcoPistolStandRun());
+    }
+  }
+  
   draw() {
     if (this.player.currentSprite && this.player.currentSprite.images) {
       const flip = this.player.direction === DIRECTION.LEFT;

@@ -8,10 +8,11 @@ import { canvas } from "../ctx.js";
 import Entity from "../entities/entity.js";
 import Drawer from "../helper/drawer.js";
 import Assets from "../helper/assets.js";
+import PlayerInputHandler from "./components/playerInputHandler.js";
 
 class Player extends Entity {
   constructor(x, y) {
-    super(x, 0, 100, 100); // Assuming y is not used anymore
+    super(x, 0, 100, 100); 
 
     this.idleState = new PlayerIdleState(this);
     this.moveState = new PlayerMoveState(this);
@@ -19,6 +20,7 @@ class Player extends Entity {
     this.spawnState = new PlayerSpawnState(this); 
     this.jumpState = new PlayerJumpState(this);
 
+    this.previousState = this.spawnState;
     this.state = this.spawnState;
     this.state.enter();
 
@@ -34,11 +36,14 @@ class Player extends Entity {
     this.lastDirection = DIRECTION.RIGHT;
 
     this.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
+
+    this.inputHandler = new PlayerInputHandler(this);
   }
 
-  setState(state) {
+  setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
+    this.previousState = this.state;
     this.state = state;
-    this.state.enter();
+    this.state.enter(sprite);
   }
 
   addBullet(bullet) {
@@ -49,29 +54,20 @@ class Player extends Entity {
     super.update();
     this.state.update(deltaTime); 
 
-    // Removed ground level handling
-    // const groundLevel = canvas.height - this.height; // Define ground level
-    // if (this.y >= groundLevel) {
-    //   this.y = groundLevel;
-    //   this.velocityY = 0;
-    //   if (!this.grounded) {
-    //     this.grounded = true;
-    //     this.canJump = true;
-    //   }
-    // } else {
-    //   this.grounded = false;
-    // }
-
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();
       return bullet.active && bullet.x > 0 && bullet.x < canvas.width;
     });
   }
 
-
   draw() {
     super.draw();
     this.bullets.forEach((bullet) => bullet.draw());
+  }
+
+  goPreviousState() {
+    this.state = this.previousState;
+    this.state.enter();
   }
 }
 

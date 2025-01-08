@@ -13,7 +13,8 @@ class PlayerShootState extends PlayerState {
         this.frameAccumulator = 0; 
     }
 
-    async enter() {
+    async enter(sprite) {
+        this.player.setSprite(sprite);
         if(this.player.direction === null) this.player.direction = DIRECTION.RIGHT;
 
             if (!this.bulletAssets) {
@@ -26,7 +27,6 @@ class PlayerShootState extends PlayerState {
                 x: this.player.direction === 'LEFT' ? -20 : this.player.width + 200,
                 y: -140
             };
-            console.log(this.player.direction)
             const bullet = new Bullet(
                 this.player.x + bulletOffset.x,
                 this.player.y + bulletOffset.y,
@@ -55,7 +55,6 @@ class PlayerShootState extends PlayerState {
         if (this.player.grounded) {
             this.player.canJump = true;
         }
-
     }
 
     draw() {

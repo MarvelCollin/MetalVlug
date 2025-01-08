@@ -1,6 +1,6 @@
 import { ctx, canvas, scaleX, scaleY } from './ctx.js'; 
 import Player from './player/player.js';
-import PlayerInputHandler from './player/components/playerInputHandler.js'; 
+import PlayerInputHandler from './player/components/playerInputHandler.js';
 import Camera from './world/camera.js';
 import { debugConfig } from './helper/debug.js';
 import Assets from './helper/assets.js';
@@ -35,7 +35,8 @@ function initializeObstacles() {
 async function startAnimation() {
     player = new Player(100, 300);
     camera = new Camera(player);
-    new PlayerInputHandler(player); 
+    // Remove the following line to avoid creating a second PlayerInputHandler
+    // new PlayerInputHandler(player); 
     initializeObstacles();
     const bgData = await loadBackground();
     gameState.background = bgData.background;

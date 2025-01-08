@@ -70,7 +70,6 @@ class Drawer {
             const imgHeight = height || img.height;
 
             if (flip) {
-                console.log(x)
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.scale(-1, 1);
