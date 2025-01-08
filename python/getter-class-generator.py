@@ -10,7 +10,7 @@ def generate_getter_path(path_parts):
     return ".".join(path_parts)
 
 def process_json_structure(data, current_path=None, getters=None):
-    """Scan JSON terus bikin getter methodnya"""
+    """Scan JSON terus bikin getter method yang dilengkapi dengan try-catch"""
     if getters is None:
         getters = []
     if current_path is None:
@@ -29,12 +29,17 @@ def process_json_structure(data, current_path=None, getters=None):
             if "frames" in value and len(value["frames"]) == 1:
                 type_field = "\n        assets.%s.TYPE = 'SINGLE';" % getter_path
 
-            # Bikin method getternya
+            # Bikin method getternya dengan try-catch
             getter = f"""
-    async {getter_name}() {{
-        const assets = await this.fetchAssets();
-        return assets.{getter_path};{type_field}
-    }}"""
+        async {getter_name}() {{
+            try {{
+                const assets = await this.fetchAssets();
+                return assets.{getter_path};{type_field}
+            }} catch (error) {{
+                console.error('Error in {getter_name}:', error);
+                return null;
+            }}
+        }}"""
             getters.append(getter)
         
         # Kalo masih ada folder dalam folder, lanjut scan

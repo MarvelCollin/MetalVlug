@@ -1,18 +1,20 @@
 import PlayerIdleState from "./states/playerIdleState.js";
-import PlayerRunState from "./states/playerRunState.js";
+import PlayerMoveState from "./states/playerMoveState.js";
 import PlayerShootState from "./states/playerShootState.js";
 import PlayerSpawnState from "./states/playerSpawnState.js";
 import PlayerJumpState from "./states/playerJumpState.js";
-import { Direction } from "./components/direction.js";
+import { DIRECTION } from "../entities/components/actions.js";
 import { canvas } from "../ctx.js";
 import Entity from "../entities/entity.js";
+import Drawer from "../helper/drawer.js";
+import Assets from "../helper/assets.js";
 
 class Player extends Entity {
   constructor(x, y) {
     super(x, 0, 100, 100);
 
     this.idleState = new PlayerIdleState(this);
-    this.runState = new PlayerRunState(this);
+    this.moveState = new PlayerMoveState(this);
     this.shootState = new PlayerShootState(this);
     this.spawnState = new PlayerSpawnState(this); 
     this.jumpState = new PlayerJumpState(this);
@@ -29,56 +31,14 @@ class Player extends Entity {
     this.canJump = true; 
 
     this.currentInputs = new Set();
-    this.lastDirection = Direction.RIGHT;
+    this.lastDirection = DIRECTION.RIGHT;
+
+    this.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
   }
 
   setState(state) {
     this.state = state;
     this.state.enter();
-  }
-
-  handleInput(input) {
-    let handled = false;
-    if (input === "runLeft" || input === "runRight") {
-      this.lastDirection = input;
-      this.setDirection(input === "runLeft" ? Direction.LEFT : Direction.RIGHT);
-      if (!(this.state instanceof PlayerJumpState)) {
-        this.setState(this.runState);
-        handled = true;
-      }
-    } else if (input === "idle") {
-      this.lastDirection = null;
-      if (!(this.state instanceof PlayerJumpState)) {
-        this.setState(this.idleState);
-        handled = true;
-      }
-      this.velocityX = 0;
-    } else if (input === "jump" && this.grounded && this.canJump) { 
-      const currentDirection = this.lastDirection;
-      this.grounded = false;
-      this.canJump = false; 
-      this.setState(this.jumpState);
-      if (currentDirection) {
-        this.lastDirection = currentDirection;
-        this.setDirection(
-          currentDirection === "runLeft" ? Direction.LEFT : Direction.RIGHT
-        );
-      }
-      handled = true;
-    } else if (input === "shoot") {
-      const now = Date.now();
-      if (now - this.lastShootTime >= this.shootCooldown) {
-        this.lastShootTime = now;
-        const shootState = new PlayerShootState(this);
-        shootState.previousState = this.state;
-        this.setState(shootState);
-        handled = true;
-      }
-    }
-
-    if (!handled) {
-      this.state.handleInput(input);
-    }
   }
 
   addBullet(bullet) {
@@ -99,7 +59,6 @@ class Player extends Entity {
     } else {
       this.grounded = false;
     }
-
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

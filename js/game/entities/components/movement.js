@@ -1,5 +1,5 @@
 
-import { Direction } from '../../player/components/direction.js';
+import { DIRECTION } from "./actions.js";
 
 class Movement {
     constructor(entity) {
@@ -8,8 +8,12 @@ class Movement {
 
     setDirection(direction) {
         this.entity.direction = direction;
-        this.entity.velocityX = direction === Direction.LEFT ? -this.entity.speed : 
-                                direction === Direction.RIGHT ? this.entity.speed : 0;
+        this.entity.velocityX =
+          direction === DIRECTION.LEFT
+            ? -this.entity.speed
+            : direction === DIRECTION.RIGHT
+            ? this.entity.speed
+            : 0;
     }
 
     update() {

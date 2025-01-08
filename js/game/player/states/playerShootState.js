@@ -3,7 +3,7 @@ import PlayerJumpState from './playerJumpState.js';
 import Drawer from '../../helper/drawer.js';
 import Assets from '../../helper/assets.js';
 import Bullet from '../components/bullet.js';
-import { Direction } from '../components/direction.js';
+import { DIRECTION } from '../../entities/components/actions.js';
 
 class PlayerShootState extends PlayerState {
     previousState = null;
@@ -14,14 +14,13 @@ class PlayerShootState extends PlayerState {
     }
 
     async enter() {
-        if(this.player.direction === null) this.player.direction = Direction.RIGHT;
+        if(this.player.direction === null) this.player.direction = DIRECTION.RIGHT;
 
-        try {
-            if (!this.shootImages) {
+            if (!this.currentSprite) {
                 if (this.player.isJumping) {
-                    this.shootImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpShoot());
+                    this.currentSprite = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolJumpShoot());
                 } else {
-                    this.shootImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandShoot());
+                    this.currentSprite = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandShoot());
                 }
             }
             if (!this.bulletAssets) {
@@ -42,38 +41,15 @@ class PlayerShootState extends PlayerState {
                 this.bulletAssets
             );
             this.player.addBullet(bullet);
-        } catch (error) {
-            console.error('Failed to load shoot state assets:', error);
-        }
-    }
-
-    handleInput(input) {
-        if (input === 'shoot') {
-            const now = Date.now();
-            if (now - this.player.lastShootTime >= this.player.shootCooldown) {
-                this.player.lastShootTime = now; 
-                this.currentFrame = 0;
-                this.frameTimer = Date.now();
-            }
-            return;
-        }
-        if (input === 'idle') {
-            this.player.setState(this.player.idleState);
-        } else if (input === 'runLeft' || input === 'runRight') {
-            this.player.setState(this.player.runState);
-        } else if (input === 'shoot') {
-            this.currentFrame = 0;
-            this.frameTimer = Date.now();
-        }
     }
 
     update(deltaTime) {
-        if (this.shootImages) {
+        if (this.currentSprite) {
             this.frameAccumulator += deltaTime;
-            if (this.frameAccumulator >= this.shootImages.delay) {
+            if (this.frameAccumulator >= this.currentSprite.delay) {
                 this.currentFrame++;
                 this.frameAccumulator = 0;
-                if (this.currentFrame >= this.shootImages.images.length) {
+                if (this.currentFrame >= this.currentSprite.images.length) {
                     this.player.setState(this.previousState || this.player.idleState);
                 }
             }
@@ -86,17 +62,18 @@ class PlayerShootState extends PlayerState {
         if (this.player.grounded) {
             this.player.canJump = true;
         }
+
     }
 
     draw() {
-        if (this.shootImages) {
-            const flip = this.player.direction === Direction.LEFT;
+        if (this.currentSprite) {
+            const flip = this.player.direction === DIRECTION.LEFT;
             Drawer.drawToCanvas(
-                this.shootImages.images,
+                this.currentSprite.images,
                 this.player.x * this.player.getScaleX(),
                 this.player.y * this.player.getScaleY(),
                 'shoot',
-                this.shootImages.delay,
+                this.currentSprite.delay,
                 undefined,
                 undefined,
                 flip

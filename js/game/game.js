@@ -1,7 +1,7 @@
 import { ctx, canvas, scaleX, scaleY } from './ctx.js'; 
 import Player from './player/player.js';
-import PlayerInputHandler from './player/components/playerInputHandler.js'; // Import PlayerInputHandler
-import Camera from './camera/camera.js';
+import PlayerInputHandler from './player/components/playerInputHandler.js'; 
+import Camera from './world/camera.js';
 import { debugConfig } from './helper/debug.js';
 import Assets from './helper/assets.js';
 import Drawer from './helper/drawer.js';
@@ -10,7 +10,6 @@ import { Obstacle, defaultObstacles } from './world/obstacle.js';
 let player;
 let camera;
 let obstacles = [];
-const activeKeys = new Set();
 let lastTimestamp = 0;
 
 async function loadBackground() {
@@ -22,6 +21,9 @@ async function loadBackground() {
             const scaledWidth = canvas.height * aspectRatio;
             
             camera.setWorldSize(scaledWidth, canvas.height);
+            const groundY = canvas.height - 50;
+            player.y = groundY;
+            player.initialY = groundY;
             resolve({ width: scaledWidth, height: canvas.height, background });
         } else {
             reject(new Error('Failed to load background'));
@@ -34,9 +36,9 @@ function initializeObstacles() {
 }
 
 async function startAnimation() {
-    player = new Player(100,0);
+    player = new Player(100, 300);
     camera = new Camera(player);
-    new PlayerInputHandler(player); // Initialize PlayerInputHandler
+    new PlayerInputHandler(player); 
     initializeObstacles();
     const bgData = await loadBackground();
     gameState.background = bgData.background;
@@ -84,8 +86,6 @@ function gameLoop(timestamp) {
 
     requestAnimationFrame(gameLoop);
 }
-
-// Remove the handleKeyDown, handleKeyUp, and updatePlayerFromKeys functions
 
 startAnimation();
 

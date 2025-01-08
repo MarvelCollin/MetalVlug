@@ -13,30 +13,29 @@ class PlayerSpawnState extends PlayerState {
         this.player.resetVelocity();
         this.player.y = 300; 
         this.player.initialY = canvas.height - 50;
-        this.spawnImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolSpawn());
+        this.player.currentSprite = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolSpawn());
     }
 
     handleInput(input) {
-        return;
     }
 
     update(deltaTime) {
         if (this.spawnImages) {
             const currentFrame = Drawer.currentFrames['spawn'];
             if (currentFrame >= this.spawnImages.images.length - 1) {
-                this.player.setState(this.player.idleState);
+                this.player.setState(th .player.idleState);
             }
         }
     }
 
     draw() {
-        if (this.spawnImages) {
+        if (this.player.currentSprite) {
             Drawer.drawToCanvas(
-                this.spawnImages.images,
-                this.player.x * this.player.getScaleX(),
-                this.player.y,
-                'spawn',
-                this.spawnImages.delay
+              this.player.currentSprite.images,
+              this.player.x * this.player.getScaleX(),
+              this.player.y,
+              "spawn",
+              this.player.currentSprite.delay
             );
         }
     }

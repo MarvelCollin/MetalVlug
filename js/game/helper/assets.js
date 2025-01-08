@@ -1,4 +1,4 @@
-// filepath: ../js/game/assets.js
+
 class Assets {
     static instance = null;
     static assets = null;
@@ -22,140 +22,275 @@ class Assets {
         return Assets.assets;
     }
 
-    async getBackground() {
-        const assets = await this.fetchAssets();
-        return assets.BACKGROUND;
-    }
+        async getBackground() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.BACKGROUND;
+            } catch (error) {
+                console.error('Error in getBackground:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoExplode() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.EXPLODE;
-    }
+        async getPlayerMarcoExplode() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.EXPLODE;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoExplode:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoMachinegunWin() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.MACHINEGUN.WIN;
-    }
+        async getPlayerMarcoMachinegunWin() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.MACHINEGUN.WIN;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoMachinegunWin:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolDashIdle() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.DASH.IDLE;
-    }
+        async getPlayerMarcoPistolDashIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.DASH.IDLE;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolDashIdle:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolDashShoot() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.DASH.SHOOT;
-    }
+        async getPlayerMarcoPistolDashShoot() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.DASH.SHOOT;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolDashShoot:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolJumpIdle() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.JUMP.IDLE;
-    }
+        async getPlayerMarcoPistolJumpIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.JUMP.IDLE;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolJumpIdle:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolJumpShoot() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.JUMP.SHOOT;
-    }
+        async getPlayerMarcoPistolJumpShoot() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.JUMP.SHOOT;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolJumpShoot:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolSneakIdle() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.SNEAK.IDLE;
-    }
+        async getPlayerMarcoPistolSneakIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SNEAK.IDLE;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolSneakIdle:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolSneakMelee() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.SNEAK.MELEE;
-    }
+        async getPlayerMarcoPistolSneakMelee() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SNEAK.MELEE;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolSneakMelee:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolSneakMove() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.SNEAK.MOVE;
-    }
+        async getPlayerMarcoPistolSneakMove() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SNEAK.MOVE;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolSneakMove:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolSneakShoot() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.SNEAK.SHOOT;
-    }
+        async getPlayerMarcoPistolSneakShoot() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SNEAK.SHOOT;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolSneakShoot:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolSneakThrow() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.SNEAK.THROW;
-    }
+        async getPlayerMarcoPistolSneakThrow() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SNEAK.THROW;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolSneakThrow:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolSpawn() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.SPAWN;
-    }
+        async getPlayerMarcoPistolSpawn() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SPAWN;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolSpawn:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolStandIdleNormal() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.STAND.IDLE.NORMAL;
-    }
+        async getPlayerMarcoPistolStandIdleNormal() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.STAND.IDLE.NORMAL;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolStandIdleNormal:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolStandIdleSleep() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.STAND.IDLE.SLEEP;
-    }
+        async getPlayerMarcoPistolStandIdleSleep() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.STAND.IDLE.SLEEP;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolStandIdleSleep:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolStandMelee() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.STAND.MELEE;
-    }
+        async getPlayerMarcoPistolStandMelee() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.STAND.MELEE;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolStandMelee:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolStandRun() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.STAND.RUN;
-    }
+        async getPlayerMarcoPistolStandRun() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.STAND.RUN;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolStandRun:', error);
+                return null;
+            }
+        }
 
-    async getPlayerMarcoPistolStandShoot() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.MARCO.PISTOL.STAND.SHOOT;
-    }
+        async getPlayerMarcoPistolStandShoot() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.STAND.SHOOT;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolStandShoot:', error);
+                return null;
+            }
+        }
 
-    async getPlayerOtherBullet() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.OTHER.BULLET;
-    }
+        async getPlayerOtherBullet() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.OTHER.BULLET;
+            } catch (error) {
+                console.error('Error in getPlayerOtherBullet:', error);
+                return null;
+            }
+        }
 
-    async getPlayerOtherGrenade() {
-        const assets = await this.fetchAssets();
-        return assets.PLAYER.OTHER.GRENADE;
-    }
+        async getPlayerOtherGrenade() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.OTHER.GRENADE;
+            } catch (error) {
+                console.error('Error in getPlayerOtherGrenade:', error);
+                return null;
+            }
+        }
 
-    async getSoldierNormalDie() {
-        const assets = await this.fetchAssets();
-        return assets.SOLDIER.NORMAL.DIE;
-    }
+        async getSoldierNormalDie() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.SOLDIER.NORMAL.DIE;
+            } catch (error) {
+                console.error('Error in getSoldierNormalDie:', error);
+                return null;
+            }
+        }
 
-    async getSoldierNormalExplode() {
-        const assets = await this.fetchAssets();
-        return assets.SOLDIER.NORMAL.EXPLODE;
-    }
+        async getSoldierNormalExplode() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.SOLDIER.NORMAL.EXPLODE;
+            } catch (error) {
+                console.error('Error in getSoldierNormalExplode:', error);
+                return null;
+            }
+        }
 
-    async getSoldierNormalGrenade() {
-        const assets = await this.fetchAssets();
-        return assets.SOLDIER.NORMAL.GRENADE;
-    }
+        async getSoldierNormalGrenade() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.SOLDIER.NORMAL.GRENADE;
+            } catch (error) {
+                console.error('Error in getSoldierNormalGrenade:', error);
+                return null;
+            }
+        }
 
-    async getSoldierNormalIdle() {
-        const assets = await this.fetchAssets();
-        return assets.SOLDIER.NORMAL.IDLE;
-    }
+        async getSoldierNormalIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.SOLDIER.NORMAL.IDLE;
+            } catch (error) {
+                console.error('Error in getSoldierNormalIdle:', error);
+                return null;
+            }
+        }
 
-    async getSoldierNormalMeleeMelee() {
-        const assets = await this.fetchAssets();
-        return assets.SOLDIER.NORMAL.MELEE.MELEE;
-    }
+        async getSoldierNormalMeleeMelee() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.SOLDIER.NORMAL.MELEE.MELEE;
+            } catch (error) {
+                console.error('Error in getSoldierNormalMeleeMelee:', error);
+                return null;
+            }
+        }
 
-    async getSoldierNormalRun() {
-        const assets = await this.fetchAssets();
-        return assets.SOLDIER.NORMAL.RUN;
-    }
+        async getSoldierNormalRun() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.SOLDIER.NORMAL.RUN;
+            } catch (error) {
+                console.error('Error in getSoldierNormalRun:', error);
+                return null;
+            }
+        }
 
-    async getSoldierNormalThrow() {
-        const assets = await this.fetchAssets();
-        return assets.SOLDIER.NORMAL.THROW;
-    }
+        async getSoldierNormalThrow() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.SOLDIER.NORMAL.THROW;
+            } catch (error) {
+                console.error('Error in getSoldierNormalThrow:', error);
+                return null;
+            }
+        }
 
 }
 

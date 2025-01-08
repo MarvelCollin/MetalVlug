@@ -1,53 +1,39 @@
 import PlayerState from "./playerState.js";
 import Drawer from "../../helper/drawer.js";
 import Assets from "../../helper/assets.js";
-import { Direction } from "../components/direction.js";
+import { DIRECTION } from "../../entities/components/actions.js";
 
 class PlayerIdleState extends PlayerState {
   constructor(player) {
     super(player);
     this.canMove = false;
     this.frameAccumulator = 0;
+    this.player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
   }
 
   async enter() {
-    this.player.resetVelocity();
-    this.currentFrame = 0;
-    this.frameAccumulator = 0; 
-    this.idleImages = await Drawer.loadImage(() => Assets.getPlayerMarcoPistolStandIdleNormal());
-  }
-
-  handleInput(input) {
-    if (input === "runLeft" || input === "runRight") {
-      this.player.setState(this.player.runState);
-    } else if (input === "shoot") {
-      this.player.setState(this.player.shootState);
-      this.player.state.currentFrame = 0;
-      this.player.state.frameTimer = Date.now();
-    } else if (input === "jump" && this.player.canJump) { 
-      this.player.setState(this.player.jumpState);
+    try {
+      this.player.resetVelocity();
+      this.currentFrame = 0;
+      this.frameAccumulator = 0; 
+    } catch (error) {
+      console.error('Error in PlayerIdleState.enter:', error);
+      this.player.setState(this.player.spawnState);
     }
   }
 
   update(deltaTime) {
-    if (this.idleImages) {
-      this.frameAccumulator += deltaTime;
-      if (this.frameAccumulator >= this.idleImages.delay) {
-        this.currentFrame = (this.currentFrame + 1) % this.idleImages.images.length;
-        this.frameAccumulator = 0;
-      }
-    }
   }
 
   draw() {
-    if (this.idleImages) {
-      const flip = this.player.direction === Direction.LEFT;
+    if (this.player.currentSprite && this.player.currentSprite.images) {
+      const flip = this.player.direction === DIRECTION.LEFT;
       Drawer.drawToCanvas(
-        this.idleImages.images,
+        this.player.currentSprite.images,
         this.player.x,
         this.player.y,
         "idle",
-        this.idleImages.delay,
+        this.player.currentSprite.delay,
         undefined,
         undefined,
         flip

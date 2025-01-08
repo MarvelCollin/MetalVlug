@@ -1,4 +1,3 @@
-
 class PlayerState {
     constructor(player) {
         this.player = player;
@@ -8,7 +7,7 @@ class PlayerState {
         // To be implemented by subclasses
     }
 
-    handleInput(input) {
+    handleInput() {
 
     }
 

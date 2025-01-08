@@ -1,4 +1,4 @@
-import { VIEWPORT_WIDTH, VIEWPORT_HEIGHT } from './camera/camera.js';
+import { VIEWPORT_WIDTH, VIEWPORT_HEIGHT } from './world/camera.js';
 
 export const canvas = document.getElementById('gameCanvas');
 export const ctx = canvas.getContext('2d');
