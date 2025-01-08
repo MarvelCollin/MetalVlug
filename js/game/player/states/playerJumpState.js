@@ -68,11 +68,10 @@ class PlayerJumpState extends PlayerState {
                 this.frameAccumulator = 0;
             }
 
-            // Check if player has landed
             if (this.player.grounded) {
                 const currentDirection = this.player.lastDirection;
                 this.player.setState(new PlayerIdleState(this.player));
-                this.player.canJump = true; // Reset canJump flag
+                this.player.canJump = true;
                 if (currentDirection) {
                     this.player.handleInput(currentDirection);
                 }

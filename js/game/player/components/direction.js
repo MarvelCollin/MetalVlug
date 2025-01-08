@@ -1,4 +1,5 @@
-export const Direction = Object.freeze({
-  LEFT: "LEFT",
-  RIGHT: "RIGHT",
-});
+export const Direction = {
+    LEFT: 'left',
+    RIGHT: 'right',
+    // ...other directions...
+};

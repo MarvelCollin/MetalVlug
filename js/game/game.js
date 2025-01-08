@@ -1,5 +1,6 @@
 import { ctx, canvas, scaleX, scaleY } from './ctx.js'; 
 import Player from './player/player.js';
+import PlayerInputHandler from './player/components/playerInputHandler.js'; // Import PlayerInputHandler
 import Camera from './camera/camera.js';
 import { debugConfig } from './helper/debug.js';
 import Assets from './helper/assets.js';
@@ -35,6 +36,7 @@ function initializeObstacles() {
 async function startAnimation() {
     player = new Player(100,0);
     camera = new Camera(player);
+    new PlayerInputHandler(player); // Initialize PlayerInputHandler
     initializeObstacles();
     const bgData = await loadBackground();
     gameState.background = bgData.background;
@@ -83,37 +85,7 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-function handleKeyDown(event) {
-    if (event.repeat) return;
-    activeKeys.add(event.key.toLowerCase()); 
-    updatePlayerFromKeys();
-}
-
-function handleKeyUp(event) {
-    activeKeys.delete(event.key.toLowerCase());
-    updatePlayerFromKeys();
-}
-
-function updatePlayerFromKeys() {
-    if (activeKeys.has('a') || activeKeys.has('d')) {
-        const direction = activeKeys.has('a') ? 'runLeft' : 'runRight';
-        player.handleInput(direction);
-    } else {
-        player.handleInput('idle');
-    }
-
-    if (activeKeys.has(' ')) {
-        player.handleInput('jump');
-    }
-
-    if (activeKeys.has('control')) { 
-        player.handleInput('shoot');
-        activeKeys.delete('control'); 
-    }
-}
-
-window.addEventListener('keydown', handleKeyDown);
-window.addEventListener('keyup', handleKeyUp);
+// Remove the handleKeyDown, handleKeyUp, and updatePlayerFromKeys functions
 
 startAnimation();
 

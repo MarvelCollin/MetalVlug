@@ -39,7 +39,6 @@ class Player extends Entity {
 
   handleInput(input) {
     let handled = false;
-
     if (input === "runLeft" || input === "runRight") {
       this.lastDirection = input;
       this.setDirection(input === "runLeft" ? Direction.LEFT : Direction.RIGHT);
@@ -54,7 +53,7 @@ class Player extends Entity {
         handled = true;
       }
       this.velocityX = 0;
-    } else if (input === "jump" && this.grounded && this.canJump) { // Updated condition
+    } else if (input === "jump" && this.grounded && this.canJump) { 
       const currentDirection = this.lastDirection;
       this.grounded = false;
       this.canJump = false; 
