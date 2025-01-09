@@ -90,7 +90,7 @@ class Drawer {
     }
 
     const img = Array.isArray(images) ? images[this.currentFrames[spriteId]] : images;
-
+    console.log(this.currentFrames)
     if(!img){
       console.log(this.currentFrames[spriteId]);
     }

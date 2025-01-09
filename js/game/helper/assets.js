@@ -1,4 +1,3 @@
-
 class Assets {
     static instance = null;
     static assets = null;
@@ -198,6 +197,26 @@ class Assets {
                 return assets.PLAYER.MARCO.PISTOL.STAND.SHOOT;
             } catch (error) {
                 console.error('Error in getPlayerMarcoPistolStandShoot:', error);
+                return null;
+            }
+        }
+
+        async getPlayerMarcoPistolShootRun() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SHOOT_RUN;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolShootRun:', error);
+                return null;
+            }
+        }
+
+        async getPlayerMarcoPistolShootJump() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.SHOOT_JUMP;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolShootJump:', error);
                 return null;
             }
         }

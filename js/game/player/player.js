@@ -58,12 +58,22 @@ class Player extends Entity {
     this.state.update(deltaTime); 
     this.movement.update();
 
-    // Prevent sprite changes while falling
-    // Removed code that changes sprite when moving and not grounded
-
-    if (this.grounded) {
-      this.setState(this.idleState);
-    } 
+    // Set jump sprite if not grounded
+    if (!this.grounded) {
+        if (this.isShooting) { // Assuming isShooting is a flag set when shooting
+            this.setSprite(Assets.getPlayerMarcoPistolShootJump());
+        } else {
+            this.setSprite(Assets.getPlayerMarcoPistolJumpIdle());
+        }
+    } else if (this.isMoving) {
+        if (this.isShooting) { // Assuming isShooting is a flag set when shooting
+            this.setSprite(Assets.getPlayerMarcoPistolShootRun());
+        } else {
+            this.setSprite(Assets.getPlayerMarcoPistolStandRun());
+        }
+    } else {
+        this.setState(this.idleState);
+    }
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

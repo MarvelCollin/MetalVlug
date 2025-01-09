@@ -26,7 +26,7 @@ class PlayerShootState extends PlayerState {
         this.frameAccumulator = 0; 
 
         const bulletOffset = {
-            x: this.player.direction === DIRECTION.LEFT ? -20 : this.player.width + 20, // Corrected offset
+            x: this.player.direction === DIRECTION.LEFT ? -20 : this.player.width + 20, 
             y: -140
         };
         const bullet = new Bullet(
@@ -38,16 +38,7 @@ class PlayerShootState extends PlayerState {
         this.player.addBullet(bullet);
     }
 
-    update(deltaTime) {
-        // Handle jumping
-        this.player.inputHandler.handleJump(this.player.currentInputs, Assets.getPlayerMarcoPistolJumpShoot());
-
-        // Handle movement only if not grounded
-        if(!this.player.grounded) {
-            this.player.inputHandler.handleMove(this.player.currentInputs, Assets.getPlayerMarcoPistolSneakShoot());
-        }
-
-        // Handle animation frames
+    async update(deltaTime) {
         if (this.player.currentSprite) {
             this.frameAccumulator += deltaTime * 1000;
 

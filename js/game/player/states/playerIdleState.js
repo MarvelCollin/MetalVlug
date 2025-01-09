@@ -27,6 +27,11 @@ class PlayerIdleState extends PlayerState {
     if(this.player.grounded) {
       this.player.inputHandler.handleMove(this.player.currentInputs, Assets.getPlayerMarcoPistolStandRun());
     }
+
+    this.player.inputHandler.handleShoot(
+      this.player.currentInputs,
+      Assets.getPlayerMarcoPistolStandShoot()
+    );
   }
   
   draw() {
