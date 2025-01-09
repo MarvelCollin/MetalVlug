@@ -25,7 +25,7 @@ class Entity {
     this.jumpSpeed = 6;
     this.gravity = 7;
     this.terminalVelocity = 15;
-    this.jumpForce = -10;
+    this.jumpForce = -12;
 
     this.collision = new Collision(this);
     this.renderer = new Renderer(this, ctx);
@@ -85,6 +85,7 @@ class Entity {
   }
 
   async setSprite(sprite) {
+    if (!this.grounded) return; // Ignore sprite changes if not grounded
     try {
         this.currentSprite = await Drawer.loadImage(() => sprite);
     } catch (error) {
@@ -92,6 +93,8 @@ class Entity {
         // Optionally, set to a default sprite to prevent disappearance
         this.currentSprite = await Drawer.loadImage(() => Assets.getPlayerDefaultSprite());
     }
+    // Ensure grounded state is managed solely by the Movement component
+    // this.grounded = this.checkIfGrounded(); // Remove if present
   }
 }
 

@@ -39,7 +39,7 @@
                     "IDLE": {
                         "PATH": "../assets/player/marco/pistol/jump/idle/idle_",
                         "FRAMES": 6,
-                        "TYPE": "LOOP",
+                        "TYPE": "HOLD",
                         "DELAY": 100
                     },
                     "SHOOT": {

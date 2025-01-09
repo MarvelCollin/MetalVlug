@@ -54,14 +54,12 @@ class Player extends Entity {
   }
 
   update(deltaTime) {
-    // console.log(this.state, this.isMoving, this.grounded)
     super.update();
     this.state.update(deltaTime); 
     this.movement.update();
 
-    if(this.isMoving && !this.grounded){
-      this.setSprite(Assets.getPlayerMarcoPistolJumpIdle())
-    }
+    // Prevent sprite changes while falling
+    // Removed code that changes sprite when moving and not grounded
 
     if (this.grounded) {
       this.setState(this.idleState);

@@ -31,7 +31,6 @@ class PlayerInputHandler {
     } else {
       player.resetVelocity();
       player.isMoving = false;
-      // player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
     }
   }
 
@@ -40,7 +39,6 @@ class PlayerInputHandler {
     if (activeKeys.has(" ") && player.grounded) {
       player.movement.jump();
       player.setSprite(sprite);
-      player.grounded = false;
     }
   }
 
