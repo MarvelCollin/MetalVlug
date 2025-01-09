@@ -11,7 +11,7 @@ import Movement from "./components/movement.js";
 
 class Player extends Entity {
   constructor(x, y) {
-    super(x, 0, 100, 100); // Removed configuration parameters
+    super(x, 0, 100, 100); 
 
     this.idleState = new PlayerIdleState(this);
     this.shootState = new PlayerShootState(this);
@@ -27,6 +27,7 @@ class Player extends Entity {
 
     this.gravity = 0.5;
     this.terminalVelocity = 10;
+    this.isMoving = false;
 
     this.currentInputs = new Set();
     this.lastDirection = DIRECTION.RIGHT;
@@ -36,13 +37,16 @@ class Player extends Entity {
     this.inputHandler = new PlayerInputHandler(this);
     this.movement = new Movement(this);
 
-    this.falling = false;
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
     this.previousState = this.state;
     this.state = state;
-    this.state.enter(sprite);
+    if (sprite) {
+        this.state.enter(sprite);
+    } else {
+        this.state.enter();
+    }
   }
 
   addBullet(bullet) {
@@ -50,16 +54,18 @@ class Player extends Entity {
   }
 
   update(deltaTime) {
+    // console.log(this.state, this.isMoving, this.grounded)
     super.update();
     this.state.update(deltaTime); 
     this.movement.update();
 
-    if (!this.grounded && !this.falling) {
-      this.falling = true;
-    } else if (this.grounded && this.falling) {
-      this.falling = false;
-      this.setState(this.idleState);
+    if(this.isMoving && !this.grounded){
+      this.setSprite(Assets.getPlayerMarcoPistolJumpIdle())
     }
+
+    if (this.grounded) {
+      this.setState(this.idleState);
+    } 
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

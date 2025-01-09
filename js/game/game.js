@@ -35,8 +35,6 @@ function initializeObstacles() {
 async function startAnimation() {
     player = new Player(100, 300);
     camera = new Camera(player);
-    // Remove the following line to avoid creating a second PlayerInputHandler
-    // new PlayerInputHandler(player); 
     initializeObstacles();
     const bgData = await loadBackground();
     gameState.background = bgData.background;
@@ -60,16 +58,12 @@ function gameLoop(timestamp) {
         const aspectRatio = img.width / img.height;
         const scaledWidth = canvas.height * aspectRatio;
         
-        Drawer.drawToCanvas(
+        Drawer.drawBackground(
             img,
             0,
             canvas.height,
-            'background',
-            0,
             scaledWidth,
-            canvas.height,
-            false,
-            'ONCE'
+            canvas.height
         );
     }
 

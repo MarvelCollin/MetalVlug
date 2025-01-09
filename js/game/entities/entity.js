@@ -38,12 +38,21 @@ class Entity {
   }
 
   checkCollision(nextX, nextY, obstacle) {
-    return (
+    const isColliding = (
       nextX < obstacle.x + obstacle.width &&
       nextX + this.width > obstacle.x &&
       nextY < obstacle.y + obstacle.height &&
       nextY + this.height > obstacle.y
     );
+
+    if (isColliding) {
+      const playerBottom = nextY + this.height;
+      const obstacleTop = obstacle.y;
+      if (Math.abs(playerBottom - obstacleTop) < 5) { 
+        return true;
+      }
+    }
+    return false;
   }
 
   update(
@@ -55,7 +64,7 @@ class Entity {
     this.stateManager.update();
 
     this.grounded = obstacles.some(obstacle => 
-      this.checkCollision(this.x, this.y , obstacle)
+      this.checkCollision(this.x, this.y + 1, obstacle) 
     );
   }
 
@@ -76,7 +85,13 @@ class Entity {
   }
 
   async setSprite(sprite) {
-    this.currentSprite = await Drawer.loadImage(() => sprite);
+    try {
+        this.currentSprite = await Drawer.loadImage(() => sprite);
+    } catch (error) {
+        console.error("Failed to load sprite:", error);
+        // Optionally, set to a default sprite to prevent disappearance
+        this.currentSprite = await Drawer.loadImage(() => Assets.getPlayerDefaultSprite());
+    }
   }
 }
 

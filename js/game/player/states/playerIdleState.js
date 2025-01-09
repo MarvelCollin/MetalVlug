@@ -14,9 +14,13 @@ class PlayerIdleState extends PlayerState {
     this.player.resetVelocity();
     this.currentFrame = 0;
     this.frameAccumulator = 0; 
-    this.player.setSprite(sprite);
+    if (sprite) {
+        await this.player.setSprite(sprite);
+    } else {
+        await this.player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
+    }
   }
-
+  
   update() {
     this.player.inputHandler.handleJump(this.player.currentInputs, Assets.getPlayerMarcoPistolJumpIdle());
     

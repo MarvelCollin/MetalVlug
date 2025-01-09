@@ -13,34 +13,48 @@ class PlayerShootState extends PlayerState {
     }
 
     async enter(sprite) {
-        this.player.setSprite(sprite);
+        this.previousState = this.player.state;
+        if (sprite) {
+            await this.player.setSprite(sprite);
+        }
         if(this.player.direction === null) this.player.direction = DIRECTION.RIGHT;
 
-            if (!this.bulletAssets) {
-                this.bulletAssets = await Drawer.loadImage(() => Assets.getPlayerOtherBullet());
-            }
-            this.currentFrame = 0; 
-            this.frameAccumulator = 0; 
+        if (!this.bulletAssets) {
+            this.bulletAssets = await Drawer.loadImage(() => Assets.getPlayerOtherBullet());
+        }
+        this.currentFrame = 0; 
+        this.frameAccumulator = 0; 
 
-            const bulletOffset = {
-                x: this.player.direction === 'LEFT' ? -20 : this.player.width + 200,
-                y: -140
-            };
-            const bullet = new Bullet(
-                this.player.x + bulletOffset.x,
-                this.player.y + bulletOffset.y,
-                this.player.direction,
-                this.bulletAssets
-            );
-            this.player.addBullet(bullet);
+        const bulletOffset = {
+            x: this.player.direction === DIRECTION.LEFT ? -20 : this.player.width + 20, // Corrected offset
+            y: -140
+        };
+        const bullet = new Bullet(
+            this.player.x + bulletOffset.x,
+            this.player.y + bulletOffset.y,
+            this.player.direction,
+            this.bulletAssets
+        );
+        this.player.addBullet(bullet);
     }
 
     update(deltaTime) {
+        // Handle jumping
+        this.player.inputHandler.handleJump(this.player.currentInputs, Assets.getPlayerMarcoPistolJumpShoot());
+
+        // Handle movement only if not grounded
+        if(!this.player.grounded) {
+            this.player.inputHandler.handleMove(this.player.currentInputs, Assets.getPlayerMarcoPistolSneakShoot());
+        }
+
+        // Handle animation frames
         if (this.player.currentSprite) {
-            this.frameAccumulator += deltaTime;
+            this.frameAccumulator += deltaTime * 1000;
+
             if (this.frameAccumulator >= this.player.currentSprite.delay) {
                 this.currentFrame++;
                 this.frameAccumulator = 0;
+
                 if (this.currentFrame >= this.player.currentSprite.images.length) {
                     this.player.setState(this.previousState || this.player.idleState);
                 }

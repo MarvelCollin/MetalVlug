@@ -24,12 +24,14 @@ class PlayerInputHandler {
   handleMove(activeKeys, sprite) {
     const { player } = this;
     if (activeKeys.has("a") || activeKeys.has("d")) {
+      player.isMoving = true;
       const direction = activeKeys.has("a") ? DIRECTION.LEFT : DIRECTION.RIGHT;
       player.movement.move(direction);
       player.setSprite(sprite);
     } else {
       player.resetVelocity();
-      player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
+      player.isMoving = false;
+      // player.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
     }
   }
 
@@ -61,10 +63,7 @@ class PlayerInputHandler {
 
     this.handleJump(activeKeys, Assets.getPlayerMarcoPistolJumpIdle());
     this.handleShoot(activeKeys, Assets.getPlayerMarcoPistolStandShoot());
-
-    if (player.grounded) {
-      this.handleMove(activeKeys, Assets.getPlayerMarcoPistolStandRun());
-    }
+    this.handleMove(activeKeys, Assets.getPlayerMarcoPistolStandRun());
   }
 }
 
