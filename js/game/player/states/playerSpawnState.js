@@ -34,7 +34,6 @@ class PlayerSpawnState extends PlayerState {
         this.player.currentSprite.images,
         this.player.x * this.player.getScaleX(),
         this.player.y,
-        "spawn",
         this.player.currentSprite.delay
       );
     }

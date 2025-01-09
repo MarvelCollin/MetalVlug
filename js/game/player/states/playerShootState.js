@@ -39,18 +39,7 @@ class PlayerShootState extends PlayerState {
     }
 
     async update(deltaTime) {
-        if (this.player.currentSprite) {
-            this.frameAccumulator += deltaTime * 1000;
-
-            if (this.frameAccumulator >= this.player.currentSprite.delay) {
-                this.currentFrame++;
-                this.frameAccumulator = 0;
-
-                if (this.currentFrame >= this.player.currentSprite.images.length) {
-                    this.player.setState(this.previousState || this.player.idleState);
-                }
-            }
-        }
+        this.player.isShooting = false;
     }
 
     draw() {
@@ -60,7 +49,6 @@ class PlayerShootState extends PlayerState {
                 this.player.currentSprite.images,
                 this.player.x * this.player.getScaleX(),
                 this.player.y * this.player.getScaleY(),
-                'shoot',
                 this.player.currentSprite.delay,
                 undefined,
                 undefined,

@@ -70,30 +70,27 @@ class Drawer {
     images,
     x,
     y,
-    spriteId,
     delay,
     width,
     height,
     flip = false,
     type = "LOOP"
   ) {
-    if (!this.currentFrames[spriteId]) {
-      this.currentFrames[spriteId] = 0;
-      this.isReversing[spriteId] = false;
+    const imagesKey = images.toString();
+
+    if (!this.currentFrames[imagesKey]) {
+      this.currentFrames[imagesKey] = 0;
+      this.isReversing[imagesKey] = false;
     }
-    if (!this.frameTimers[spriteId]) {
-      this.frameTimers[spriteId] = Date.now();
+    if (!this.frameTimers[imagesKey]) {
+      this.frameTimers[imagesKey] = Date.now();
     }
 
-    if (this.currentFrames[spriteId] >= images.length) {
-      this.currentFrames[spriteId] = 0;
+    if (this.currentFrames[imagesKey] >= images.length) {
+      this.currentFrames[imagesKey] = 0;
     }
 
-    const img = Array.isArray(images) ? images[this.currentFrames[spriteId]] : images;
-    console.log(this.currentFrames)
-    if(!img){
-      console.log(this.currentFrames[spriteId]);
-    }
+    const img = Array.isArray(images) ? images[this.currentFrames[imagesKey]] : images;
     if (img) {
       const imgWidth = width || img.width;
       const imgHeight = height || img.height;
@@ -103,7 +100,6 @@ class Drawer {
         ctx.translate(x, y);
         ctx.scale(-1, 1);
         ctx.drawImage(img, -30, -imgHeight, imgWidth, imgHeight);
-        ctx.scale(1, 1);
         ctx.restore();
       } else {
         ctx.drawImage(img, x, y - imgHeight, imgWidth, imgHeight);
@@ -111,40 +107,38 @@ class Drawer {
 
       if (type !== "ONCE") {
         const now = Date.now();
-        if (now - this.frameTimers[spriteId] >= delay) {
-          const animationType = images.type || "LOOP";
-
-          switch (animationType) {
+        if (now - this.frameTimers[imagesKey] >= delay) {
+          switch (type) {
             case "LOOP":
-              this.currentFrames[spriteId] = (this.currentFrames[spriteId] + 1) % images.length;
+              this.currentFrames[imagesKey] = (this.currentFrames[imagesKey] + 1) % images.length;
               break;
 
             case "HOLD":
-              if (this.currentFrames[spriteId] < images.length - 1) {
-                this.currentFrames[spriteId] = this.currentFrames[spriteId] + 1;
+              if (this.currentFrames[imagesKey] < images.length - 1) {
+                this.currentFrames[imagesKey]++;
               }
               break;
 
             case "BACK":
-              if (!this.isReversing[spriteId]) {
-                if (this.currentFrames[spriteId] >= images.length - 1) {
-                  this.isReversing[spriteId] = true;
-                  this.currentFrames[spriteId]--;
+              if (!this.isReversing[imagesKey]) {
+                if (this.currentFrames[imagesKey] >= images.length - 1) {
+                  this.isReversing[imagesKey] = true;
+                  this.currentFrames[imagesKey]--;
                 } else {
-                  this.currentFrames[spriteId]++;
+                  this.currentFrames[imagesKey]++;
                 }
               } else {
-                if (this.currentFrames[spriteId] <= 0) {
-                  this.isReversing[spriteId] = false;
-                  this.currentFrames[spriteId]++;
+                if (this.currentFrames[imagesKey] <= 0) {
+                  this.isReversing[imagesKey] = false;
+                  this.currentFrames[imagesKey]++;
                 } else {
-                  this.currentFrames[spriteId]--;
+                  this.currentFrames[imagesKey]--;
                 }
               }
               break;
           }
 
-          this.frameTimers[spriteId] = now;
+          this.frameTimers[imagesKey] = now;
         }
       }
 
@@ -163,7 +157,6 @@ class Drawer {
           sprite.images,
           sprite.x,
           sprite.y,
-          index,
           sprite.delay
         );
       }

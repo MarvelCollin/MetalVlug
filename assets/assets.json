@@ -39,12 +39,20 @@
                     "IDLE": {
                         "PATH": "../assets/player/marco/pistol/jump/idle/idle_",
                         "FRAMES": 6,
-                        "TYPE": "HOLD",
+                        "TYPE": "LOOP",
                         "DELAY": 100
                     },
                     "SHOOT": {
                         "PATH": "../assets/player/marco/pistol/jump/shoot/shoot_",
                         "FRAMES": 8,
+                        "TYPE": "LOOP",
+                        "DELAY": 100
+                    }
+                },
+                "MOVE": {
+                    "SHOOT": {
+                        "PATH": "../assets/player/marco/pistol/move/shoot/shoot_",
+                        "FRAMES": 9,
                         "TYPE": "LOOP",
                         "DELAY": 100
                     }
@@ -85,7 +93,7 @@
                     "PATH": "../assets/player/marco/pistol/spawn/spawn_",
                     "FRAMES": 7,
                     "TYPE": "LOOP",
-                    "DELAY": 120
+                    "DELAY": 100
                 },
                 "STAND": {
                     "IDLE": {

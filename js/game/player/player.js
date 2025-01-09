@@ -24,6 +24,7 @@ class Player extends Entity {
     this.bullets = [];
     this.lastShootTime = 0;
     this.shootCooldown = 150;
+    this.isShooting = false;
 
     this.gravity = 0.5;
     this.terminalVelocity = 10;
@@ -37,6 +38,7 @@ class Player extends Entity {
     this.inputHandler = new PlayerInputHandler(this);
     this.movement = new Movement(this);
 
+    this.frameAccumulator = 0; 
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
@@ -58,22 +60,25 @@ class Player extends Entity {
     this.state.update(deltaTime); 
     this.movement.update();
 
-    // Set jump sprite if not grounded
     if (!this.grounded) {
-        if (this.isShooting) { // Assuming isShooting is a flag set when shooting
-            this.setSprite(Assets.getPlayerMarcoPistolShootJump());
+        if (this.isShooting) { 
+            this.setSprite(Assets.getPlayerMarcoPistolJumpShoot());
         } else {
             this.setSprite(Assets.getPlayerMarcoPistolJumpIdle());
         }
     } else if (this.isMoving) {
-        if (this.isShooting) { // Assuming isShooting is a flag set when shooting
-            this.setSprite(Assets.getPlayerMarcoPistolShootRun());
+        if (this.isShooting) { 
+            this.setSprite(Assets.getPlayerMarcoPistolMoveShoot());
         } else {
             this.setSprite(Assets.getPlayerMarcoPistolStandRun());
         }
     } else {
         this.setState(this.idleState);
     }
+
+    // Removed the duplicate state.update call
+    // const validDeltaTime = typeof deltaTime === 'number' && !isNaN(deltaTime) ? deltaTime : 0;
+    // this.state.update(validDeltaTime);
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

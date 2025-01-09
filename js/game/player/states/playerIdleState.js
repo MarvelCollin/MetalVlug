@@ -41,7 +41,6 @@ class PlayerIdleState extends PlayerState {
         this.player.currentSprite.images,
         this.player.x,
         this.player.y,
-        "idle",
         this.player.currentSprite.delay,
         undefined,
         undefined,

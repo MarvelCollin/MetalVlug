@@ -23,9 +23,9 @@ class PlayerInputHandler {
 
   handleMove(activeKeys, sprite) {
     const { player } = this;
-    if (activeKeys.has("a") || activeKeys.has("d")) {
+    if (activeKeys.has("arrowleft") || activeKeys.has("arrowright")) {
       player.isMoving = true;
-      const direction = activeKeys.has("a") ? DIRECTION.LEFT : DIRECTION.RIGHT;
+      const direction = activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT; 
       player.movement.move(direction);
       player.setSprite(sprite);
     } else {
@@ -44,14 +44,15 @@ class PlayerInputHandler {
 
   handleShoot(activeKeys, sprite) {
     const { player } = this;
-    if (activeKeys.has("control")) {
-      player.setSprite(sprite);
+    if (activeKeys.has("control") && !player.isShooting) {
       this.activeKeys.delete("control");
+      player.isShooting = true; 
+      player.setState(player.shootState, sprite);
     }
   }
 
   isMove(activeKeys) {
-    return activeKeys.has("a") || activeKeys.has("d");
+    return activeKeys.has("arrowleft") || activeKeys.has("arrowright"); 
   }
 
   updatePlayerFromKeys() {

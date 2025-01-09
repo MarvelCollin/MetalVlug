@@ -34,4 +34,14 @@ function resizeCanvas() {
 const { scaleX, scaleY } = resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
+window.addEventListener('keydown', function(event) {
+    if (event.ctrlKey) {
+        const forbiddenKeys = ['w', 's', 'a', 'd', 'c', 'x', 'v', 'b', 'n', 'm']; 
+        if (forbiddenKeys.includes(event.key.toLowerCase())) {
+            event.preventDefault();
+            console.log(`Prevented default for Ctrl+${event.key}`);
+        }
+    }
+});
+
 export { scaleX, scaleY };
