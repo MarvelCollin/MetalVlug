@@ -14,6 +14,7 @@ class PlayerIdleState extends PlayerState {
     this.player.resetVelocity();
     this.currentFrame = 0;
     this.frameAccumulator = 0; 
+    this.player.isShooting = false;
     if (sprite) {
         await this.player.setSprite(sprite);
     } else {

@@ -39,6 +39,7 @@ class Player extends Entity {
     this.movement = new Movement(this);
 
     this.frameAccumulator = 0; 
+    this.currentFrame = 0; // Added currentFrame
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
@@ -55,9 +56,9 @@ class Player extends Entity {
     this.bullets.push(bullet);
   }
 
-  update(deltaTime) {
+  update() {
     super.update();
-    this.state.update(deltaTime); 
+    this.state.update(); 
     this.movement.update();
 
     if (!this.grounded) {
@@ -75,10 +76,6 @@ class Player extends Entity {
     } else {
         this.setState(this.idleState);
     }
-
-    // Removed the duplicate state.update call
-    // const validDeltaTime = typeof deltaTime === 'number' && !isNaN(deltaTime) ? deltaTime : 0;
-    // this.state.update(validDeltaTime);
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

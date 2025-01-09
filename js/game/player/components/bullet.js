@@ -13,8 +13,8 @@ class Bullet {
     }
 
     update() {
-        console.log(    this.direction)
-        if (this.direction === 'RIGHT') {
+        console.log(this.direction)
+        if (this.direction === 'right') {
             this.x += this.speed;
         } else {
             this.x -= this.speed;

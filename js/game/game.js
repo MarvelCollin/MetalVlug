@@ -69,7 +69,7 @@ function gameLoop(timestamp) {
 
     ctx.scale(scaleX, scaleY);
 
-    player.update(deltaTime); 
+    player.update(); 
     player.draw();
 
     obstacles.forEach(obstacle => obstacle.draw(ctx));

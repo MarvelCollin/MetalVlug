@@ -26,6 +26,7 @@ class PlayerInputHandler {
     if (activeKeys.has("arrowleft") || activeKeys.has("arrowright")) {
       player.isMoving = true;
       const direction = activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT; 
+      player.direction = direction;
       player.movement.move(direction);
       player.setSprite(sprite);
     } else {
@@ -44,6 +45,7 @@ class PlayerInputHandler {
 
   handleShoot(activeKeys, sprite) {
     const { player } = this;
+    // console.log(player.isShooting)
     if (activeKeys.has("control") && !player.isShooting) {
       this.activeKeys.delete("control");
       player.isShooting = true; 

@@ -6,10 +6,8 @@ import { DIRECTION } from '../../entities/components/actions.js';
 
 class PlayerShootState extends PlayerState {
     previousState = null;
-
     constructor(player) {
         super(player);
-        this.frameAccumulator = 0; 
     }
 
     async enter(sprite) {
@@ -17,13 +15,10 @@ class PlayerShootState extends PlayerState {
         if (sprite) {
             await this.player.setSprite(sprite);
         }
-        if(this.player.direction === null) this.player.direction = DIRECTION.RIGHT;
-
+        console.log("direction", this.player.direction);
         if (!this.bulletAssets) {
             this.bulletAssets = await Drawer.loadImage(() => Assets.getPlayerOtherBullet());
         }
-        this.currentFrame = 0; 
-        this.frameAccumulator = 0; 
 
         const bulletOffset = {
             x: this.player.direction === DIRECTION.LEFT ? -20 : this.player.width + 20, 
@@ -36,10 +31,16 @@ class PlayerShootState extends PlayerState {
             this.bulletAssets
         );
         this.player.addBullet(bullet);
+        this.player.currentFrame = 0; 
     }
 
-    async update(deltaTime) {
-        this.player.isShooting = false;
+    async update() {
+        this.player.currentFrame++; 
+        if (this.player.currentFrame >= this.player.currentSprite.images.length - 1) {
+            this.player.isShooting = false; 
+            this.player.currentFrame = 0;
+            this.player.setState(this.previousState);
+        }
     }
 
     draw() {
