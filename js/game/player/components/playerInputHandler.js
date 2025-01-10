@@ -28,7 +28,7 @@ class PlayerInputHandler {
       const direction = activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT; 
       player.direction = direction;
       player.movement.move(direction);
-      player.setSprite(sprite);
+      if(!activeKeys.has(" ")) player.setSprite(sprite);
     } else {
       player.resetVelocity();
       player.isMoving = false;
@@ -37,7 +37,7 @@ class PlayerInputHandler {
 
   handleJump(activeKeys, sprite) {
     const { player } = this;
-    if (activeKeys.has(" ") && player.grounded) {
+    if (activeKeys.has(" ") && player.currentJumpHeight < player.maxJumpHeight) {
       player.movement.jump();
       player.setSprite(sprite);
     }

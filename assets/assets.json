@@ -40,7 +40,7 @@
                         "PATH": "../assets/player/marco/pistol/jump/idle/idle_",
                         "FRAMES": 6,
                         "TYPE": "LOOP",
-                        "DELAY": 100
+                        "DELAY": 120
                     },
                     "SHOOT": {
                         "PATH": "../assets/player/marco/pistol/jump/shoot/shoot_",

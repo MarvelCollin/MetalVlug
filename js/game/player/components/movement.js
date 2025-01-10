@@ -16,9 +16,11 @@ class Movement {
     }
 
     jump() {
-        if (this.player.grounded) {
+        // Increment jump height and apply jump force if not exceeding maxJumpHeight
+        if (this.player.grounded && this.player.currentJumpHeight < this.player.maxJumpHeight) {
             this.player.velocityY = this.player.jumpForce;
             this.player.grounded = false;
+            this.player.currentJumpHeight += Math.abs(this.player.jumpForce);
         }
     }
 
@@ -28,10 +30,16 @@ class Movement {
         }
 
         if (!this.player.grounded) {
-            this.player.velocityY = Math.min(this.player.velocityY + this.player.gravity, this.player.terminalVelocity);
+            if (this.player.currentJumpHeight < this.player.maxJumpHeight) {
+                this.player.velocityY += this.player.gravity;
+                this.player.currentJumpHeight += this.player.gravity;
+            } else {
+                this.player.velocityY = Math.min(this.player.velocityY + this.player.gravity, this.player.terminalVelocity);
+            }
             this.player.y += this.player.velocityY;
         } else {
             this.player.velocityY = 0;
+            this.player.currentJumpHeight = 0; 
         }
 
     }

@@ -29,6 +29,8 @@ class Player extends Entity {
     this.gravity = 0.5;
     this.terminalVelocity = 10;
     this.isMoving = false;
+    this.maxJumpHeight = 1000;
+    this.currentJumpHeight = 0;
 
     this.currentInputs = new Set();
     this.lastDirection = DIRECTION.RIGHT;
@@ -39,7 +41,7 @@ class Player extends Entity {
     this.movement = new Movement(this);
 
     this.frameAccumulator = 0; 
-    this.currentFrame = 0; // Added currentFrame
+    this.currentFrame = 0; 
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
@@ -60,7 +62,6 @@ class Player extends Entity {
     super.update();
     this.state.update(); 
     this.movement.update();
-
     if (!this.grounded) {
         if (this.isShooting) { 
             this.setSprite(Assets.getPlayerMarcoPistolJumpShoot());

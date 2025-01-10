@@ -27,6 +27,9 @@ class Entity {
     this.terminalVelocity = 15;
     this.jumpForce = -12;
 
+    this.maxJumpHeight = 1000;
+    this.currentJumpHeight = 0;
+
     this.collision = new Collision(this);
     this.renderer = new Renderer(this, ctx);
     this.stateManager = new StateManager(this);
