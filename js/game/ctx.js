@@ -16,6 +16,7 @@ function resizeCanvas() {
     canvas.height = VIEWPORT_HEIGHT;
     
     const displayWidth = Math.round(VIEWPORT_WIDTH * scale);
+    // const displayHeight = Math.round(VIEWPORT_HEIGHT * scale);
     const displayHeight = Math.round(VIEWPORT_HEIGHT * scale);
     
     canvas.style.width = `${displayWidth}px`;

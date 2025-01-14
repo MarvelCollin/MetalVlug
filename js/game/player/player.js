@@ -12,11 +12,11 @@ import PlayerSpriteHandler from "./components/playerSpriteHandler.js";
 
 class Player extends Entity {
   constructor(x, y) {
-    super(x, 0, 100, 100); 
+    super(x, y, 100, 100);
 
     this.idleState = new PlayerIdleState(this);
     this.shootState = new PlayerShootState(this);
-    this.spawnState = new PlayerSpawnState(this); 
+    this.spawnState = new PlayerSpawnState(this);
 
     this.previousState = this.spawnState;
     this.state = this.spawnState;
@@ -27,22 +27,21 @@ class Player extends Entity {
     this.shootCooldown = 150;
     this.isShooting = false;
 
-    this.gravity = 0.5;
+    this.gravity = 0.5; 
     this.terminalVelocity = 10;
-    this.isMoving = false;
-    this.maxJumpHeight = 1000;
+    this.jumpForce = -20;
+
+    this.maxJumpHeight = 500; 
     this.currentJumpHeight = 0;
 
     this.currentInputs = new Set();
     this.lastDirection = DIRECTION.RIGHT;
 
-    this.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
-
     this.inputHandler = new PlayerInputHandler(this);
     this.playerMoveHandler = new PlayerMoveHandler(this);
 
-    this.frameAccumulator = 0; 
-    this.currentFrame = 0; 
+    this.frameAccumulator = 0;
+    this.currentFrame = 0;
 
     this.actions = new Set();
     this.spriteHandler = new PlayerSpriteHandler(this);
@@ -70,41 +69,49 @@ class Player extends Entity {
 
   update() {
     super.update();
-    this.state.update(); 
-    this.playerMoveHandler.update(); // Apply movement each frame
-    console.log(this.actions);
+    this.playerMoveHandler.update();
+    this.state.update();
 
-    if (this.actions.size === 0 || (this.actions.size === 1 && this.actions.has(ACTION.IDLE))) {
-        this.idleTime = Date.now() - this.lastActionTime;
+    if (
+      this.actions.size === 0 ||
+      (this.actions.size === 1 && this.actions.has(ACTION.IDLE))
+    ) {
+      this.idleTime = Date.now() - this.lastActionTime;
     } else {
-        this.lastActionTime = Date.now();
-        this.idleTime = 0;
+      this.lastActionTime = Date.now();
+      this.idleTime = 0;
     }
 
     if (this.actions.size === 0) {
-        this.actions.add(ACTION.IDLE);
+      this.actions.add(ACTION.IDLE);
     }
 
     if (!this.grounded) {
-        this.actions.add(ACTION.FLOAT);
+      this.actions.add(ACTION.FLOAT);
     } else {
-        this.actions.delete(ACTION.FLOAT);
+      this.actions.delete(ACTION.FLOAT);
     }
 
     const newSprite = this.spriteHandler.handleSprite(this.actions);
     if (newSprite) {
-        this.setSprite(newSprite);
+      this.setSprite(newSprite);
     }
 
-    if (this.actions.has(ACTION.SHOOT) && 
-        this.currentFrame >= this.currentSprite.images.length - 1) {
-        this.actions.delete(ACTION.SHOOT);
-        this.isShooting = false;
+    if (
+      this.actions.has(ACTION.SHOOT) &&
+      this.currentFrame >= this.currentSprite.images.length - 1
+    ) {
+      this.actions.delete(ACTION.SHOOT);
+      this.isShooting = false;
     }
-
-    if (this.grounded) {
-        this.actions.delete(ACTION.JUMP);
-    }
+    // console.log(this.playerMoveHandler.isJumping, this.grounded);
+    // if (this.grounded) {
+    //   this.actions.delete(ACTION.JUMP);
+    //   this.playerMoveHandler.isJumping = false;
+    //   this.playerMoveHandler.velocityY = 0; 
+    //   this.playerMoveHandler.currentJumpHeight = 0;
+    //   this.currentJumpHeight = 0;
+    // }
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

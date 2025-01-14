@@ -7,12 +7,10 @@ class PlayerSpriteHandler {
     }
 
     handleSprite(actions) {
-        // Spawn state has highest priority
         if (actions.has(ACTION.SPAWN)) {
             return Assets.getPlayerMarcoPistolSpawn();
         }
 
-        // Air state checks
         if (!this.player.grounded) {
             if (actions.has(ACTION.FLOAT)) {
                 return Assets.getPlayerMarcoPistolJumpIdle(); 
@@ -23,15 +21,12 @@ class PlayerSpriteHandler {
             if (actions.has(ACTION.JUMP)) {
                 return Assets.getPlayerMarcoPistolJumpIdle();
             }
-            // Falling state
             if (this.player.velocityY > 0) {
                 return Assets.getPlayerMarcoPistolJumpIdle();
             }
         }
 
-        // Ground state checks
         if (this.player.grounded) {
-            // Sneak combinations
             if (actions.has(ACTION.SNEAK)) {
                 if (actions.has(ACTION.SHOOT)) {
                     return Assets.getPlayerMarcoPistolSneakShoot();
@@ -48,7 +43,6 @@ class PlayerSpriteHandler {
                 return Assets.getPlayerMarcoPistolSneakIdle();
             }
 
-            // Standing combinations
             if (actions.has(ACTION.RUN)) {
                 if (actions.has(ACTION.SHOOT)) {
                     return Assets.getPlayerMarcoPistolMoveShoot();

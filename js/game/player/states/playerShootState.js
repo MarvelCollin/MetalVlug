@@ -40,6 +40,8 @@ class PlayerShootState extends PlayerState {
             this.player.currentFrame = 0;
             this.player.setState(this.previousState);
         }
+
+        // Ensure shooting does not affect jump height
     }
 
     exit() {

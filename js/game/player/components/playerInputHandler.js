@@ -28,7 +28,7 @@ class PlayerInputHandler {
       this.player.isMoving = true;
       this.player.actions.add(ACTION.RUN);
     } else {
-      playerMoveHandler.resetVelocity(); // Reset horizontal velocity
+      playerMoveHandler.resetVelocity(); 
       this.player.isMoving = false;
       this.player.actions.delete(ACTION.RUN);
     }
@@ -36,8 +36,8 @@ class PlayerInputHandler {
 
   handleJump(activeKeys) {
     const { playerMoveHandler } = this.player;
-    if (activeKeys.has(" ") && this.player.currentJumpHeight < this.player.maxJumpHeight) {
-      playerMoveHandler.jump(); // Initiate jump
+    if (activeKeys.has(" ") && !playerMoveHandler.isJumping && this.player.grounded) {
+      playerMoveHandler.jump(); 
     } else if (!activeKeys.has(" ")) {
       this.player.actions.delete(ACTION.JUMP);
     }

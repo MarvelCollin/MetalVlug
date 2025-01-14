@@ -15,8 +15,5 @@ export const ACTION = {
     SPAWN: 'spawn',
     SNEAK: 'sneak',
     DIE: 'die',
-    HURT: 'hurt',
-    FALL: 'fall',
-    LAND: 'land',
     FLOAT: 'float',
 }

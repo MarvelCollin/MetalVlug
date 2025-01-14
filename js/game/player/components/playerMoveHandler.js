@@ -3,8 +3,9 @@ import { DIRECTION, ACTION } from "../../entities/components/actions.js";
 class PlayerMoveHandler {
     constructor(player) {
         this.player = player;
-        this.velocityX = 0; // Add horizontal velocity
-        this.velocityY = 0;
+        this.velocityX = 0;
+        this.velocityY = 0; 
+        this.isJumping = false; 
     }
 
     move(direction) {
@@ -18,32 +19,23 @@ class PlayerMoveHandler {
     }
 
     jump() {
-        if (this.player.grounded && this.player.currentJumpHeight === 0) {
-            this.velocityY = -15; // Initial jump velocity
+        if (this.player.grounded && !this.isJumping) {
+            this.isJumping = true; 
+            this.player.currentJumpHeight = 0; 
             this.player.grounded = false;
-            this.player.currentJumpHeight += Math.abs(this.velocityY);
-            this.player.actions.add(ACTION.JUMP);
+            this.player.actions.add(ACTION.JUMP);   
+            this.velocityY = this.player.jumpForce; 
         }
     }
 
     applyGravity() {
         if (!this.player.grounded) {
-            this.velocityY += this.player.gravity;
+            this.velocityY += this.player.gravity; 
             if (this.velocityY > this.player.terminalVelocity) {
                 this.velocityY = this.player.terminalVelocity;
             }
-            this.player.y += this.velocityY;
-
-            // Check if player has landed (example condition)
-            if (this.player.y >= this.player.groundLevel) {
-                this.player.y = this.player.groundLevel;
-                this.player.grounded = true;
-                this.velocityY = 0;
-                this.player.actions.delete(ACTION.JUMP);
-            } else {
-                this.player.grounded = false;
-            }
-        }
+            this.player.y += this.velocityY; 
+        } 
     }
 
     applyMovement() {
@@ -51,13 +43,31 @@ class PlayerMoveHandler {
     }
 
     resetVelocity() {
-        this.velocityX = 0; // Reset horizontal velocity
-        this.velocityY = 0; // Reset vertical velocity
+        this.velocityX = 0; 
+    }
+
+    resetOnLanding() {
+        if (this.player.grounded) {
+            this.isJumping = false;
+            this.player.currentJumpHeight = 0;
+        }
     }
 
     update() {
-        this.applyGravity();
-        this.applyMovement(); // Apply horizontal movement each frame
+        if (this.isJumping) {
+            this.player.y += this.velocityY; 
+            this.velocityY += this.player.gravity;
+
+            this.player.currentJumpHeight += Math.abs(this.velocityY);
+            if (this.player.currentJumpHeight >= this.player.maxJumpHeight) {
+                this.isJumping = false; 
+            }
+        } else {
+            this.applyGravity(); 
+        }
+
+        this.applyMovement(); 
+
     }
 }
 

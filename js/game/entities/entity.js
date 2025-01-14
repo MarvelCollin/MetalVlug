@@ -22,12 +22,12 @@ class Entity {
     this.scaleX = 5.5;
     this.scaleY = 5.5;
 
-    this.jumpSpeed = 6;
+    this.jumpSpeed = 18;
     this.gravity = 7;
-    this.terminalVelocity = 15;
+    this.terminalVelocity = 30;
     this.jumpForce = -12;
 
-    this.maxJumpHeight = 1000;
+    this.maxJumpHeight = 350;
     this.currentJumpHeight = 0;
 
     this.collision = new Collision(this);
@@ -40,35 +40,23 @@ class Entity {
     this.velocityY = 0;
   }
 
-  checkCollision(nextX, nextY, obstacle) {
-    const isColliding = (
-      nextX < obstacle.x + obstacle.width &&
-      nextX + this.width > obstacle.x &&
-      nextY < obstacle.y + obstacle.height &&
-      nextY + this.height > obstacle.y
-    );
-
-    if (isColliding) {
-      const playerBottom = nextY + this.height;
-      const obstacleTop = obstacle.y;
-      if (Math.abs(playerBottom - obstacleTop) < 5) { 
-        return true;
-      }
-    }
-    return false;
-  }
-
   update(
     obstacles = defaultObstacles,
-    leftPercentage = 0.5,
-    rightPercentage = 0.3
+    leftPercentage = 0.2, 
+    rightPercentage = 0.2 
   ) {
     this.collision.handleCollision(obstacles, leftPercentage, rightPercentage);
     this.stateManager.update();
 
+    const wasGrounded = this.grounded;
     this.grounded = obstacles.some(obstacle => 
-      this.checkCollision(this.x, this.y + 1, obstacle) 
+      this.collision.checkCollision(this.x, this.y, obstacle) 
     );
+    console.log(this.grounded);
+
+    if (this.grounded && !wasGrounded) {
+      this.currentJumpHeight = 0;
+    }
   }
 
   draw() {
