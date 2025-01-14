@@ -57,11 +57,6 @@ class Player extends Entity {
       this.state.exit();
     }
     this.state = state;
-    if (sprite) {
-        this.state.enter(sprite);
-    } else {
-        this.state.enter();
-    }
   }
 
   addBullet(bullet) {
@@ -74,7 +69,6 @@ class Player extends Entity {
     this.movement.update();
     console.log(this.actions);
 
-    // Update idle time
     if (this.actions.size === 0 || (this.actions.size === 1 && this.actions.has(ACTION.IDLE))) {
         this.idleTime = Date.now() - this.lastActionTime;
     } else {
@@ -82,30 +76,31 @@ class Player extends Entity {
         this.idleTime = 0;
     }
 
-    // Add IDLE action if no other actions are present
     if (this.actions.size === 0) {
         this.actions.add(ACTION.IDLE);
     }
 
-    // Update sprite based on current actions
+    if (!this.grounded) {
+        this.actions.add(ACTION.FLOAT);
+    } else {
+        this.actions.delete(ACTION.FLOAT);
+    }
+
     const newSprite = this.spriteHandler.handleSprite(this.actions);
     if (newSprite) {
         this.setSprite(newSprite);
     }
 
-    // Reset shoot action after animation
     if (this.actions.has(ACTION.SHOOT) && 
         this.currentFrame >= this.currentSprite.images.length - 1) {
         this.actions.delete(ACTION.SHOOT);
         this.isShooting = false;
     }
 
-    // Reset jump action when grounded
     if (this.grounded) {
         this.actions.delete(ACTION.JUMP);
     }
 
-    // Update bullets
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();
       return bullet.active && bullet.x > 0 && bullet.x < canvas.width;

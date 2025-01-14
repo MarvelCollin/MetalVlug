@@ -18,4 +18,5 @@ export const ACTION = {
     HURT: 'hurt',
     FALL: 'fall',
     LAND: 'land',
+    FLOAT: 'float',
 }

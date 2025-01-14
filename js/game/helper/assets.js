@@ -1,4 +1,3 @@
-
 class Assets {
     static instance = null;
     static assets = null;
@@ -208,6 +207,16 @@ class Assets {
                 return assets.PLAYER.MARCO.PISTOL.STAND.SHOOT;
             } catch (error) {
                 console.error('Error in getPlayerMarcoPistolStandShoot:', error);
+                return null;
+            }
+        }
+
+        async getPlayerMarcoPistolFloat() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PLAYER.MARCO.PISTOL.FLOAT;
+            } catch (error) {
+                console.error('Error in getPlayerMarcoPistolFloat:', error);
                 return null;
             }
         }

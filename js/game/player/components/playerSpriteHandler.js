@@ -14,6 +14,9 @@ class PlayerSpriteHandler {
 
         // Air state checks
         if (!this.player.grounded) {
+            if (actions.has(ACTION.FLOAT)) {
+                return Assets.getPlayerMarcoPistolJumpIdle(); 
+            }
             if (actions.has(ACTION.SHOOT) && actions.has(ACTION.JUMP)) {
                 return Assets.getPlayerMarcoPistolJumpShoot();
             }
