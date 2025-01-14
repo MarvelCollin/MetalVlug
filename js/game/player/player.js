@@ -46,6 +46,9 @@ class Player extends Entity {
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
     this.previousState = this.state;
+    if (this.state) {
+      this.state.exit();
+    }
     this.state = state;
     if (sprite) {
         this.state.enter(sprite);

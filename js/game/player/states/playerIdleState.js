@@ -25,14 +25,6 @@ class PlayerIdleState extends PlayerState {
   update() {
     this.player.inputHandler.handleJump(this.player.currentInputs, Assets.getPlayerMarcoPistolJumpIdle());
     
-    if(this.player.grounded) {
-      this.player.inputHandler.handleMove(this.player.currentInputs, Assets.getPlayerMarcoPistolStandRun());
-    }
-
-    this.player.inputHandler.handleShoot(
-      this.player.currentInputs,
-      Assets.getPlayerMarcoPistolStandShoot()
-    );
   }
   
   draw() {
@@ -48,6 +40,11 @@ class PlayerIdleState extends PlayerState {
         flip
       );
     }
+  }
+
+  exit() {
+    this.frameAccumulator = 0;
+    this.currentFrame = 0;
   }
 }
 

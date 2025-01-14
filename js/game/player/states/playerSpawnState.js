@@ -28,6 +28,11 @@ class PlayerSpawnState extends PlayerState {
     }
   }
 
+  exit() {
+    this.player.currentFrame = 0;
+    Drawer.currentFrames["spawn"] = 0;
+  }
+
   draw() {
     if (this.player.currentSprite) {
       Drawer.drawToCanvas(

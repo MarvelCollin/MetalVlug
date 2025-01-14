@@ -45,7 +45,6 @@ class PlayerInputHandler {
 
   handleShoot(activeKeys, sprite) {
     const { player } = this;
-    // console.log(player.isShooting)
     if (activeKeys.has("control") && !player.isShooting) {
       this.activeKeys.delete("control");
       player.isShooting = true; 

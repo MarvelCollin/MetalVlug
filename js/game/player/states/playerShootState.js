@@ -15,7 +15,6 @@ class PlayerShootState extends PlayerState {
         if (sprite) {
             await this.player.setSprite(sprite);
         }
-        console.log("direction", this.player.direction);
         if (!this.bulletAssets) {
             this.bulletAssets = await Drawer.loadImage(() => Assets.getPlayerOtherBullet());
         }
@@ -41,6 +40,12 @@ class PlayerShootState extends PlayerState {
             this.player.currentFrame = 0;
             this.player.setState(this.previousState);
         }
+    }
+
+    exit() {
+        this.player.currentFrame = 0;
+        this.player.isShooting = false;
+        this.previousState = null;
     }
 
     draw() {

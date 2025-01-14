@@ -18,6 +18,4 @@ export const ACTION = {
     HURT: 'hurt',
     FALL: 'fall',
     LAND: 'land',
-    JUMP_SHOOT: 'jumpShoot',
-    SNEAK_SHOOT: 'sneakShoot',
 }
