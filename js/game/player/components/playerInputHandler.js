@@ -1,4 +1,4 @@
-import { DIRECTION } from "../../entities/components/actions.js";
+import { DIRECTION, ACTION } from "../../entities/components/actions.js";
 import Assets from "../../helper/assets.js";
 
 class PlayerInputHandler {
@@ -21,34 +21,37 @@ class PlayerInputHandler {
     this.updatePlayerFromKeys();
   }
 
-  handleMove(activeKeys, sprite) {
+  handleMove(activeKeys) {
     const { player } = this;
     if (activeKeys.has("arrowleft") || activeKeys.has("arrowright")) {
       player.isMoving = true;
       const direction = activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT; 
       player.direction = direction;
       player.movement.move(direction);
-      if(!activeKeys.has(" ")) player.setSprite(sprite);
+      player.actions.add(ACTION.RUN);
     } else {
       player.resetVelocity();
       player.isMoving = false;
+      player.actions.delete(ACTION.RUN);
     }
   }
 
-  handleJump(activeKeys, sprite) {
+  handleJump(activeKeys) {
     const { player } = this;
     if (activeKeys.has(" ") && player.currentJumpHeight < player.maxJumpHeight) {
       player.movement.jump();
-      player.setSprite(sprite);
+      player.actions.add(ACTION.JUMP);
+    } else if (!activeKeys.has(" ")) {
+      player.actions.delete(ACTION.JUMP);
     }
   }
 
-  handleShoot(activeKeys, sprite) {
+  handleShoot(activeKeys) {
     const { player } = this;
     if (activeKeys.has("control") && !player.isShooting) {
       this.activeKeys.delete("control");
+      player.actions.add(ACTION.SHOOT);
       player.isShooting = true; 
-      player.setState(player.shootState, sprite);
     }
   }
 
@@ -61,9 +64,9 @@ class PlayerInputHandler {
     const { activeKeys } = this;
     player.currentInputs = new Set(activeKeys);
 
-    this.handleJump(activeKeys, Assets.getPlayerMarcoPistolJumpIdle());
-    this.handleShoot(activeKeys, Assets.getPlayerMarcoPistolStandShoot());
-    this.handleMove(activeKeys, Assets.getPlayerMarcoPistolStandRun());
+    this.handleJump(activeKeys);
+    this.handleShoot(activeKeys);
+    this.handleMove(activeKeys);
   }
 }
 

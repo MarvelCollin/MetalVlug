@@ -1,13 +1,14 @@
 import PlayerIdleState from "./states/playerIdleState.js";
 import PlayerShootState from "./states/playerShootState.js";
 import PlayerSpawnState from "./states/playerSpawnState.js";
-import { DIRECTION } from "../entities/components/actions.js";
+import { DIRECTION, ACTION } from "../entities/components/actions.js";
 import { canvas } from "../ctx.js";
 import Entity from "../entities/entity.js";
 import Drawer from "../helper/drawer.js";
 import Assets from "../helper/assets.js";
 import PlayerInputHandler from "./components/playerInputHandler.js";
 import Movement from "./components/movement.js";
+import PlayerSpriteHandler from "./components/playerSpriteHandler.js";
 
 class Player extends Entity {
   constructor(x, y) {
@@ -42,6 +43,12 @@ class Player extends Entity {
 
     this.frameAccumulator = 0; 
     this.currentFrame = 0; 
+
+    this.actions = new Set();
+    this.spriteHandler = new PlayerSpriteHandler(this);
+
+    this.idleTime = 0;
+    this.lastActionTime = Date.now();
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
@@ -65,22 +72,40 @@ class Player extends Entity {
     super.update();
     this.state.update(); 
     this.movement.update();
-    if (!this.grounded) {
-        if (this.isShooting) { 
-            this.setSprite(Assets.getPlayerMarcoPistolJumpShoot());
-        } else {
-            this.setSprite(Assets.getPlayerMarcoPistolJumpIdle());
-        }
-    } else if (this.isMoving) {
-        if (this.isShooting) { 
-            this.setSprite(Assets.getPlayerMarcoPistolMoveShoot());
-        } else {
-            this.setSprite(Assets.getPlayerMarcoPistolStandRun());
-        }
+    console.log(this.actions);
+
+    // Update idle time
+    if (this.actions.size === 0 || (this.actions.size === 1 && this.actions.has(ACTION.IDLE))) {
+        this.idleTime = Date.now() - this.lastActionTime;
     } else {
-        this.setState(this.idleState);
+        this.lastActionTime = Date.now();
+        this.idleTime = 0;
     }
 
+    // Add IDLE action if no other actions are present
+    if (this.actions.size === 0) {
+        this.actions.add(ACTION.IDLE);
+    }
+
+    // Update sprite based on current actions
+    const newSprite = this.spriteHandler.handleSprite(this.actions);
+    if (newSprite) {
+        this.setSprite(newSprite);
+    }
+
+    // Reset shoot action after animation
+    if (this.actions.has(ACTION.SHOOT) && 
+        this.currentFrame >= this.currentSprite.images.length - 1) {
+        this.actions.delete(ACTION.SHOOT);
+        this.isShooting = false;
+    }
+
+    // Reset jump action when grounded
+    if (this.grounded) {
+        this.actions.delete(ACTION.JUMP);
+    }
+
+    // Update bullets
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();
       return bullet.active && bullet.x > 0 && bullet.x < canvas.width;
