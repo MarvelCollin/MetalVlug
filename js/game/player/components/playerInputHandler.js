@@ -22,27 +22,24 @@ class PlayerInputHandler {
   }
 
   handleMove(activeKeys) {
-    const { player } = this;
+    const { playerMoveHandler } = this.player;
     if (activeKeys.has("arrowleft") || activeKeys.has("arrowright")) {
-      player.isMoving = true;
-      const direction = activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT; 
-      player.direction = direction;
-      player.movement.move(direction);
-      player.actions.add(ACTION.RUN);
+      playerMoveHandler.move(activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT); // Set velocity
+      this.player.isMoving = true;
+      this.player.actions.add(ACTION.RUN);
     } else {
-      player.resetVelocity();
-      player.isMoving = false;
-      player.actions.delete(ACTION.RUN);
+      playerMoveHandler.resetVelocity(); // Reset horizontal velocity
+      this.player.isMoving = false;
+      this.player.actions.delete(ACTION.RUN);
     }
   }
 
   handleJump(activeKeys) {
-    const { player } = this;
-    if (activeKeys.has(" ") && player.currentJumpHeight < player.maxJumpHeight) {
-      player.movement.jump();
-      player.actions.add(ACTION.JUMP);
+    const { playerMoveHandler } = this.player;
+    if (activeKeys.has(" ") && this.player.currentJumpHeight < this.player.maxJumpHeight) {
+      playerMoveHandler.jump(); // Initiate jump
     } else if (!activeKeys.has(" ")) {
-      player.actions.delete(ACTION.JUMP);
+      this.player.actions.delete(ACTION.JUMP);
     }
   }
 

@@ -7,7 +7,7 @@ import Entity from "../entities/entity.js";
 import Drawer from "../helper/drawer.js";
 import Assets from "../helper/assets.js";
 import PlayerInputHandler from "./components/playerInputHandler.js";
-import Movement from "./components/movement.js";
+import PlayerMoveHandler from "./components/playerMoveHandler.js";
 import PlayerSpriteHandler from "./components/playerSpriteHandler.js";
 
 class Player extends Entity {
@@ -39,7 +39,7 @@ class Player extends Entity {
     this.setSprite(Assets.getPlayerMarcoPistolStandIdleNormal());
 
     this.inputHandler = new PlayerInputHandler(this);
-    this.movement = new Movement(this);
+    this.playerMoveHandler = new PlayerMoveHandler(this);
 
     this.frameAccumulator = 0; 
     this.currentFrame = 0; 
@@ -57,6 +57,11 @@ class Player extends Entity {
       this.state.exit();
     }
     this.state = state;
+    if (sprite) {
+      this.state.enter(sprite);
+    } else {
+      this.state.enter();
+    }
   }
 
   addBullet(bullet) {
@@ -66,7 +71,7 @@ class Player extends Entity {
   update() {
     super.update();
     this.state.update(); 
-    this.movement.update();
+    this.playerMoveHandler.update(); // Apply movement each frame
     console.log(this.actions);
 
     if (this.actions.size === 0 || (this.actions.size === 1 && this.actions.has(ACTION.IDLE))) {
