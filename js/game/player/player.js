@@ -9,6 +9,7 @@ import Assets from "../helper/assets.js";
 import PlayerInputHandler from "./components/playerInputHandler.js";
 import PlayerMoveHandler from "./components/playerMoveHandler.js";
 import PlayerSpriteHandler from "./components/playerSpriteHandler.js";
+import { defaultObstacles } from "../world/obstacle.js";
 
 class Player extends Entity {
   constructor(x, y) {
@@ -43,7 +44,6 @@ class Player extends Entity {
     this.frameAccumulator = 0;
     this.currentFrame = 0;
 
-    this.actions = new Set();
     this.spriteHandler = new PlayerSpriteHandler(this);
 
     this.idleTime = 0;
@@ -68,9 +68,16 @@ class Player extends Entity {
   }
 
   update() {
+    // console.log(this.actions);
     super.update();
     this.playerMoveHandler.update();
     this.state.update();
+
+    
+
+    if(!this.actions.has(ACTION.JUMP) && this.actions.has(ACTION.FLOAT)){
+      // this.grounded = true;
+    }
 
     if (
       this.actions.size === 0 ||
@@ -97,6 +104,10 @@ class Player extends Entity {
       this.setSprite(newSprite);
     }
 
+    if (this.actions.has(ACTION.SHOOT) && !this.isShooting) {
+      this.setState(this.shootState);
+    }
+
     if (
       this.actions.has(ACTION.SHOOT) &&
       this.currentFrame >= this.currentSprite.images.length - 1
@@ -104,14 +115,6 @@ class Player extends Entity {
       this.actions.delete(ACTION.SHOOT);
       this.isShooting = false;
     }
-    // console.log(this.playerMoveHandler.isJumping, this.grounded);
-    // if (this.grounded) {
-    //   this.actions.delete(ACTION.JUMP);
-    //   this.playerMoveHandler.isJumping = false;
-    //   this.playerMoveHandler.velocityY = 0; 
-    //   this.playerMoveHandler.currentJumpHeight = 0;
-    //   this.currentJumpHeight = 0;
-    // }
 
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();

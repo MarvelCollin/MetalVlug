@@ -1,4 +1,4 @@
-import { DIRECTION } from "./components/actions.js";
+import { DIRECTION, ACTION } from "./components/actions.js";
 import { ctx, canvas, scaleX, scaleY } from "../ctx.js";
 import { defaultObstacles } from "../world/obstacle.js";
 import Collision from "./components/collision.js";
@@ -21,6 +21,7 @@ class Entity {
     this.currentSprite = null;
     this.scaleX = 5.5;
     this.scaleY = 5.5;
+    this.actions = new Set();
 
     this.jumpSpeed = 18;
     this.gravity = 7;
@@ -37,7 +38,7 @@ class Entity {
 
   resetVelocity() {
     this.velocityX = 0;
-    this.velocityY = 0;
+    // this.velocityY = 0;
   }
 
   update(
@@ -49,18 +50,25 @@ class Entity {
     this.stateManager.update();
 
     const wasGrounded = this.grounded;
-    this.grounded = obstacles.some(obstacle => 
+    let checker = obstacles.some(obstacle => 
       this.collision.checkCollision(this.x, this.y, obstacle) 
     );
-    console.log(this.grounded);
+
+    if(checker && !this.actions.has(ACTION.JUMP)){
+      this.grounded = true;
+    }
+
+    // console.log("eeeee", this.grounded);
+
 
     if (this.grounded && !wasGrounded) {
       this.currentJumpHeight = 0;
     }
   }
 
-  draw() {
+  draw(obstacles = defaultObstacles) {
     this.renderer.draw();
+    this.collision.drawDebug(ctx, obstacles); // Draw the bottom layer and obstacles for debugging
   }
 
   getScaleX() {
@@ -81,6 +89,10 @@ class Entity {
     } catch (error) {
         console.error("Failed to load sprite:", error);
     }
+  }
+
+  isIntersectingWithObstacles(obstacles) {
+    return obstacles.some(obstacle => this.collision.isIntersecting(obstacle));
   }
 }
 

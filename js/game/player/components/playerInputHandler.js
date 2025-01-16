@@ -24,7 +24,7 @@ class PlayerInputHandler {
   handleMove(activeKeys) {
     const { playerMoveHandler } = this.player;
     if (activeKeys.has("arrowleft") || activeKeys.has("arrowright")) {
-      playerMoveHandler.move(activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT); // Set velocity
+      playerMoveHandler.move(activeKeys.has("arrowleft") ? DIRECTION.LEFT : DIRECTION.RIGHT); 
       this.player.isMoving = true;
       this.player.actions.add(ACTION.RUN);
     } else {
@@ -38,9 +38,10 @@ class PlayerInputHandler {
     const { playerMoveHandler } = this.player;
     if (activeKeys.has(" ") && !playerMoveHandler.isJumping && this.player.grounded) {
       playerMoveHandler.jump(); 
-    } else if (!activeKeys.has(" ")) {
-      this.player.actions.delete(ACTION.JUMP);
-    }
+    } 
+    // else if (!activeKeys.has(" ")) {
+    //   this.player.actions.delete(ACTION.JUMP);
+    // }
   }
 
   handleShoot(activeKeys) {
@@ -49,6 +50,7 @@ class PlayerInputHandler {
       this.activeKeys.delete("control");
       player.actions.add(ACTION.SHOOT);
       player.isShooting = true; 
+      player.setState(player.shootState);
     }
   }
 

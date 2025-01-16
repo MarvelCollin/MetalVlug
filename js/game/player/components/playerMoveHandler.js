@@ -54,20 +54,26 @@ class PlayerMoveHandler {
     }
 
     update() {
-        if (this.isJumping) {
+        // console.log(this.player.grounded);
+        if (this.player.actions.has(ACTION.JUMP)) {
             this.player.y += this.velocityY; 
-            this.velocityY += this.player.gravity;
+            this.velocityY += this.player.gravity;  
 
             this.player.currentJumpHeight += Math.abs(this.velocityY);
             if (this.player.currentJumpHeight >= this.player.maxJumpHeight) {
                 this.isJumping = false; 
+                this.player.actions.delete(ACTION.JUMP);
             }
-        } else {
+        } else if (!this.player.grounded) {
             this.applyGravity(); 
         }
 
         this.applyMovement(); 
 
+        if (this.player.grounded && !this.player.actions.has(ACTION.JUMP)) {
+            this.velocityY = 0;
+            this.isJumping = false; 
+        }
     }
 }
 

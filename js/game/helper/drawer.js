@@ -66,6 +66,38 @@ class Drawer {
     }
   }
 
+  static updateFrame(imagesKey, type, imagesLength) {
+    switch (type) {
+      case "LOOP":
+        this.currentFrames[imagesKey] = (this.currentFrames[imagesKey] + 1) % imagesLength;
+        break;
+
+      case "HOLD":
+        if (this.currentFrames[imagesKey] < imagesLength - 1) {
+          this.currentFrames[imagesKey]++;
+        }
+        break;
+
+      case "BACK":
+        if (!this.isReversing[imagesKey]) {
+          if (this.currentFrames[imagesKey] >= imagesLength - 1) {
+            this.isReversing[imagesKey] = true;
+            this.currentFrames[imagesKey]--;
+          } else {
+            this.currentFrames[imagesKey]++;
+          }
+        } else {
+          if (this.currentFrames[imagesKey] <= 0) {
+            this.isReversing[imagesKey] = false;
+            this.currentFrames[imagesKey]++;
+          } else {
+            this.currentFrames[imagesKey]--;
+          }
+        }
+        break;
+    }
+  }
+
   static drawToCanvas(
     images,
     x,
@@ -95,56 +127,29 @@ class Drawer {
       const imgWidth = width || img.width;
       const imgHeight = height || img.height;
 
+      const realX = x * scaleX;
+      const realY = y * scaleY - imgHeight;
+
       if (flip) {
         ctx.save();
-        ctx.translate(x, y);
+        ctx.translate(realX + imgWidth, realY);
         ctx.scale(-1, 1);
-        ctx.drawImage(img, -30, -imgHeight, imgWidth, imgHeight);
+        ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
         ctx.restore();
       } else {
-        ctx.drawImage(img, x, y - imgHeight, imgWidth, imgHeight);
+        ctx.drawImage(img, realX, realY, imgWidth, imgHeight);
       }
 
       if (type !== "ONCE") {
         const now = Date.now();
         if (now - this.frameTimers[imagesKey] >= delay) {
-          switch (type) {
-            case "LOOP":
-              this.currentFrames[imagesKey] = (this.currentFrames[imagesKey] + 1) % images.length;
-              break;
-
-            case "HOLD":
-              if (this.currentFrames[imagesKey] < images.length - 1) {
-                this.currentFrames[imagesKey]++;
-              }
-              break;
-
-            case "BACK":
-              if (!this.isReversing[imagesKey]) {
-                if (this.currentFrames[imagesKey] >= images.length - 1) {
-                  this.isReversing[imagesKey] = true;
-                  this.currentFrames[imagesKey]--;
-                } else {
-                  this.currentFrames[imagesKey]++;
-                }
-              } else {
-                if (this.currentFrames[imagesKey] <= 0) {
-                  this.isReversing[imagesKey] = false;
-                  this.currentFrames[imagesKey]++;
-                } else {
-                  this.currentFrames[imagesKey]--;
-                }
-              }
-              break;
-          }
-
+          this.updateFrame(imagesKey, type, images.length);
           this.frameTimers[imagesKey] = now;
         }
       }
 
       if (debugConfig.enabled) {
-        const debugX = flip ? x : x;
-        drawDebugBorder(ctx, debugX, y - imgHeight, imgWidth, imgHeight);
+        drawDebugBorder(ctx, realX, realY, imgWidth, imgHeight);
       }
     }
   }

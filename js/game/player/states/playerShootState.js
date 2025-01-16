@@ -2,7 +2,7 @@ import PlayerState from './playerState.js';
 import Drawer from '../../helper/drawer.js';
 import Assets from '../../helper/assets.js';
 import Bullet from '../components/bullet.js';
-import { DIRECTION } from '../../entities/components/actions.js';
+import { DIRECTION, ACTION } from '../../entities/components/actions.js';
 
 class PlayerShootState extends PlayerState {
     previousState = null;
@@ -12,6 +12,7 @@ class PlayerShootState extends PlayerState {
 
     async enter(sprite) {
         this.previousState = this.player.state;
+        this.player.actions.delete(ACTION.IDLE);
         if (sprite) {
             await this.player.setSprite(sprite);
         }
@@ -40,8 +41,6 @@ class PlayerShootState extends PlayerState {
             this.player.currentFrame = 0;
             this.player.setState(this.previousState);
         }
-
-        // Ensure shooting does not affect jump height
     }
 
     exit() {
