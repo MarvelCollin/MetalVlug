@@ -98,6 +98,25 @@ class Drawer {
     }
   }
 
+  static drawImageFromBottom(img, x, y, width, height, flip = false) {
+    const realX = x * scaleX;
+    const realY = y * scaleY - height;
+
+    if (flip) {
+      ctx.save();
+      ctx.translate(realX + width, realY);
+      ctx.scale(-1, 1);
+      ctx.drawImage(img, 0, 0, width, height);
+      ctx.restore();
+    } else {
+      ctx.drawImage(img, realX, realY, width, height);
+    }
+
+    if (debugConfig.enabled) {
+      drawDebugBorder(ctx, realX, realY, width, height);
+    }
+  }
+
   static drawToCanvas(
     images,
     x,
@@ -127,18 +146,7 @@ class Drawer {
       const imgWidth = width || img.width;
       const imgHeight = height || img.height;
 
-      const realX = x * scaleX;
-      const realY = y * scaleY - imgHeight;
-
-      if (flip) {
-        ctx.save();
-        ctx.translate(realX + imgWidth, realY);
-        ctx.scale(-1, 1);
-        ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-        ctx.restore();
-      } else {
-        ctx.drawImage(img, realX, realY, imgWidth, imgHeight);
-      }
+      this.drawImageFromBottom(img, x, y, imgWidth, imgHeight, flip);
 
       if (type !== "ONCE") {
         const now = Date.now();
@@ -146,10 +154,6 @@ class Drawer {
           this.updateFrame(imagesKey, type, images.length);
           this.frameTimers[imagesKey] = now;
         }
-      }
-
-      if (debugConfig.enabled) {
-        drawDebugBorder(ctx, realX, realY, imgWidth, imgHeight);
       }
     }
   }

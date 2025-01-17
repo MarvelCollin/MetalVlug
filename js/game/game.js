@@ -2,7 +2,7 @@ import { ctx, canvas, scaleX, scaleY } from './ctx.js';
 import Player from './player/player.js';
 import PlayerInputHandler from './player/components/playerInputHandler.js';
 import Camera from './world/camera.js';
-import { debugConfig } from './helper/debug.js';
+import { debugConfig, logCursorPosition } from './helper/debug.js';
 import Assets from './helper/assets.js';
 import Drawer from './helper/drawer.js';
 import { Obstacle, defaultObstacles } from './world/obstacle.js';
@@ -38,6 +38,7 @@ async function startAnimation() {
     initializeObstacles();
     const bgData = await loadBackground();
     gameState.background = bgData.background;
+    canvas.addEventListener('mousemove', logCursorPosition);
     requestAnimationFrame(gameLoop);
 }
 

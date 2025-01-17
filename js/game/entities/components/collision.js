@@ -1,5 +1,6 @@
 import { ACTION } from "./actions.js";
 import { drawDebugBorder } from "../../helper/debug.js";
+import Drawer from "../../helper/drawer.js";
 
 class Collision {
   constructor(entity) {
@@ -19,7 +20,7 @@ class Collision {
       nextY + this.entity.height > obstacle.y;
 
     console.log(
-      `Checking collision: nextX=${nextX}, nextY=${nextY}, obstacleX=${obstacle.x}, obstacleY=${obstacle.y}, result=${result}`
+      // `Checking collision: nextX=${nextX}, nextY=${nextY}, obstacleX=${obstacle.x}, obstacleY=${obstacle.y}, result=${result}`
     );
     return result;
   }
@@ -30,27 +31,28 @@ class Collision {
 
     for (const obstacle of obstacles) {
       const middleX = this.entity.x + this.entity.width / 2;
-      const bottomY = this.entity.y + this.entity.height - 10; // Adjust the bottomY to be higher
+      const bottomY = this.entity.y + this.entity.height - 10;
+      // console.log(bottomY - this.entity.height);
       if (
         this.checkCollision(
           middleX,
-          bottomY - this.entity.height * leftPercentage,
+          bottomY - this.entity.height,
           obstacle
         ) ||
         this.checkCollision(
           middleX,
-          bottomY + this.entity.height * rightPercentage,
+          bottomY + this.entity.height ,
           obstacle
         )
       ) {
         if (this.entity.velocityY > 0) {
-          console.log("Collision detected while moving downwards");
+          // console.log("Collision detected while moving downwards");
           this.entity.y = obstacle.y - this.entity.height;
           this.entity.velocityY = 0;
           this.entity.grounded = true;
           verticalCollision = true;
         } else if (this.entity.velocityY < 0 && !obstacle.passable) {
-          console.log("Collision detected while moving upwards");
+          // console.log("Collision detected while moving upwards");
           this.entity.y = obstacle.y + obstacle.height;
           this.entity.velocityY = 0;
           verticalCollision = true;
@@ -60,27 +62,27 @@ class Collision {
     }
 
     if (!verticalCollision) {
-      console.log("No vertical collision detected");
+      // console.log("No vertical collision detected");
       this.entity.y = nextY;
       this.entity.grounded = false;
     }
   }
 
   isIntersecting(obstacle) {
-    const bottomY = this.entity.y + this.entity.height - 10; // Adjust the bottomY to be higher
+    const bottomY = this.entity.y + this.entity.height - 10; 
     return this.checkCollision(this.entity.x, bottomY, obstacle);
   }
 
   drawDebug(ctx, obstacles) {
-    const bottomY = this.entity.y + this.entity.height - 10; // Adjust the bottomY to be higher
-    drawDebugBorder(ctx, this.entity.x, bottomY, this.entity.width, 1);
+    // const bottomY = this.entity.y + this.entity.height - 10; 
+    // drawDebugBorder(ctx, this.entity.x, bottomY, this.entity.width, 1);
 
-    obstacles.forEach(obstacle => {
-      const isIntersecting = this.isIntersecting(obstacle);
-      ctx.fillStyle = isIntersecting ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)';
-      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    });
+    // obstacles.forEach(obstacle => {
+    //   const isIntersecting = this.isIntersecting(obstacle);
+    //   ctx.fillStyle = isIntersecting ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)';
+    //   ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    // });
   }
-}
+}   
 
 export default Collision;

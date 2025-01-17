@@ -41,7 +41,7 @@ class Obstacle {
     draw(ctx) {
         if(debugConfig.enabled) {
             ctx.fillStyle = this.passable ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)';
-            ctx.fillRect(this.x, this.y - this.height, this.width, this.height); // Draw from the bottom
+            ctx.fillRect(this.x, this.y - this.height, this.width, this.height);
             
             if (this.startX !== this.targetX || this.startY !== this.targetY) {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';

@@ -68,7 +68,7 @@ class Entity {
 
   draw(obstacles = defaultObstacles) {
     this.renderer.draw();
-    this.collision.drawDebug(ctx, obstacles); // Draw the bottom layer and obstacles for debugging
+    this.collision.drawDebug(ctx, obstacles);
   }
 
   getScaleX() {
