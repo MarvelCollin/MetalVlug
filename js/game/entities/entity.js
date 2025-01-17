@@ -41,14 +41,10 @@ class Entity {
     // this.velocityY = 0;
   }
 
-  update(
-    obstacles = defaultObstacles,
-    leftPercentage = 0.2, 
-    rightPercentage = 0.2 
-  ) {
-    this.collision.handleCollision(obstacles, leftPercentage, rightPercentage);
+  update(obstacles = defaultObstacles) {
+    this.collision.handleCollision(obstacles);
+    
     this.stateManager.update();
-
     const wasGrounded = this.grounded;
     let checker = obstacles.some(obstacle => 
       this.collision.checkCollision(this.x, this.y, obstacle) 
@@ -58,12 +54,15 @@ class Entity {
       this.grounded = true;
     }
 
-    // console.log("eeeee", this.grounded);
-
-
     if (this.grounded && !wasGrounded) {
       this.currentJumpHeight = 0;
     }
+
+    obstacles.forEach(obstacle => {
+      if (obstacle.type === 'stair' && this.collision.checkCollision(this.x, this.y, obstacle)) {
+        this.y -= this.speed; 
+      }
+    });
   }
 
   draw(obstacles = defaultObstacles) {

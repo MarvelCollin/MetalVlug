@@ -68,7 +68,6 @@ class Player extends Entity {
   }
 
   update() {
-    // console.log(this.actions);
     super.update();
     this.playerMoveHandler.update();
     this.state.update();

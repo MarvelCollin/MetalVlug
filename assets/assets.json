@@ -1,6 +1,6 @@
 {
     "BACKGROUND": {
-        "PATH": "../assets/background/background",
+        "PATH": "../assets/background/wave_background",
         "FRAMES": 1,
         "TYPE": "SINGLE"
     },
