@@ -3,6 +3,7 @@ import Drawer from "../../helper/drawer.js";
 import Assets from "../../helper/assets.js";
 import { canvas } from "../../ctx.js";
 import PlayerIdleState from "./playerIdleState.js";
+import { DIRECTION } from "../../entities/components/actions.js";
 
 class PlayerSpawnState extends PlayerState {
   constructor(player) {
@@ -37,9 +38,12 @@ class PlayerSpawnState extends PlayerState {
     if (this.player.currentSprite) {
       Drawer.drawToCanvas(
         this.player.currentSprite.images,
-        this.player.x * this.player.getScaleX(),
+        this.player.x,
         this.player.y,
-        this.player.currentSprite.delay
+        this.player.currentSprite.delay,
+        90,  // fixed width
+        90,  // fixed height
+        this.player.direction === DIRECTION.LEFT
       );
     }
   }

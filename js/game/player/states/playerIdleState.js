@@ -24,8 +24,6 @@ class PlayerIdleState extends PlayerState {
   
   update() {
     this.player.inputHandler.handleJump(this.player.currentInputs);
-    // Ensure jump handling respects maxJumpHeight
-    // Optional: Handle other idle-specific logic
   }
   
   draw() {

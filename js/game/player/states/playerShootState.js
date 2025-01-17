@@ -54,11 +54,11 @@ class PlayerShootState extends PlayerState {
             const flip = this.player.direction === DIRECTION.LEFT;
             Drawer.drawToCanvas(
                 this.player.currentSprite.images,
-                this.player.x * this.player.getScaleX(),
-                this.player.y * this.player.getScaleY(),
+                this.player.x,
+                this.player.y,
                 this.player.currentSprite.delay,
-                undefined,
-                undefined,
+                90,  // fixed width
+                90,  // fixed height
                 flip
             );
         }

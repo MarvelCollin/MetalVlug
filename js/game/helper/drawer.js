@@ -1,4 +1,4 @@
-import { ctx, canvas, scaleX, scaleY } from "../ctx.js";
+import { ctx, canvas } from "../ctx.js";
 import { drawDebugBorder, debugConfig } from "./debug.js";
 import Assets from "./assets.js";
 
@@ -99,8 +99,8 @@ class Drawer {
   }
 
   static drawImageFromBottom(img, x, y, width, height, flip = false) {
-    const realX = x * scaleX;
-    const realY = y * scaleY - height;
+    const realX = x;
+    const realY = y - height;
 
     if (flip) {
       ctx.save();

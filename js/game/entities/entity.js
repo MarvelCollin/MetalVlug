@@ -1,5 +1,5 @@
 import { DIRECTION, ACTION } from "./components/actions.js";
-import { ctx, canvas, scaleX, scaleY } from "../ctx.js";
+import { ctx, canvas } from "../ctx.js";
 import { defaultObstacles } from "../world/obstacle.js";
 import Collision from "./components/collision.js";
 import Renderer from "./components/renderer.js";
@@ -19,8 +19,6 @@ class Entity {
     this.grounded = true;
     this.lastUpdateTime = Date.now();
     this.currentSprite = null;
-    this.scaleX = 5.5;
-    this.scaleY = 5.5;
     this.actions = new Set();
 
     this.jumpSpeed = 18;
@@ -68,14 +66,6 @@ class Entity {
   draw(obstacles = defaultObstacles) {
     this.renderer.draw();
     this.collision.drawDebug(ctx, obstacles);
-  }
-
-  getScaleX() {
-    return scaleX;
-  }
-
-  getScaleY() {
-    return scaleY;
   }
 
   getPosition() {

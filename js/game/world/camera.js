@@ -1,5 +1,8 @@
-export const VIEWPORT_WIDTH = window.innerWidth;
-export const VIEWPORT_HEIGHT = window.innerHeight;
+import { GAME_WIDTH, GAME_HEIGHT } from '../config.js';
+
+export const VIEWPORT_WIDTH = GAME_WIDTH;
+export const VIEWPORT_HEIGHT = GAME_HEIGHT;
+
 class Camera {
     constructor(target) {
         this.x = 0;

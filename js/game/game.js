@@ -1,4 +1,4 @@
-import { ctx, canvas, scaleX, scaleY } from './ctx.js'; 
+import { ctx, canvas } from './ctx.js'; 
 import Player from './player/player.js';
 import PlayerInputHandler from './player/components/playerInputHandler.js';
 import Camera from './world/camera.js';
@@ -67,8 +67,6 @@ function gameLoop(timestamp) {
             canvas.height
         );
     }
-
-    ctx.scale(scaleX, scaleY);
 
     player.update(); 
     player.draw();
