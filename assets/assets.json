@@ -108,6 +108,12 @@
                             "FRAMES": 6,
                             "TYPE": "LOOP",
                             "DELAY": 100
+                        },
+                        "SLEEPING": {
+                            "PATH": "../assets/player/marco/pistol/stand/idle/sleeping/sleeping_",
+                            "FRAMES": 3,
+                            "TYPE": "LOOP",
+                            "DELAY": 300
                         }
                     },
                     "MELEE": {

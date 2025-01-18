@@ -11,6 +11,8 @@ class PlayerShootState extends PlayerState {
     }
 
     async enter(sprite) {
+        if(!this.player.isShooting) return;
+
         this.previousState = this.player.state;
         this.player.actions.delete(ACTION.IDLE);
         if (sprite) {
@@ -21,13 +23,13 @@ class PlayerShootState extends PlayerState {
         }
 
         const bulletOffset = {
-            x: this.player.direction === DIRECTION.LEFT ? -20 : this.player.width + 20, 
-            y: -140
+            x: this.player.lastDirection === DIRECTION.LEFT ? -20 : this.player.width * 2 , 
+            y: -125
         };
         const bullet = new Bullet(
             this.player.x + bulletOffset.x,
             this.player.y + bulletOffset.y,
-            this.player.direction,
+            this.player.lastDirection,
             this.bulletAssets
         );
         this.player.addBullet(bullet);
@@ -37,9 +39,8 @@ class PlayerShootState extends PlayerState {
     async update() {
         this.player.currentFrame++; 
         if (this.player.currentFrame >= this.player.currentSprite.images.length - 1) {
-            this.player.isShooting = false; 
             this.player.currentFrame = 0;
-            this.player.setState(this.previousState);
+            this.player.setState(this.player.idleState);
         }
     }
 
@@ -47,21 +48,6 @@ class PlayerShootState extends PlayerState {
         this.player.currentFrame = 0;
         this.player.isShooting = false;
         this.previousState = null;
-    }
-
-    draw() {
-        if (this.player.currentSprite) {
-            const flip = this.player.direction === DIRECTION.LEFT;
-            Drawer.drawToCanvas(
-                this.player.currentSprite.images,
-                this.player.x,
-                this.player.y,
-                this.player.currentSprite.delay,
-                90,  // fixed width
-                90,  // fixed height
-                flip
-            );
-        }
     }
 }
 

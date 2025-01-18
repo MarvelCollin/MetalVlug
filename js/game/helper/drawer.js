@@ -98,22 +98,24 @@ class Drawer {
     }
   }
 
-  static drawImageFromBottom(img, x, y, width, height, flip = false) {
+  static drawImageFromBottom(img, x, y, flip = false, scale = 1) {
+    const scaledWidth = img.width * scale;
+    const scaledHeight = img.height * scale;
     const realX = x;
-    const realY = y - height;
+    const realY = y - scaledHeight;
 
     if (flip) {
       ctx.save();
-      ctx.translate(realX + width, realY);
+      ctx.translate(realX + scaledWidth, realY);
       ctx.scale(-1, 1);
-      ctx.drawImage(img, 0, 0, width, height);
+      ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
       ctx.restore();
     } else {
-      ctx.drawImage(img, realX, realY, width, height);
+      ctx.drawImage(img, realX, realY, scaledWidth, scaledHeight);
     }
 
     if (debugConfig.enabled) {
-      drawDebugBorder(ctx, realX, realY, width, height);
+      drawDebugBorder(ctx, realX, realY, scaledWidth, scaledHeight);
     }
   }
 
@@ -122,9 +124,8 @@ class Drawer {
     x,
     y,
     delay,
-    width,
-    height,
     flip = false,
+    scale = 1,
     type = "LOOP"
   ) {
     const imagesKey = images.toString();
@@ -143,10 +144,7 @@ class Drawer {
 
     const img = Array.isArray(images) ? images[this.currentFrames[imagesKey]] : images;
     if (img) {
-      const imgWidth = width || img.width;
-      const imgHeight = height || img.height;
-
-      this.drawImageFromBottom(img, x, y, imgWidth, imgHeight, flip);
+      this.drawImageFromBottom(img, x, y, flip, scale);
 
       if (type !== "ONCE") {
         const now = Date.now();

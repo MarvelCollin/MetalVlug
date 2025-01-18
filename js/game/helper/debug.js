@@ -2,7 +2,8 @@ import Drawer from "./drawer.js";
 
 const debugConfig = {
     enabled: true,
-    cursor: true
+    cursor: false,
+    actionPlayer: false,
 };
 
 function drawDebugBorder(ctx, x, y, width, height) {

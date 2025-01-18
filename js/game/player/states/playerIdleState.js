@@ -25,21 +25,6 @@ class PlayerIdleState extends PlayerState {
   update() {
     this.player.inputHandler.handleJump(this.player.currentInputs);
   }
-  
-  draw() {
-    if (this.player.currentSprite && this.player.currentSprite.images) {
-      const flip = this.player.direction === DIRECTION.LEFT;
-      Drawer.drawToCanvas(
-        this.player.currentSprite.images,
-        this.player.x,
-        this.player.y,
-        this.player.currentSprite.delay,
-        undefined,
-        undefined,
-        flip
-      );
-    }
-  }
 
   exit() {
     this.frameAccumulator = 0;

@@ -58,11 +58,10 @@ class PlayerSpriteHandler {
                 return Assets.getPlayerMarcoPistolStandMelee();
             }
 
-            // Idle variations
             if (actions.has(ACTION.IDLE)) {
-                if (this.player.idleTime > 5000) { // 5 seconds idle
-                    return Assets.getPlayerMarcoPistolStandIdleSleep();
-                }
+                if (this.player.idleTime > 5000 ) {
+                    return Assets.getPlayerMarcoPistolStandIdleSleeping();
+                } 
                 return Assets.getPlayerMarcoPistolStandIdleNormal();
             }
         }

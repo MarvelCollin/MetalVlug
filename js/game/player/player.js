@@ -36,7 +36,6 @@ class Player extends Entity {
     this.currentJumpHeight = 0;
 
     this.currentInputs = new Set();
-    this.lastDirection = DIRECTION.RIGHT;
 
     this.inputHandler = new PlayerInputHandler(this);
     this.playerMoveHandler = new PlayerMoveHandler(this);
@@ -48,6 +47,8 @@ class Player extends Entity {
 
     this.idleTime = 0;
     this.lastActionTime = Date.now();
+
+    this.scale = 5; 
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
@@ -72,7 +73,6 @@ class Player extends Entity {
     this.playerMoveHandler.update();
     this.state.update();
 
-    
 
     if(!this.actions.has(ACTION.JUMP) && this.actions.has(ACTION.FLOAT)){
       // this.grounded = true;
@@ -109,7 +109,7 @@ class Player extends Entity {
 
     if (
       this.actions.has(ACTION.SHOOT) &&
-      this.currentFrame >= this.currentSprite.images.length - 1
+      this.currentFrame >= this.currentSprite.images.length
     ) {
       this.actions.delete(ACTION.SHOOT);
       this.isShooting = false;

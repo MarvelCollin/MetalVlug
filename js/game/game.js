@@ -91,4 +91,4 @@ const gameState = {
 export { 
     startAnimation, 
     getPlayerPosition 
-};
+};  

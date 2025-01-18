@@ -1,3 +1,6 @@
+import Drawer from '../../helper/drawer.js';
+import { DIRECTION } from '../../entities/components/actions.js';
+
 class PlayerState {
     constructor(player) {
         this.player = player;
@@ -8,7 +11,7 @@ class PlayerState {
     }
 
     handleInput() {
-
+        // To be implemented by subclasses
     }
 
     update() {
@@ -16,7 +19,17 @@ class PlayerState {
     }
 
     draw() {
-        // To be implemented by subclasses
+        if (this.player.currentSprite && this.player.currentSprite.images) {
+            const flip = this.player.lastDirection === DIRECTION.LEFT;
+            Drawer.drawToCanvas(
+                this.player.currentSprite.images,
+                this.player.x,
+                this.player.y,
+                this.player.currentSprite.delay,
+                flip,
+                this.player.scale
+            );
+        }
     }
 }
 

@@ -6,10 +6,10 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.speed = 15;
+        this.speed = 20;
         this.assets = assets;
         this.active = true;
-        this.scale = 2; 
+        this.scale = 0.2; 
     }
 
     update() {

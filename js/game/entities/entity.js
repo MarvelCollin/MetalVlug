@@ -5,6 +5,7 @@ import Collision from "./components/collision.js";
 import Renderer from "./components/renderer.js";
 import StateManager from "./components/stateManager.js";
 import Drawer from "../helper/drawer.js";
+import { debugConfig } from "../helper/debug.js";
 
 class Entity {
   constructor(x, y, width, height) {
@@ -13,8 +14,8 @@ class Entity {
     this.width = this.height = height;
     this.velocityX = 0;
     this.velocityY = 0;
+    this.lastDirection = DIRECTION.RIGHT;
 
-    this.direction = DIRECTION.RIGHT;
     this.speed = 8;
     this.grounded = true;
     this.lastUpdateTime = Date.now();
@@ -40,7 +41,12 @@ class Entity {
   }
 
   update(obstacles = defaultObstacles) {
+    console.log(this.lastDirection);
     this.collision.handleCollision(obstacles);
+
+    if(debugConfig.actionPlayer) {
+      console.log("Player actions: ", this.actions);  
+    }
     
     this.stateManager.update();
     const wasGrounded = this.grounded;

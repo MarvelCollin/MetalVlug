@@ -33,20 +33,6 @@ class PlayerSpawnState extends PlayerState {
     this.player.currentFrame = 0;
     Drawer.currentFrames["spawn"] = 0;
   }
-
-  draw() {
-    if (this.player.currentSprite) {
-      Drawer.drawToCanvas(
-        this.player.currentSprite.images,
-        this.player.x,
-        this.player.y,
-        this.player.currentSprite.delay,
-        90,  // fixed width
-        90,  // fixed height
-        this.player.direction === DIRECTION.LEFT
-      );
-    }
-  }
 }
 
 export default PlayerSpawnState;

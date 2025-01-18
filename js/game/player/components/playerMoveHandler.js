@@ -54,7 +54,10 @@ class PlayerMoveHandler {
     }
 
     update() {
-        // console.log(this.player.grounded);
+        if(!this.player.isShooting){
+            this.player.actions.delete(ACTION.SHOOT);
+        }
+
         if (this.player.actions.has(ACTION.JUMP)) {
             this.player.y += this.velocityY; 
             this.velocityY += this.player.gravity;  
