@@ -3,8 +3,8 @@ import { canvas } from "../ctx.js";
 
 class EnemySpawner {
   constructor() {
-    this.minSpawnTime = 3000; 
-    this.maxSpawnTime = 8000; 
+    this.minSpawnTime = 10000000; 
+    this.maxSpawnTime = 100000000; 
     this.lastSpawnTime = Date.now();
     this.nextSpawnTime = this.getRandomSpawnTime();
     this.minEnemies = 1;

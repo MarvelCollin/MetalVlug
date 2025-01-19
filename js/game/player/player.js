@@ -64,15 +64,19 @@ class Player extends Entity {
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
+    if (!state) return;
+    
     this.previousState = this.state;
-    if (this.state) {
-      this.state.exit();
+    if (this.state && typeof this.state.exit === 'function') {
+        this.state.exit();
     }
     this.state = state;
-    if (sprite) {
-      this.state.enter(sprite);
-    } else {
-      this.state.enter();
+    if (typeof this.state.enter === 'function') {
+        if (sprite) {
+            this.state.enter(sprite);
+        } else {
+            this.state.enter();
+        }
     }
   }
 
@@ -132,10 +136,19 @@ class Player extends Entity {
   }
 
   draw() {
-    super.draw();
+    if (this.currentSprite && this.currentSprite.images) {
+        const flip = this.lastDirection === DIRECTION.LEFT;
+        Drawer.drawToCanvas(
+            this.currentSprite.images,
+            this.x,
+            this.y,
+            this.currentSprite.delay,
+            flip,
+            this.scale
+        );
+    }
     this.bullets.forEach((bullet) => bullet.draw());
     this.debug();
-
   }
 
   debug() {

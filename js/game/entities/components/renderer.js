@@ -1,5 +1,5 @@
-
 import { ctx } from "../../ctx.js";
+import Drawer from "../../helper/drawer.js";
 
 class Renderer {
     constructor(entity, ctx) {
@@ -8,13 +8,17 @@ class Renderer {
     }
 
     draw() {
-        if (this.entity.state) {
-            this.ctx.save();
-            this.ctx.translate(this.entity.x, this.entity.y);
-            this.ctx.scale(this.entity.scaleX, this.entity.scaleY);
-            this.ctx.translate(-this.entity.x, -this.entity.y);
-            this.entity.state.draw();
-            this.ctx.restore();
+        // Check if entity has a currentSprite instead of state
+        if (this.entity.currentSprite && this.entity.currentSprite.images) {
+            const flip = this.entity.lastDirection === 'left';
+            Drawer.drawToCanvas(
+                this.entity.currentSprite.images,
+                this.entity.x,
+                this.entity.y,
+                this.entity.currentSprite.delay,
+                flip,
+                this.entity.scale
+            );
         }
     }
 }

@@ -6,15 +6,15 @@ import { debugConfig, logCursorPosition } from './helper/debug.js';
 import Assets from './helper/assets.js';
 import Drawer from './helper/drawer.js';
 import { Obstacle, defaultObstacles } from './world/obstacle.js';
-import EnemyFactory from './enemy/enemyFactory.js'; 
-import EnemySpawner from './enemy/enemySpawner.js'
+import WebSocketClient from './server/websocket.js';
+import EnemySpawner from './enemy/enemySpawner.js'; 
 
 let player;
 let camera;
 let obstacles = [];
+let enemies = [];
+let enemySpawner;
 let lastTimestamp = 0;
-let enemies = []; 
-let enemySpawner; 
 
 async function loadBackground() {
     const background = await Drawer.loadImage(() => Assets.getBackground());
@@ -39,17 +39,12 @@ function initializeObstacles() {
 async function startAnimation() {
     player = new Player(100, 300);
     camera = new Camera(player);
+    enemySpawner = new EnemySpawner(); 
     initializeObstacles();
     const bgData = await loadBackground();
     gameState.background = bgData.background;
     canvas.addEventListener('mousemove', logCursorPosition);
-
-    enemySpawner = new EnemySpawner();
-
-    const enemy1 = EnemyFactory.createEnemy('normal', 500, 800);
-    const enemy2 = EnemyFactory.createEnemy('normal', 1200, 800);
-    enemies.push(enemy1, enemy2);
-
+    WebSocketClient.connect();
     requestAnimationFrame(gameLoop);
 }
 
@@ -79,22 +74,28 @@ function gameLoop(timestamp) {
         );
     }
 
-    player.update(enemies); 
-    player.draw();
-
-    obstacles.forEach(obstacle => obstacle.draw(ctx));
-
     const newEnemies = enemySpawner.update();
     enemies.push(...newEnemies);
 
     enemies = enemies.filter(enemy => {
         if (enemy.health <= 0) {
-            return false; 
+            return false;
         }
         enemy.update(player);
         enemy.draw();
         return true;
     });
+
+    player.update(enemies);
+    player.draw();
+
+    WebSocketClient.players.forEach(otherPlayer => {
+        otherPlayer.draw();
+    });
+
+    WebSocketClient.sendPlayerState(player);
+
+    obstacles.forEach(obstacle => obstacle.draw(ctx));
 
     ctx.restore();
 
