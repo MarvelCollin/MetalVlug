@@ -3,8 +3,10 @@ import Drawer from "./drawer.js";
 const debugConfig = {
     enabled: true,
     cursor: false,
-    actionPlayer: true,
-    collisionDetail: false, 
+    actionPlayer: false,
+    collisionDetail: false,
+    enemyDetail: true,
+    playerStat: true
 };
 
 function drawDebugBorder(ctx, x, y, width, height) {

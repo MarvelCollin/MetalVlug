@@ -6,11 +6,15 @@ import { debugConfig, logCursorPosition } from './helper/debug.js';
 import Assets from './helper/assets.js';
 import Drawer from './helper/drawer.js';
 import { Obstacle, defaultObstacles } from './world/obstacle.js';
+import EnemyFactory from './enemy/enemyFactory.js'; 
+import EnemySpawner from './enemy/enemySpawner.js'
 
 let player;
 let camera;
 let obstacles = [];
 let lastTimestamp = 0;
+let enemies = []; 
+let enemySpawner; 
 
 async function loadBackground() {
     const background = await Drawer.loadImage(() => Assets.getBackground());
@@ -39,6 +43,13 @@ async function startAnimation() {
     const bgData = await loadBackground();
     gameState.background = bgData.background;
     canvas.addEventListener('mousemove', logCursorPosition);
+
+    enemySpawner = new EnemySpawner();
+
+    const enemy1 = EnemyFactory.createEnemy('normal', 500, 800);
+    const enemy2 = EnemyFactory.createEnemy('normal', 1200, 800);
+    enemies.push(enemy1, enemy2);
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -68,10 +79,22 @@ function gameLoop(timestamp) {
         );
     }
 
-    player.update(); 
+    player.update(enemies); 
     player.draw();
 
     obstacles.forEach(obstacle => obstacle.draw(ctx));
+
+    const newEnemies = enemySpawner.update();
+    enemies.push(...newEnemies);
+
+    enemies = enemies.filter(enemy => {
+        if (enemy.health <= 0) {
+            return false; 
+        }
+        enemy.update(player);
+        enemy.draw();
+        return true;
+    });
 
     ctx.restore();
 
@@ -91,4 +114,4 @@ const gameState = {
 export { 
     startAnimation, 
     getPlayerPosition 
-};  
+};

@@ -10,6 +10,8 @@ import PlayerInputHandler from "./components/playerInputHandler.js";
 import PlayerMoveHandler from "./components/playerMoveHandler.js";
 import PlayerSpriteHandler from "./components/playerSpriteHandler.js";
 import { defaultObstacles } from "../world/obstacle.js";
+import { debugConfig } from "../helper/debug.js";
+import { ctx } from "../ctx.js";
 
 class Player extends Entity {
   constructor(x, y) {
@@ -47,8 +49,18 @@ class Player extends Entity {
 
     this.idleTime = 0;
     this.lastActionTime = Date.now();
+    this.damage = 100;
 
     this.scale = 5; 
+
+    this.health = 100;
+    this.maxHealth = 100;
+    this.invulnerableTime = 4000; 
+    this.lastHitTime = 0;
+
+    this.initialX = x;
+    this.initialY = y;
+    this.isDead = false;
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {
@@ -68,12 +80,22 @@ class Player extends Entity {
     this.bullets.push(bullet);
   }
 
-  update() {
-    console.log(this.lastDirection);
+  update(enemies = []) {
     super.update();
     this.playerMoveHandler.update();
     this.state.update();
 
+    this.bullets = this.bullets.filter((bullet) => {
+        enemies.forEach(enemy => {
+            if (bullet.checkCollision(enemy)) {
+                enemy.takeDamage(this.damage);  
+                bullet.active = false;
+            }
+        });
+
+        bullet.update();
+        return bullet.active; 
+    });
 
     if(!this.actions.has(ACTION.JUMP) && this.actions.has(ACTION.FLOAT)){
       // this.grounded = true;
@@ -107,21 +129,60 @@ class Player extends Entity {
     if (this.actions.has(ACTION.SHOOT) && !this.isShooting) {
       this.setState(this.shootState);
     }
-
-    this.bullets = this.bullets.filter((bullet) => {
-      bullet.update();
-      return bullet.active && bullet.x > 0 && bullet.x < canvas.width;
-    });
   }
 
   draw() {
     super.draw();
     this.bullets.forEach((bullet) => bullet.draw());
+    this.debug();
+
+  }
+
+  debug() {
+    if (debugConfig.playerStat) {
+        ctx.save();
+        ctx.fillStyle = "white";
+        ctx.font = "14px Arial";
+        ctx.fillText(
+            `Health: ${this.health}`,
+            this.x,
+            this.y - this.height - 25
+        );
+        ctx.fillText(
+            `State: ${this.state.constructor.name}`,
+            this.x,
+            this.y - this.height - 40
+        );
+        ctx.restore();
+    }
   }
 
   goPreviousState() {
     this.state = this.previousState;
     this.state.enter();
+  }
+
+  takeDamage(amount) {
+    const currentTime = Date.now();
+    if (currentTime - this.lastHitTime > this.invulnerableTime) {
+        this.health = Math.max(0, this.health - amount);
+        this.lastHitTime = currentTime;
+        
+        if (this.health <= 0 && !this.isDead) {
+            this.isDead = true;
+            setTimeout(() => this.respawn(), 1000); 
+        }
+    }
+  }
+
+  respawn() {
+    this.health = this.maxHealth;
+    this.x = this.initialX;
+    this.y = this.initialY;
+    this.isDead = false;
+    this.velocityX = 0;
+    this.velocityY = 0;
+    this.setState(this.spawnState);
   }
 }
 

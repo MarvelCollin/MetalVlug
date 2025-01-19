@@ -175,7 +175,7 @@
                 "PATH": "../assets/soldier/normal/idle/idle_",
                 "FRAMES": 4,
                 "TYPE": "LOOP",
-                "DELAY": 100
+                "DELAY": 300
             },
             "MELEE": {
                 "MELEE": {

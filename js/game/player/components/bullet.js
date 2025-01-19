@@ -6,10 +6,12 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.speed = 20;
+        this.speed = 40;
         this.assets = assets;
         this.active = true;
         this.scale = 0.2; 
+        this.maxTravelDistance = 6000; 
+        this.initialX = x;  
     }
 
     update() {
@@ -18,6 +20,21 @@ class Bullet {
         } else {
             this.x -= this.speed;
         }
+
+        // Deactivate bullet based on travel distance
+        const distanceTraveled = Math.abs(this.x - this.initialX);
+        if (distanceTraveled > this.maxTravelDistance) {
+            this.active = false;
+        }
+    }
+
+    checkCollision(enemy) {
+        return (
+            this.x < enemy.x + enemy.width &&
+            this.x + 20 > enemy.x &&
+            this.y < enemy.y &&
+            this.y + 20 > enemy.y - enemy.height
+        );
     }
 
     draw() {

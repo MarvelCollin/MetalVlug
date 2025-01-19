@@ -156,20 +156,7 @@ class Drawer {
     }
   }
 
-  static drawMultiple(sprites) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    sprites.forEach((sprite, index) => {
-      if (sprite.images.length > 0) {
-        this.drawToCanvas(
-          sprite.images,
-          sprite.x,
-          sprite.y,
-          sprite.delay
-        );
-      }
-    });
-    requestAnimationFrame(() => this.drawMultiple(sprites));
-  }
+
 }
 
 export default Drawer;
