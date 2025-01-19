@@ -3,7 +3,7 @@ import Drawer from "./drawer.js";
 const debugConfig = {
     enabled: true,
     cursor: false,
-    actionPlayer: false,
+    actionPlayer: true,
     collisionDetail: false, 
 };
 

@@ -6,6 +6,10 @@ class PlayerMoveHandler {
     this.velocityX = 0;
     this.velocityY = 0;
     this.isJumping = false;
+    this.dashSpeed = 20; // Add dash speed
+    this.isDashing = false;
+    this.dashDuration = 350; // milliseconds
+    this.dashStartTime = 0;
   }
 
   move(direction) {
@@ -25,6 +29,15 @@ class PlayerMoveHandler {
       this.player.grounded = false;
       this.player.actions.add(ACTION.JUMP);
       this.velocityY = this.player.jumpForce;
+    }
+  }
+
+  dash() {
+    if (!this.isDashing) {
+      this.isDashing = true;
+      this.dashStartTime = Date.now();
+      const dashMultiplier = this.player.lastDirection === DIRECTION.LEFT ? -1 : 1;
+      this.velocityX = this.dashSpeed * dashMultiplier;
     }
   }
 
@@ -54,6 +67,14 @@ class PlayerMoveHandler {
   }
 
   update() {
+    if (this.isDashing) {
+      if (Date.now() - this.dashStartTime >= this.dashDuration) {
+        this.isDashing = false;
+        this.player.actions.delete(ACTION.DASH);
+        this.velocityX = 0;
+      }
+    }
+
     if (!this.player.isShooting) {
       this.player.actions.delete(ACTION.SHOOT);
     }

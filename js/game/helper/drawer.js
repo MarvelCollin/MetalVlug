@@ -106,7 +106,7 @@ class Drawer {
 
     if (flip) {
       ctx.save();
-      ctx.translate(realX + scaledWidth, realY);
+      ctx.translate(realX, realY);
       ctx.scale(-1, 1);
       ctx.drawImage(img, -100, 0, scaledWidth, scaledHeight);
       ctx.restore();

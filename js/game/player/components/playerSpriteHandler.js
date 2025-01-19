@@ -1,5 +1,5 @@
 import Assets from "../../helper/assets.js";
-import { ACTION } from "../../entities/components/actions.js";
+import { ACTION, DIRECTION } from "../../entities/components/actions.js";
 
 class PlayerSpriteHandler {
     constructor(player) {
@@ -7,6 +7,41 @@ class PlayerSpriteHandler {
     }
 
     handleSprite(actions) {
+        if (actions.has(ACTION.DASH)) {
+          if (actions.has(ACTION.SHOOT)) {
+            return Assets.getPlayerMarcoPistolDashShoot();
+          }
+          return Assets.getPlayerMarcoPistolDashIdle();
+        }
+        // Check for action-based states first
+        if (actions.has(ACTION.SNEAK)) {
+            if (actions.has(ACTION.SHOOT)) {
+                return Assets.getPlayerMarcoPistolSneakShoot();
+            }
+            if (actions.has(ACTION.RUN)) {
+                return Assets.getPlayerMarcoPistolSneakMove();
+            }
+            return Assets.getPlayerMarcoPistolSneakIdle();
+        }
+
+        if (actions.has(ACTION.LOOKUP)) {
+            // utk liat keatas tapi belom ada
+            return Assets.getPlayerMarcoPistolStandIdleNormal();
+        }
+
+        if (this.player.lastDirection === DIRECTION.DOWN) {
+            if (actions.has(ACTION.SHOOT)) {
+                return Assets.getPlayerMarcoPistolSneakShoot();
+            }
+            if (actions.has(ACTION.RUN)) {
+                return Assets.getPlayerMarcoPistolSneakMove();
+            }
+            return Assets.getPlayerMarcoPistolSneakIdle();
+        }
+
+        // Check for dash second
+        
+
         if (actions.has(ACTION.SPAWN)) {
             return Assets.getPlayerMarcoPistolSpawn();
         }

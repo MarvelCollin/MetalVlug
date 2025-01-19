@@ -93,6 +93,10 @@ class Entity {
     };
   }
 
+  setDirection(direction) {
+    this.lastDirection = direction;
+  }
+
   isMoving() {
     return this.velocityX !== 0;
   }

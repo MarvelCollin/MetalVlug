@@ -34,6 +34,21 @@ class PlayerInputHandler {
     }
   }
 
+  handleDirection() {
+    const { player } = this;
+    if (this.activeKeys.has("arrowdown")) {
+        player.actions.add(ACTION.SNEAK);
+    } else {
+        player.actions.delete(ACTION.SNEAK);
+    }
+    
+    if (this.activeKeys.has("arrowup")) {
+        player.actions.add(ACTION.LOOKUP);
+    } else {
+        player.actions.delete(ACTION.LOOKUP);
+    }
+  }
+
   handleJump(activeKeys) {
     const { playerMoveHandler } = this.player;
     if (activeKeys.has(" ") && !playerMoveHandler.isJumping && this.player.grounded) {
@@ -54,6 +69,13 @@ class PlayerInputHandler {
     }
   }
 
+  handleDash(activeKeys) {
+    if (activeKeys.has("alt") && !this.player.playerMoveHandler.isDashing) {
+        this.player.actions.add(ACTION.DASH);
+        this.player.playerMoveHandler.dash();
+    }
+  }
+
   isMove(activeKeys) {
     return activeKeys.has("arrowleft") || activeKeys.has("arrowright"); 
   }
@@ -63,9 +85,11 @@ class PlayerInputHandler {
     const { activeKeys } = this;
     player.currentInputs = new Set(activeKeys);
 
+    this.handleDirection();
     this.handleJump(activeKeys);
     this.handleShoot(activeKeys);
     this.handleMove(activeKeys);
+    this.handleDash(activeKeys);
   }
 }
 
