@@ -27,7 +27,9 @@ class PlayerState {
                 this.player.y,
                 this.player.currentSprite.delay,
                 flip,
-                this.player.scale
+                this.player.scale,
+                this.player.currentSprite.type,
+                30
             );
         }
     }

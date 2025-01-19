@@ -40,13 +40,14 @@ class PlayerShootState extends PlayerState {
         this.player.currentFrame++; 
         if (this.player.currentFrame >= this.player.currentSprite.images.length - 1) {
             this.player.currentFrame = 0;
+            this.player.isShooting = false;
             this.player.setState(this.player.idleState);
         }
     }
 
     exit() {
         this.player.currentFrame = 0;
-        this.player.isShooting = false;
+        // this.player.isShooting = false;
         this.previousState = null;
     }
 }

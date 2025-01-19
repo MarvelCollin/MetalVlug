@@ -41,19 +41,19 @@ class Entity {
   }
 
   update(obstacles = defaultObstacles) {
-    console.log(this.lastDirection);
     this.collision.handleCollision(obstacles);
 
-    if(debugConfig.actionPlayer) {
+    if(debugConfig.actionPlayer) {  
       console.log("Player actions: ", this.actions);  
     }
     
     this.stateManager.update();
     const wasGrounded = this.grounded;
-    let checker = obstacles.some(obstacle => 
-      this.collision.checkCollision(this.x, this.y, obstacle) 
-    );
+    // let checker = obstacles.some(obstacle => 
+    //   this.collision.checkCollision(this.x, this.y, obstacle) 
+    // );
 
+    let checker = false;
     if(checker && !this.actions.has(ACTION.JUMP)){
       this.grounded = true;
     }
@@ -61,12 +61,6 @@ class Entity {
     if (this.grounded && !wasGrounded) {
       this.currentJumpHeight = 0;
     }
-
-    obstacles.forEach(obstacle => {
-      if (obstacle.type === 'stair' && this.collision.checkCollision(this.x, this.y, obstacle)) {
-        this.y -= this.speed; 
-      }
-    });
   }
 
   draw(obstacles = defaultObstacles) {
@@ -88,6 +82,24 @@ class Entity {
 
   isIntersectingWithObstacles(obstacles) {
     return obstacles.some(obstacle => this.collision.isIntersecting(obstacle));
+  }
+
+  getMovementInfo() {
+    return {
+        isMovingLeft: this.velocityX < 0,
+        isMovingRight: this.velocityX > 0,
+        velocity: Math.abs(this.velocityX),
+        direction: this.lastDirection
+    };
+  }
+
+  isMoving() {
+    return this.velocityX !== 0;
+  }
+
+  getMovementDirection() {
+    if (this.velocityX === 0) return null;
+    return this.velocityX > 0 ? DIRECTION.RIGHT : DIRECTION.LEFT;
   }
 }
 

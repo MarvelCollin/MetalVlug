@@ -49,7 +49,7 @@ class Obstacle {
   }
 
   draw(ctx) {
-    if (debugConfig.enabled) {
+    if (debugConfig.collisionDetail) {
       switch (this.type) {
         case "normal":
           ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
@@ -60,24 +60,16 @@ class Obstacle {
         case "stair":
           ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
           break;
+        case "reverseStair":
+          ctx.fillStyle = "rgba(255, 0, 255, 0.5)"; 
+          break;
         default:
           ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-          break;
+          break;  
       }
-      ctx.fillRect(this.x, this.y - this.height, this.width, this.height);
+      ctx.fillRect(this.x, this.y , this.width, this.height);
 
-      if (this.startX !== this.targetX || this.startY !== this.targetY) {
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(this.startX + this.width / 2, this.startY + this.height / 2);
-        ctx.lineTo(
-          this.targetX + this.width / 2,
-          this.targetY + this.height / 2
-        );
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
+
     }
   }
 }
@@ -86,22 +78,14 @@ const obstacles = [
   // floor
   new Obstacle(0, 950, 3000, 20, "normal"),
 
-  // left stair
-  new Obstacle(450, 800, 100, 20, "stair"),
-  new Obstacle(500, 750, 100, 20, "stair"),
-  new Obstacle(550, 700, 100, 20, "stair"),
-  new Obstacle(600, 650, 100, 20, "stair"),
-  new Obstacle(650, 600, 100, 20, "stair"),
+  // left stair (going up left to right)
+  new Obstacle(420, 550, 300, 250, "stair"),
+
+  // right stair (going up right to left)
+  new Obstacle(1800, 570, 300, 250, "reverseStair"),
 
   // mid
-  new Obstacle(750, 560, 1200, 20, "normal"),
-
-  // right stair
-  new Obstacle(2100, 800, 100, 20, "stair"),
-  new Obstacle(2050, 750, 100, 20, "stair"),
-  new Obstacle(2000, 700, 100, 20, "stair"),
-  new Obstacle(1950, 650, 100, 20, "stair"),
-  new Obstacle(1900, 600, 100, 20, "stair"),
+  new Obstacle(750, 560, 1100, 20, "normal"),
 ];
 
 export { Obstacle, obstacles as defaultObstacles };

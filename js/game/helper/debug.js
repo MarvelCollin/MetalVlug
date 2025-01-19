@@ -4,6 +4,7 @@ const debugConfig = {
     enabled: true,
     cursor: false,
     actionPlayer: false,
+    collisionDetail: false, 
 };
 
 function drawDebugBorder(ctx, x, y, width, height) {

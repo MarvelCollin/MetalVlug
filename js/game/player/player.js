@@ -107,14 +107,6 @@ class Player extends Entity {
       this.setState(this.shootState);
     }
 
-    if (
-      this.actions.has(ACTION.SHOOT) &&
-      this.currentFrame >= this.currentSprite.images.length
-    ) {
-      this.actions.delete(ACTION.SHOOT);
-      this.isShooting = false;
-    }
-
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update();
       return bullet.active && bullet.x > 0 && bullet.x < canvas.width;

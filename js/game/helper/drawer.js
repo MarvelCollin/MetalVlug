@@ -108,7 +108,7 @@ class Drawer {
       ctx.save();
       ctx.translate(realX + scaledWidth, realY);
       ctx.scale(-1, 1);
-      ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+      ctx.drawImage(img, -100, 0, scaledWidth, scaledHeight);
       ctx.restore();
     } else {
       ctx.drawImage(img, realX, realY, scaledWidth, scaledHeight);

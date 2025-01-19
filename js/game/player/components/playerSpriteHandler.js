@@ -18,6 +18,9 @@ class PlayerSpriteHandler {
             if (actions.has(ACTION.SHOOT) && actions.has(ACTION.JUMP)) {
                 return Assets.getPlayerMarcoPistolJumpShoot();
             }
+            if(actions.has(ACTION.SHOOT)){
+                return Assets.getPlayerMarcoPistolJumpIdle();
+            }
             if (actions.has(ACTION.JUMP)) {
                 return Assets.getPlayerMarcoPistolJumpIdle();
             }
