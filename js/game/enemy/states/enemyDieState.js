@@ -6,23 +6,21 @@ class EnemyDieState {
     }
 
     enter() {
-        this.enemy.setSprite(Assets.getSoldierNormalDie());
+        this.enemy.setSprite(Assets.getEnemySoldierNormalDie());
     }
 
     update() {
-        // Handle death animation completion
         if (this.enemy.currentFrame >= this.enemy.currentSprite.images.length - 1) {
-            this.enemy.active = false; // Mark for removal
+            this.enemy.active = false; 
         }
     }
 
     exit() {
-        // Cleanup if needed
     }
 
     draw() {
-        // Drawing handled by entity renderer
     }
 }
 
 export default EnemyDieState;
+[]

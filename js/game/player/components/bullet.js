@@ -21,7 +21,6 @@ class Bullet {
             this.x -= this.speed;
         }
 
-        // Deactivate bullet based on travel distance
         const distanceTraveled = Math.abs(this.x - this.initialX);
         if (distanceTraveled > this.maxTravelDistance) {
             this.active = false;
@@ -33,7 +32,7 @@ class Bullet {
             this.x < enemy.x + enemy.width &&
             this.x + 20 > enemy.x &&
             this.y < enemy.y &&
-            this.y + 20 > enemy.y - enemy.height
+            this.y + enemy.height > enemy.y - enemy.height
         );
     }
 

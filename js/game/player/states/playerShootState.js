@@ -24,7 +24,7 @@ class PlayerShootState extends PlayerState {
 
         const bulletOffset = {
             x: this.player.lastDirection === DIRECTION.LEFT ? -20 : this.player.width * 2 , 
-            y: -125
+            y: this.player.actions.has('sneak') ? -70 : -125
         };
         const bullet = new Bullet(
             this.player.x + bulletOffset.x,

@@ -1,8 +1,249 @@
 {
     "BACKGROUND": {
-        "PATH": "../assets/background/wave_background",
-        "FRAMES": 1,
-        "TYPE": "SINGLE"
+        "ARCADE": {
+            "PATH": "../assets/background/arcade/arcade",
+            "FRAMES": 1,
+            "TYPE": "SINGLE"
+        },
+        "MISSION": {
+            "PATH": "../assets/background/mission/mission",
+            "FRAMES": 1,
+            "TYPE": "SINGLE"
+        }
+    },
+    "ENEMY": {
+        "GUNNER": {
+            "BULLET": {
+                "PATH": "../assets/enemy/gunner/bullet/bullet_",
+                "FRAMES": 1,
+                "TYPE": "SINGLE"
+            },
+            "DIE": {
+                "PATH": "../assets/enemy/gunner/die/die_",
+                "FRAMES": 15,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "IDLE": {
+                "PATH": "../assets/enemy/gunner/idle/idle_",
+                "FRAMES": 16,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "MOVE": {
+                "PATH": "../assets/enemy/gunner/move/move_",
+                "FRAMES": 14,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "SHOOT": {
+                "DIAGONAL": {
+                    "PATH": "../assets/enemy/gunner/shoot/diagonal/diagonal_",
+                    "FRAMES": 6,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "HORIZONTAL": {
+                    "PATH": "../assets/enemy/gunner/shoot/horizontal/horizontal_",
+                    "FRAMES": 4,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                }
+            }
+        },
+        "SOLDIER": {
+            "BAZOOKA": {
+                "BULLET": {
+                    "PATH": "../assets/enemy/soldier/bazooka/bullet/bullet_",
+                    "FRAMES": 2,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "DIE": {
+                    "PATH": "../assets/enemy/soldier/bazooka/die/die_",
+                    "FRAMES": 11,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "EXPLODE": {
+                    "PATH": "../assets/enemy/soldier/bazooka/explode/explode_",
+                    "FRAMES": 13,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "MOVE": {
+                    "PATH": "../assets/enemy/soldier/bazooka/move/move_",
+                    "FRAMES": 9,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                }
+            },
+            "NORMAL": {
+                "DIE": {
+                    "PATH": "../assets/enemy/soldier/normal/die/die_",
+                    "FRAMES": 16,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "EXPLODE": {
+                    "PATH": "../assets/enemy/soldier/normal/explode/explode_",
+                    "FRAMES": 8,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "GRENADE": {
+                    "PATH": "../assets/enemy/soldier/normal/grenade/grenade_",
+                    "FRAMES": 2,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "IDLE": {
+                    "PATH": "../assets/enemy/soldier/normal/idle/idle_",
+                    "FRAMES": 4,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "MELEE": {
+                    "FORWARD": {
+                        "PATH": "../assets/enemy/soldier/normal/melee/forward/forward_",
+                        "FRAMES": 14,
+                        "TYPE": "LOOP",
+                        "DELAY": 100
+                    },
+                    "STAB": {
+                        "PATH": "../assets/enemy/soldier/normal/melee/stab/stab_",
+                        "FRAMES": 6,
+                        "TYPE": "LOOP",
+                        "DELAY": 100
+                    }
+                },
+                "RUN": {
+                    "PATH": "../assets/enemy/soldier/normal/run/run_",
+                    "FRAMES": 10,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "THROW": {
+                    "PATH": "../assets/enemy/soldier/normal/throw/throw_",
+                    "FRAMES": 13,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                }
+            },
+            "RIFLE": {
+                "BULLET": {
+                    "PATH": "../assets/enemy/soldier/rifle/bullet/bullet_",
+                    "FRAMES": 1,
+                    "TYPE": "SINGLE"
+                },
+                "DIE": {
+                    "PATH": "../assets/enemy/soldier/rifle/die/die_",
+                    "FRAMES": 8,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "IDLE": {
+                    "PATH": "../assets/enemy/soldier/rifle/idle/idle_",
+                    "FRAMES": 7,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "MOVE": {
+                    "PATH": "../assets/enemy/soldier/rifle/move/move_",
+                    "FRAMES": 10,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "SHOOT": {
+                    "PATH": "../assets/enemy/soldier/rifle/shoot/shoot_",
+                    "FRAMES": 6,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "SMOKE": {
+                    "PATH": "../assets/enemy/soldier/rifle/smoke/smoke_",
+                    "FRAMES": 6,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                }
+            },
+            "SHIELD": {
+                "DEFEND": {
+                    "PATH": "../assets/enemy/soldier/shield/defend/defend_",
+                    "FRAMES": 3,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "DIE": {
+                    "PATH": "../assets/enemy/soldier/shield/die/die_",
+                    "FRAMES": 8,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "IDLE": {
+                    "PATH": "../assets/enemy/soldier/shield/idle/idle_",
+                    "FRAMES": 1,
+                    "TYPE": "LOOP"
+                },
+                "MELEE": {
+                    "PATH": "../assets/enemy/soldier/shield/melee/melee_",
+                    "FRAMES": 9,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "MOVE": {
+                    "PATH": "../assets/enemy/soldier/shield/move/move_",
+                    "FRAMES": 9,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "SHIELD": {
+                    "PATH": "../assets/enemy/soldier/shield/shield/shield_",
+                    "FRAMES": 8,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "SHOOT": {
+                    "PATH": "../assets/enemy/soldier/shield/shoot/shoot_",
+                    "FRAMES": 8,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                }
+            }
+        }
+    },
+    "PARTNER": {
+        "TARO": {
+            "ATTACK": {
+                "PATH": "../assets/partner/taro/attack/attack_",
+                "FRAMES": 18,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "BULLET": {
+                "PATH": "../assets/partner/taro/bullet/bullet_",
+                "FRAMES": 1,
+                "TYPE": "SINGLE"
+            },
+            "IDLE": {
+                "PATH": "../assets/partner/taro/idle/idle_",
+                "FRAMES": 7,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "INIT": {
+                "PATH": "../assets/partner/taro/init/init_",
+                "FRAMES": 8,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "MOVE": {
+                "PATH": "../assets/partner/taro/move/move_",
+                "FRAMES": 10,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        }
     },
     "PLAYER": {
         "MARCO": {
@@ -40,7 +281,7 @@
                         "PATH": "../assets/player/marco/pistol/jump/idle/idle_",
                         "FRAMES": 6,
                         "TYPE": "LOOP",
-                        "DELAY": 120
+                        "DELAY": 100
                     },
                     "SHOOT": {
                         "PATH": "../assets/player/marco/pistol/jump/shoot/shoot_",
@@ -97,6 +338,12 @@
                 },
                 "STAND": {
                     "IDLE": {
+                        "DRINK": {
+                            "PATH": "../assets/player/marco/pistol/stand/idle/drink/drink_",
+                            "FRAMES": 10,
+                            "TYPE": "LOOP",
+                            "DELAY": 100
+                        },
                         "NORMAL": {
                             "PATH": "../assets/player/marco/pistol/stand/idle/normal/normal_",
                             "FRAMES": 4,
@@ -113,7 +360,7 @@
                             "PATH": "../assets/player/marco/pistol/stand/idle/sleeping/sleeping_",
                             "FRAMES": 3,
                             "TYPE": "LOOP",
-                            "DELAY": 300
+                            "DELAY": 100
                         }
                     },
                     "MELEE": {
@@ -137,6 +384,45 @@
                 }
             }
         },
+        "METALSLUG": {
+            "ATTACK": {
+                "PATH": "../assets/player/metalslug/attack/attack_",
+                "FRAMES": 6,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "DAMAGE": {
+                "LEFT": {
+                    "PATH": "../assets/player/metalslug/damage/left/left_",
+                    "FRAMES": 16,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "RIGHT": {
+                    "PATH": "../assets/player/metalslug/damage/right/right_",
+                    "FRAMES": 16,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                }
+            },
+            "EXPLODE": {
+                "PATH": "../assets/player/metalslug/explode/explode_",
+                "FRAMES": 14,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "IDLE": {
+                "PATH": "../assets/player/metalslug/idle/idle_",
+                "FRAMES": 1,
+                "TYPE": "SINGLE"
+            },
+            "MOVE": {
+                "PATH": "../assets/player/metalslug/move/move_",
+                "FRAMES": 10,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        },
         "OTHER": {
             "BULLET": {
                 "PATH": "../assets/player/other/bullet/bullet",
@@ -146,54 +432,6 @@
             "GRENADE": {
                 "PATH": "../assets/player/other/grenade/grenade_",
                 "FRAMES": 19,
-                "TYPE": "LOOP",
-                "DELAY": 100
-            }
-        }
-    },
-    "SOLDIER": {
-        "NORMAL": {
-            "DIE": {
-                "PATH": "../assets/soldier/normal/die/die_",
-                "FRAMES": 16,
-                "TYPE": "LOOP",
-                "DELAY": 100
-            },
-            "EXPLODE": {
-                "PATH": "../assets/soldier/normal/explode/explode_",
-                "FRAMES": 8,
-                "TYPE": "LOOP",
-                "DELAY": 100
-            },
-            "GRENADE": {
-                "PATH": "../assets/soldier/normal/grenade/grenade_",
-                "FRAMES": 2,
-                "TYPE": "LOOP",
-                "DELAY": 100
-            },
-            "IDLE": {
-                "PATH": "../assets/soldier/normal/idle/idle_",
-                "FRAMES": 4,
-                "TYPE": "LOOP",
-                "DELAY": 300
-            },
-            "MELEE": {
-                "MELEE": {
-                    "PATH": "../assets/soldier/normal/melee/stab/melee_",
-                    "FRAMES": 6,
-                    "TYPE": "LOOP",
-                    "DELAY": 100
-                }
-            },
-            "RUN": {
-                "PATH": "../assets/soldier/normal/run/run_",
-                "FRAMES": 10,
-                "TYPE": "LOOP",
-                "DELAY": 100
-            },
-            "THROW": {
-                "PATH": "../assets/soldier/normal/throw_grenade/throw_",
-                "FRAMES": 13,
                 "TYPE": "LOOP",
                 "DELAY": 100
             }

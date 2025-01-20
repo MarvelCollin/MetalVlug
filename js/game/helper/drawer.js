@@ -104,6 +104,25 @@ class Drawer {
     const realX = x;
     const realY = y - scaledHeight;
 
+    if(debugConfig.showShadow){
+      ctx.save();
+      ctx.globalAlpha = 0.7;
+      if (flip) {
+        ctx.translate(realX, y);
+        ctx.scale(-1, 0.25);
+        ctx.transform(1, 0, 0, 0.5, 0, 0); 
+        ctx.filter = 'blur(2px) brightness(0%)';
+        ctx.drawImage(img, -100, 0, scaledWidth, scaledHeight);
+      } else {
+        ctx.translate(realX, y);
+        ctx.scale(1, 0.25);
+        ctx.transform(1, 0, 0, 0.5, 0, 0); 
+        ctx.filter = 'blur(2px) brightness(0%)';
+        ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+      }
+      ctx.restore();
+    }
+
     if (flip) {
       ctx.save();
       ctx.translate(realX, realY);

@@ -12,6 +12,7 @@ import PlayerSpriteHandler from "./components/playerSpriteHandler.js";
 import { defaultObstacles } from "../world/obstacle.js";
 import { debugConfig } from "../helper/debug.js";
 import { ctx } from "../ctx.js";
+import { playerConfig } from "./components/playerConfig.js";
 
 class Player extends Entity {
   constructor(x, y) {
@@ -25,16 +26,18 @@ class Player extends Entity {
     this.state = this.spawnState;
     this.state.enter();
 
+    this.speed = playerConfig.speed;
+
     this.bullets = [];
     this.lastShootTime = 0;
-    this.shootCooldown = 150;
+    this.shootCooldown = playerConfig.shootCooldown;
     this.isShooting = false;
 
-    this.gravity = 0.5; 
-    this.terminalVelocity = 10;
-    this.jumpForce = -20;
+    this.gravity = playerConfig.gravity; 
+    this.terminalVelocity = playerConfig.terminalVelocity;
+    this.jumpForce = playerConfig.jumpForce;
 
-    this.maxJumpHeight = 500; 
+    this.maxJumpHeight = playerConfig.maxJumpHeight; 
     this.currentJumpHeight = 0;
 
     this.currentInputs = new Set();
@@ -49,13 +52,13 @@ class Player extends Entity {
 
     this.idleTime = 0;
     this.lastActionTime = Date.now();
-    this.damage = 100;
+    this.damage = playerConfig.damage;
 
-    this.scale = 5; 
+    this.scale = playerConfig.scale; 
 
-    this.health = 100;
-    this.maxHealth = 100;
-    this.invulnerableTime = 4000; 
+    this.health = playerConfig.health;
+    this.maxHealth = playerConfig.maxHealth;
+    this.invulnerableTime = playerConfig.inuverableTime; 
     this.lastHitTime = 0;
 
     this.initialX = x;
@@ -85,6 +88,7 @@ class Player extends Entity {
   }
 
   update(enemies = []) {
+    this.actions.has(ACTION.SNEAK) ? this.speed = playerConfig.sneakSpeed : this.speed = playerConfig.speed;
     super.update();
     this.playerMoveHandler.update();
     this.state.update();
@@ -100,6 +104,7 @@ class Player extends Entity {
         bullet.update();
         return bullet.active; 
     });
+
 
     if(!this.actions.has(ACTION.JUMP) && this.actions.has(ACTION.FLOAT)){
       // this.grounded = true;

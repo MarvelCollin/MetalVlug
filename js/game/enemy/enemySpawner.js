@@ -1,14 +1,16 @@
 import EnemyFactory from "./enemyFactory.js";
 import { canvas } from "../ctx.js";
+import { enemyType } from "./types/enemyType.js";
 
 class EnemySpawner {
   constructor() {
-    this.minSpawnTime = 10000000; 
-    this.maxSpawnTime = 100000000; 
+    this.minSpawnTime = 1000; 
+    this.maxSpawnTime = 3000; 
     this.lastSpawnTime = Date.now();
     this.nextSpawnTime = this.getRandomSpawnTime();
     this.minEnemies = 1;
     this.maxEnemies = 3;
+    this.enemyTypes = Object.values(enemyType);
   }
 
   getRandomSpawnTime() {
@@ -20,7 +22,7 @@ class EnemySpawner {
 
   getRandomPosition() {
     return {
-      x: Math.random() * (canvas.width * 2) + 500,
+      x: Math.random() * (canvas.width * 2) + 300,
       y: Math.random() * 600 + 200,
     };
   }
@@ -32,6 +34,11 @@ class EnemySpawner {
     );
   }
 
+  getRandomEnemyType() {
+    const randomIndex = Math.floor(Math.random() * this.enemyTypes.length);
+    return this.enemyTypes[randomIndex];
+  }
+
   update() {
     const currentTime = Date.now();
     if (currentTime - this.lastSpawnTime > this.nextSpawnTime) {
@@ -40,8 +47,9 @@ class EnemySpawner {
 
       for (let i = 0; i < enemyCount; i++) {
         const position = this.getRandomPosition();
+        const type = this.getRandomEnemyType();
         const enemy = EnemyFactory.createEnemy(
-          "normal",
+          type,
           position.x,
           position.y
         );

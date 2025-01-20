@@ -10,7 +10,7 @@ class EnemyAttackState {
     }
 
     enter() {
-        this.enemy.setSprite(Assets.getSoldierNormalMeleeMelee());
+        this.enemy.setSprite(Assets.getEnemySoldierNormalMeleeStab());
         this.enemy.velocityX = 0;
     }
 

@@ -11,7 +11,7 @@ class EnemyMoveState {
     }
 
     enter() {
-        this.enemy.setSprite(Assets.getSoldierNormalRun());
+        this.enemy.setSprite(Assets.getEnemySoldierNormalRun());
         this.currentFrame = 0;
         this.lastFrameTime = Date.now();
     }
@@ -29,7 +29,6 @@ class EnemyMoveState {
             }
         }
 
-        // Handle ground movement
         if (this.enemy.grounded) {
             this.enemy.velocityX = this.enemy.lastDirection === DIRECTION.LEFT ? 
                 -this.enemy.speed : this.enemy.speed;
@@ -42,7 +41,6 @@ class EnemyMoveState {
     }
 
     draw() {
-        // Drawing is handled by entity renderer
     }
 }
 

@@ -13,7 +13,6 @@ class PlayerSpriteHandler {
           }
           return Assets.getPlayerMarcoPistolDashIdle();
         }
-        // Check for action-based states first
         if (actions.has(ACTION.SNEAK)) {
             if (actions.has(ACTION.SHOOT)) {
                 return Assets.getPlayerMarcoPistolSneakShoot();
@@ -39,8 +38,6 @@ class PlayerSpriteHandler {
             return Assets.getPlayerMarcoPistolSneakIdle();
         }
 
-        // Check for dash second
-        
 
         if (actions.has(ACTION.SPAWN)) {
             return Assets.getPlayerMarcoPistolSpawn();

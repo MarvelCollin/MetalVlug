@@ -17,7 +17,9 @@ let enemySpawner;
 let lastTimestamp = 0;
 
 async function loadBackground() {
-    const background = await Drawer.loadImage(() => Assets.getBackground());
+    const background = await Drawer.loadImage(() =>
+      Assets.getBackgroundArcade()
+    );
     return new Promise((resolve, reject) => {
         if (background && background.images && background.images[0]) {
             const img = background.images[0];

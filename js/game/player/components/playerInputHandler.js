@@ -70,7 +70,7 @@ class PlayerInputHandler {
   }
 
   handleDash(activeKeys) {
-    if (activeKeys.has("alt") && !this.player.playerMoveHandler.isDashing) {
+    if (activeKeys.has("shift") && !this.player.playerMoveHandler.isDashing) {
         this.player.actions.add(ACTION.DASH);
         this.player.playerMoveHandler.dash();
     }

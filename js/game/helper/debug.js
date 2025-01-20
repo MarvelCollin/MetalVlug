@@ -6,7 +6,8 @@ const debugConfig = {
     actionPlayer: false,
     collisionDetail: false,
     enemyDetail: true,
-    playerStat: true
+    playerStat: true,
+    showShadow: false
 };
 
 function drawDebugBorder(ctx, x, y, width, height) {

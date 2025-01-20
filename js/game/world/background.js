@@ -7,7 +7,7 @@ export let backgroundWidth = 0;
 export let backgroundHeight = 0;
 
 export async function loadBackground() {
-    background = await Drawer.loadImage(() => Assets.getBackground());
+    background = await Drawer.loadImage(() => Assets.getBackgroundArcade());
     if (background && background.images && background.images[0]) {
         const img = background.images[0];
         backgroundWidth = img.width;

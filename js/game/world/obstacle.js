@@ -76,7 +76,7 @@ class Obstacle {
 
 const obstacles = [
   // floor
-  new Obstacle(0, 950, 3000, 20, "normal"),
+  new Obstacle(0, 910, 3000, 20, "normal"),
 
   // left stair (going up left to right)
   new Obstacle(420, 550, 300, 250, "stair"),

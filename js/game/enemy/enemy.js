@@ -7,15 +7,51 @@ import { DIRECTION } from '../entities/components/actions.js';
 import Drawer from '../helper/drawer.js';
 import { debugConfig } from '../helper/debug.js';
 import { ctx } from '../ctx.js';
+import { enemyType, enemyTypeToSprite } from './types/enemyType.js';
 
 class Enemy extends Entity {
     constructor(x, y, type) {
         super(x, y, 100, 100);
         this.type = type;
-        this.health = 100;
-        this.speed = 10;
-        this.detectionRange = 300;
-        this.attackRange = 150;
+        
+        switch(type) {
+            case enemyType.RIFLE:
+                this.health = 80;
+                this.speed = 8;
+                this.detectionRange = 900;
+                this.attackRange = 700;
+                this.scale = 5;
+                break;
+            case enemyType.BAZOOKA:
+                this.health = 120;
+                this.speed = 6;
+                this.detectionRange = 1000;
+                this.attackRange = 800;
+                this.scale = 5.5;
+                break;
+            case enemyType.SHIELD:
+                this.health = 200;
+                this.speed = 7;
+                this.detectionRange = 600;
+                this.attackRange = 200;
+                this.scale = 5.5;
+                break;
+            case enemyType.GUNNER:
+                this.health = 150;
+                this.speed = 5;
+                this.detectionRange = 800;
+                this.attackRange = 600;
+                this.scale = 6;
+                break;
+            case enemyType.NORMAL:
+            default:
+                this.health = 100;
+                this.speed = 10;
+                this.detectionRange = 700;
+                this.attackRange = 150;
+                this.scale = 5;
+                break;
+        }
         
         this.idleState = new EnemyIdleState(this);
         this.moveState = new EnemyMoveState(this);
@@ -25,7 +61,6 @@ class Enemy extends Entity {
         this.state = this.idleState;
         this.state.enter();
 
-        this.scale = 5;
         this.currentFrame = 0;
         this.frameAccumulator = 0;
         
@@ -34,12 +69,33 @@ class Enemy extends Entity {
         this.grounded = false;
         this.previousY = y;
 
-        this.target = null; 
+        this.target = null;
+        this.sprites = enemyTypeToSprite[this.type];
     }
 
     async setSprite(sprite) {
         try {
-            this.currentSprite = await Drawer.loadImage(() => sprite);
+            const typeSprites = enemyTypeToSprite[this.type];
+            if (typeSprites) {
+                switch(this.state.constructor) {
+                    case EnemyIdleState:
+                        this.currentSprite = await Drawer.loadImage(() => typeSprites.idle);
+                        break;
+                    case EnemyMoveState:
+                        this.currentSprite = await Drawer.loadImage(() => typeSprites.walk);
+                        break;
+                    case EnemyAttackState:
+                        this.currentSprite = await Drawer.loadImage(() => typeSprites.attack);
+                        break;
+                    case EnemyDieState:
+                        this.currentSprite = await Drawer.loadImage(() => typeSprites.die);
+                        break;
+                    default:
+                        this.currentSprite = await Drawer.loadImage(() => sprite);
+                }
+            } else {
+                this.currentSprite = await Drawer.loadImage(() => sprite);
+            }
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }

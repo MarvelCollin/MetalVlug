@@ -6,20 +6,17 @@ class EnemyIdleState {
     }
 
     enter() {
-        this.enemy.setSprite(Assets.getSoldierNormalIdle());
+        this.enemy.setSprite(Assets.getEnemySoldierNormalIdle());
         this.enemy.velocityX = 0;
     }
 
     update() {
-        // Add idle behavior if needed
     }
 
     exit() {
-        // Cleanup if needed
     }
 
     draw() {
-        // Drawing handled by entity renderer
     }
 }
 
