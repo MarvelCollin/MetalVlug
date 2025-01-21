@@ -13,7 +13,7 @@ class RocketGunner {
         this.damage = damage;
         this.speed = speed;
         this.active = true;
-        this.scale = 2;
+        this.scale = 1.5;
         this.loadSprite(sprite);
         this.target = target;
         this.isHoming = isHoming;
@@ -116,35 +116,6 @@ class RocketGunner {
             if (debugConfig.rocketGunner) {
                 ctx.save();
                 
-                if (this.target) {
-                    const pulse = (Math.sin(Date.now() * 0.005) + 1) * 0.5; 
-                    ctx.strokeStyle = `rgba(255, 0, 0, ${0.3 + pulse * 0.4})`;
-                    ctx.fillStyle = `rgba(255, 0, 0, ${0.1 + pulse * 0.1})`;
-                    
-                    ctx.beginPath();
-                    ctx.arc(
-                        this.target.x + this.target.width/2,
-                        this.target.y - this.target.height/2,
-                        50,
-                        0,
-                        Math.PI * 2
-                    );
-                    ctx.fill();
-                    ctx.stroke();
-
-                    const crosshairSize = 20;
-                    const targetX = this.target.x + this.target.width/2;
-                    const targetY = this.target.y - this.target.height/2;
-                    
-                    ctx.strokeStyle = `rgba(255, 255, 0, ${0.5 + pulse * 0.5})`;
-                    ctx.beginPath();
-                    ctx.moveTo(targetX - crosshairSize, targetY);
-                    ctx.lineTo(targetX + crosshairSize, targetY);
-                    ctx.moveTo(targetX, targetY - crosshairSize);
-                    ctx.lineTo(targetX, targetY + crosshairSize);
-                    ctx.stroke();
-                }
-
                 if (this.isHoming && this.target && !this.fixedDirection) {
                     ctx.beginPath();
                     ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';

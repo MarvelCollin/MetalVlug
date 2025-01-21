@@ -28,9 +28,19 @@
             border: 1px solid black;
         }
     </style>
+    <link rel="stylesheet" href="../styles/game.css">
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
+    
+    <div class="modal-overlay" id="pauseModal">
+        <div class="modal">
+            <button class="modal-button selected" id="continueButton">Continue</button>
+            <button class="modal-button" id="baseButton">Back to Base</button>
+            <button class="modal-button" id="restartButton">Restart</button>
+        </div>
+    </div>
+
     <script type="module" src="../js/game/game.js"></script>
 </body>
 </html>

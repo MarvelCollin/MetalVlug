@@ -5,6 +5,11 @@
             "FRAMES": 1,
             "TYPE": "SINGLE"
         },
+        "BASE": {
+            "PATH": "../assets/background/base/base",
+            "FRAMES": 1,
+            "TYPE": "SINGLE"
+        },
         "MISSION": {
             "PATH": "../assets/background/mission/mission",
             "FRAMES": 1,

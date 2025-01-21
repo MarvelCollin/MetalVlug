@@ -16,15 +16,16 @@ export class Gunner extends EnemyAbstract {
     };
 
     this.burstCount = 0;
-    this.maxBurst = 1; 
-    this.burstDelay = 200; 
+    this.maxBurst = 3;
+    this.burstDelay = 1000;
     this.lastBurstTime = 0;
-    this.idleTime = 1000; 
+    this.idleTime = 2000;
     this.isIdling = false;
     this.idleStartTime = 0;
+    this.canShoot = true;
 
     this.shootPattern = 0;
-    this.patternSwitchTime = 10;
+    this.patternSwitchTime = 100;
     this.lastPatternSwitch = Date.now();
 
     this.bullets = [];
@@ -44,13 +45,12 @@ export class Gunner extends EnemyAbstract {
     const now = Date.now();
     const distance = enemy.getDistanceToPlayer(enemy.target);
 
+    console.log("as")
     if (this.isIdling) {
       if (now - this.idleStartTime >= this.idleTime) {
-        this.setIsIdling(false);
-        this.setBurstCount(0);
-        this.setLastBurstTime(0);
-        enemy.lastAttackTime = 0;
-        enemy.setSprite(enemy.sprites.idle);
+        this.isIdling = false;
+        this.burstCount = 0;
+        this.lastBurstTime = now;
       }
       return;
     }
@@ -60,15 +60,14 @@ export class Gunner extends EnemyAbstract {
       this.lastPatternSwitch = now;
     }
 
-    if (distance <= enemy.attackRange && this.bulletSprite) {
+
+    if (distance <= enemy.attackRange && this.bulletSprite && !this.isIdling) {
       if (
-        this.getBurstCount() < this.maxBurst &&
-        now - this.getLastBurstTime() >= this.burstDelay
+        now - this.lastBurstTime >= this.burstDelay
       ) {
         const direction = enemy.lastDirection === DIRECTION.LEFT ? -1 : 1;
         const bulletX = enemy.x + (direction === 1 ? enemy.width : 0);
         const bulletY = enemy.y - enemy.height / 2;
-
         const bullet = new RocketGunner(
           bulletX,
           bulletY,
@@ -82,11 +81,13 @@ export class Gunner extends EnemyAbstract {
 
         this.bullets.push(bullet);
         enemy.currentSprite = enemy.sprites.attack;
-        this.setBurstCount(this.getBurstCount() + 1);
-        this.setLastBurstTime(now);
+        this.burstCount++;
+        this.lastBurstTime = now;
 
-        this.setIsIdling(true);
-        this.idleStartTime = now;
+        if (this.burstCount >= this.maxBurst) {
+          this.isIdling = true;
+          this.idleStartTime = now;
+        }
       }
     }
   }
@@ -114,17 +115,17 @@ export class Gunner extends EnemyAbstract {
       if (enemy.health <= 0) {
         enemy.setState(enemy.dieState);
       } else if (distanceToPlayer <= enemy.attackRange) {
-        if (!this.isIdling) {
+        if (this.isIdling) {
+          enemy.setState(enemy.idleState);
+          enemy.setSprite(enemy.sprites.idle);
+        } else {
           enemy.setState(enemy.attackState);
           enemy.setSprite(enemy.sprites.attack);
           this.attack(enemy);
-        } else {
-          enemy.setState(enemy.idleState);
-          enemy.setSprite(enemy.sprites.idle);
         }
       } else {
-        this.setIsIdling(false);
-        this.setBurstCount(0);
+        this.isIdling = false;
+        this.burstCount = 0;
 
         if (distanceToPlayer <= enemy.detectionRange) {
           enemy.setState(enemy.moveState);

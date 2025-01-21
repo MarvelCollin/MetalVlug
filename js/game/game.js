@@ -8,6 +8,7 @@ import { Obstacle, defaultObstacles } from './world/obstacle.js';
 import WebSocketClient from './server/websocket.js';
 import EnemySpawner from './enemy/enemySpawner.js'; 
 import Assets from './helper/assets.js';
+import { PauseModal } from './modal/pauseModal.js';
 
 let player;
 let camera;
@@ -16,105 +17,134 @@ let enemies = [];
 let enemySpawner;
 let lastTimestamp = 0;
 
-async function loadBackground() {
-    const background = await Drawer.loadImage(() =>
-      Assets.getBackgroundArcade()
-    );
-    return new Promise((resolve, reject) => {
-        if (background && background.images && background.images[0]) {
-            const img = background.images[0];
+class Game {
+    constructor() {
+        this.pauseModal = new PauseModal(this);
+        this.isPaused = false;
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Escape') {
+                if (this.pauseModal.isVisible()) {
+                    this.pauseModal.continue();
+                } else {
+                    this.pauseModal.show();
+                }
+            }
+        });
+    }
+
+    pause() {
+        this.isPaused = true;
+    }
+
+    resume() {
+        this.isPaused = false;
+        // Continue game loop
+        this.gameLoop();
+    }
+
+    async loadBackground() {
+        const background = await Drawer.loadImage(() =>
+          Assets.getBackgroundArcade()
+        );
+        return new Promise((resolve, reject) => {
+            if (background && background.images && background.images[0]) {
+                const img = background.images[0];
+                const aspectRatio = img.width / img.height;
+                const scaledWidth = canvas.height * aspectRatio;
+                
+                camera.setWorldSize(scaledWidth, canvas.height);
+                resolve({ width: scaledWidth, height: canvas.height, background });
+            } else {
+                reject(new Error('Failed to load background'));
+            }
+        });
+    }
+
+    initializeObstacles() {
+        obstacles = [...defaultObstacles];  
+    }
+
+    async startAnimation() {
+        player = new Player(100, 300);
+        camera = new Camera(player);
+        enemySpawner = new EnemySpawner(); 
+        this.initializeObstacles();
+        const bgData = await this.loadBackground();
+        gameState.background = bgData.background;
+        canvas.addEventListener('mousemove', logCursorPosition);
+        WebSocketClient.connect();
+        requestAnimationFrame(this.gameLoop.bind(this));
+    }
+
+    gameLoop(timestamp) {
+        if (this.isPaused) return;
+
+        const deltaTime = timestamp - lastTimestamp;
+        lastTimestamp = timestamp;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        camera.follow();
+        const viewport = camera.getViewport();
+
+        ctx.save();
+        ctx.translate(-viewport.x, -viewport.y);
+
+        if (gameState.background) {
+            const img = gameState.background.images[0];
             const aspectRatio = img.width / img.height;
             const scaledWidth = canvas.height * aspectRatio;
             
-            camera.setWorldSize(scaledWidth, canvas.height);
-            resolve({ width: scaledWidth, height: canvas.height, background });
-        } else {
-            reject(new Error('Failed to load background'));
+            Drawer.drawBackground(
+                img,
+                0,
+                canvas.height,
+                scaledWidth,
+                canvas.height
+            );
         }
-    });
-}
 
-function initializeObstacles() {
-    obstacles = [...defaultObstacles];  
-}
+        const newEnemies = enemySpawner.update();
+        enemies.push(...newEnemies);
 
-async function startAnimation() {
-    player = new Player(100, 300);
-    camera = new Camera(player);
-    enemySpawner = new EnemySpawner(); 
-    initializeObstacles();
-    const bgData = await loadBackground();
-    gameState.background = bgData.background;
-    canvas.addEventListener('mousemove', logCursorPosition);
-    WebSocketClient.connect();
-    requestAnimationFrame(gameLoop);
-}
+        enemies = enemies.filter(enemy => {
+            if (enemy.health <= 0) {
+                return false;
+            }
+            enemy.update(player);
+            enemy.draw();
+            return true;
+        });
 
-function gameLoop(timestamp) {
-    const deltaTime = timestamp - lastTimestamp;
-    lastTimestamp = timestamp;
+        player.update(enemies);
+        player.draw();
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        WebSocketClient.players.forEach(otherPlayer => {
+            otherPlayer.draw();
+        });
 
-    camera.follow();
-    const viewport = camera.getViewport();
+        WebSocketClient.sendPlayerState(player);
 
-    ctx.save();
-    ctx.translate(-viewport.x, -viewport.y);
+        obstacles.forEach(obstacle => obstacle.draw(ctx));
 
-    if (gameState.background) {
-        const img = gameState.background.images[0];
-        const aspectRatio = img.width / img.height;
-        const scaledWidth = canvas.height * aspectRatio;
-        
-        Drawer.drawBackground(
-            img,
-            0,
-            canvas.height,
-            scaledWidth,
-            canvas.height
-        );
+        ctx.restore();
+
+        requestAnimationFrame(this.gameLoop.bind(this));
     }
 
-    const newEnemies = enemySpawner.update();
-    enemies.push(...newEnemies);
-
-    enemies = enemies.filter(enemy => {
-        if (enemy.health <= 0) {
-            return false;
-        }
-        enemy.update(player);
-        enemy.draw();
-        return true;
-    });
-
-    player.update(enemies);
-    player.draw();
-
-    WebSocketClient.players.forEach(otherPlayer => {
-        otherPlayer.draw();
-    });
-
-    WebSocketClient.sendPlayerState(player);
-
-    obstacles.forEach(obstacle => obstacle.draw(ctx));
-
-    ctx.restore();
-
-    requestAnimationFrame(gameLoop);
-}
-
-startAnimation();
-
-function getPlayerPosition() {
-    return player ? player.getPosition() : null;
+    getPlayerPosition() {
+        return player ? player.getPosition() : null;
+    }
 }
 
 const gameState = {
     background: null
 };
 
-export { 
-    startAnimation, 
-    getPlayerPosition 
+const game = new Game();
+game.startAnimation();
+
+export {     game, 
+    gameState 
 };

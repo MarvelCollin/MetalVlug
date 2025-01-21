@@ -35,19 +35,16 @@ export class RifleSoldier {
                 enemy.setState(enemy.dieState);
             } else if (distanceToPlayer <= enemy.attackRange) {
                 if (distanceToPlayer < 300) {
-                    // Too close, retreat
                     enemy.setState(enemy.moveState);
                     const direction = enemy.target.x < enemy.x ? 1 : -1;
                     enemy.velocityX = enemy.speed * direction;
                     enemy.lastDirection = direction > 0 ? 'RIGHT' : 'LEFT';
                 } else {
-                    // Good range to attack
                     enemy.setState(enemy.attackState);
                     this.attack(enemy);
                     enemy.velocityX = 0;
                 }
             } else if (distanceToPlayer <= enemy.detectionRange) {
-                // Move to optimal range
                 enemy.setState(enemy.moveState);
                 if (Math.abs(distanceToPlayer - this.optimalRange) > 50) {
                     enemy.moveTowardsPlayer(enemy.target);

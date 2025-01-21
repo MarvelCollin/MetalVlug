@@ -32,6 +32,16 @@ export class Assets {
             }
         }
 
+        async getBackgroundBase() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.BACKGROUND.BASE;
+            } catch (error) {
+                console.error('Error in getBackgroundBase:', error);
+                return null;
+            }
+        }
+
         async getBackgroundMission() {
             try {
                 const assets = await this.fetchAssets();
