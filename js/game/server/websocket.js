@@ -9,7 +9,6 @@ class WebSocketClient {
 
     connect() {
         try {
-            // Make sure this matches the server port exactly
             this.ws = new WebSocket("https://smart-cups-kick.loca.lt");
             
             this.ws.onerror = (error) => {

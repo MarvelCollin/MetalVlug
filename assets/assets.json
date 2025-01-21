@@ -15,8 +15,9 @@
         "GUNNER": {
             "BULLET": {
                 "PATH": "../assets/enemy/gunner/bullet/bullet_",
-                "FRAMES": 1,
-                "TYPE": "SINGLE"
+                "FRAMES": 12,
+                "TYPE": "LOOP",
+                "DELAY": 100
             },
             "DIE": {
                 "PATH": "../assets/enemy/gunner/die/die_",
@@ -183,7 +184,7 @@
                 "IDLE": {
                     "PATH": "../assets/enemy/soldier/shield/idle/idle_",
                     "FRAMES": 1,
-                    "TYPE": "LOOP"
+                    "TYPE": "SINGLE"
                 },
                 "MELEE": {
                     "PATH": "../assets/enemy/soldier/shield/melee/melee_",

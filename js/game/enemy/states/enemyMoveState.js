@@ -11,7 +11,6 @@ class EnemyMoveState {
     }
 
     enter() {
-        this.enemy.setSprite(Assets.getEnemySoldierNormalRun());
         this.currentFrame = 0;
         this.lastFrameTime = Date.now();
     }

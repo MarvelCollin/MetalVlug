@@ -5,7 +5,7 @@ export const playerConfig = {
     gravity: 0.5,
     maxJumpHeight: 500,
     shootCooldown: 150,
-    scale: 5,   
+    scale: 4,   
     damage: 100,
     terminalVelocity: 10,
     jumpForce: -20,

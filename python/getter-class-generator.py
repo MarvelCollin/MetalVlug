@@ -59,7 +59,7 @@ def generate_assets_class(json_file_path, output_file_path):
     
     # Template buat class nya
     class_code = """
-class Assets {
+export class Assets {
     static instance = null;
     static assets = null;
 

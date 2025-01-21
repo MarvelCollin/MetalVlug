@@ -6,7 +6,6 @@ class EnemyIdleState {
     }
 
     enter() {
-        this.enemy.setSprite(Assets.getEnemySoldierNormalIdle());
         this.enemy.velocityX = 0;
     }
 

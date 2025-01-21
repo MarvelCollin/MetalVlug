@@ -6,7 +6,6 @@ class EnemyDieState {
     }
 
     enter() {
-        this.enemy.setSprite(Assets.getEnemySoldierNormalDie());
     }
 
     update() {

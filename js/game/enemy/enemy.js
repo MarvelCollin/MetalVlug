@@ -8,6 +8,11 @@ import Drawer from '../helper/drawer.js';
 import { debugConfig } from '../helper/debug.js';
 import { ctx } from '../ctx.js';
 import { enemyType, enemyTypeToSprite } from './types/enemyType.js';
+import { NormalSoldier } from './types/normalSoldier/normalSoldier.js';
+import { BazookaSoldier } from './types/bazookaSoldier/bazookaSoldier.js';
+import { ShieldSoldier } from './types/shieldSoldier/shieldSoldier.js';
+import { RifleSoldier } from './types/rifleSoldier/rifleSoldier.js';
+import { Gunner } from './types/gunner/gunner.js';
 
 class Enemy extends Entity {
     constructor(x, y, type) {
@@ -15,43 +20,25 @@ class Enemy extends Entity {
         this.type = type;
         
         switch(type) {
+            case enemyType.GUNNER:
+                this.behavior = new Gunner();
+                break;
             case enemyType.RIFLE:
-                this.health = 80;
-                this.speed = 8;
-                this.detectionRange = 900;
-                this.attackRange = 700;
-                this.scale = 5;
+                this.behavior = new RifleSoldier();
                 break;
             case enemyType.BAZOOKA:
-                this.health = 120;
-                this.speed = 6;
-                this.detectionRange = 1000;
-                this.attackRange = 800;
-                this.scale = 5.5;
+                this.behavior = new BazookaSoldier();
                 break;
             case enemyType.SHIELD:
-                this.health = 200;
-                this.speed = 7;
-                this.detectionRange = 600;
-                this.attackRange = 200;
-                this.scale = 5.5;
-                break;
-            case enemyType.GUNNER:
-                this.health = 150;
-                this.speed = 5;
-                this.detectionRange = 800;
-                this.attackRange = 600;
-                this.scale = 6;
+                this.behavior = new ShieldSoldier();
                 break;
             case enemyType.NORMAL:
             default:
-                this.health = 100;
-                this.speed = 10;
-                this.detectionRange = 700;
-                this.attackRange = 150;
-                this.scale = 5;
+                this.behavior = new NormalSoldier();
                 break;
         }
+        
+        this.setStat(this.behavior.stats);
         
         this.idleState = new EnemyIdleState(this);
         this.moveState = new EnemyMoveState(this);
@@ -70,7 +57,10 @@ class Enemy extends Entity {
         this.previousY = y;
 
         this.target = null;
-        this.sprites = enemyTypeToSprite[this.type];
+        this.sprites = this.behavior.sprites;
+        this.lastAttackTime = 0;
+        this.attackCooldown = 1000;
+        this.damageAmount = 10;
     }
 
     async setSprite(sprite) {
@@ -101,6 +91,15 @@ class Enemy extends Entity {
         }
     }
 
+    setStat(stat) {
+        this.health = stat.health;
+        this.speed = stat.speed;
+        this.detectionRange = stat.detectionRange;
+        this.attackRange = stat.attackRange;
+        this.scale = stat.scale;
+    }
+
+    
     draw() {
         super.draw();
         if (this.currentSprite && this.currentSprite.images) {
@@ -113,6 +112,10 @@ class Enemy extends Entity {
                 flip,
                 this.scale
             );
+        }
+
+        if (this.behavior.draw) {
+            this.behavior.draw(this);
         }
 
         if (debugConfig.enemyDetail) {
@@ -130,10 +133,30 @@ class Enemy extends Entity {
 
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
-            ctx.fillText(`Health: ${this.health}`, this.x, this.y - this.height - 20);
-            ctx.fillText(`State: ${this.state.constructor.name}`, this.x, this.y - this.height - 5);
-            ctx.fillText(`Grounded: ${this.grounded}`, this.x, this.y - this.height + 10);
+            let textY = this.y - this.height - 20;
 
+            ctx.fillText(`Health: ${this.health}`, this.x, textY);
+            textY += 15;
+            
+            if (debugConfig.showEnemyType) {
+                ctx.fillStyle = 'yellow';
+                ctx.fillText(`Type: ${this.type}`, this.x, textY);
+                textY += 15;
+            }
+
+            if (debugConfig.showSpriteInfo) {
+                ctx.fillStyle = 'cyan';
+                const currentSpriteName = this.state.constructor.name.replace('Enemy', '').replace('State', '');
+                ctx.fillText(`Sprite: ${currentSpriteName}`, this.x, textY);
+                textY += 15;
+            }
+
+            ctx.fillStyle = 'white';
+            ctx.fillText(`State: ${this.state.constructor.name}`, this.x, textY);
+            textY += 15;
+            ctx.fillText(`Grounded: ${this.grounded}`, this.x, textY);
+
+            // Velocity indicator
             if (this.velocityX !== 0 || this.velocityY !== 0) {
                 ctx.beginPath();
                 ctx.strokeStyle = 'cyan';
@@ -167,25 +190,7 @@ class Enemy extends Entity {
             this.velocityY = 0;
         }
 
-        if (this.grounded) {
-            this.velocityY = 0;
-            const distanceToPlayer = this.getDistanceToPlayer(player);
-            
-            if (this.health <= 0) {
-                this.setState(this.dieState);
-            } else if (distanceToPlayer <= this.attackRange) {
-                this.setState(this.attackState);
-                this.velocityX = 0;
-            } else if (distanceToPlayer <= this.detectionRange) {
-                this.setState(this.moveState);
-                this.moveTowardsPlayer(player);
-            } else {
-                this.setState(this.idleState);
-                this.velocityX = 0;
-            }
-        } else {
-            this.velocityX = 0;
-        }
+        this.behavior.updateBehavior(this);
 
         this.x += this.velocityX;
         this.state.update();
@@ -204,6 +209,9 @@ class Enemy extends Entity {
     }
 
     takeDamage(amount) {
+        if (this.behavior.takeDamage) {
+            amount = this.behavior.takeDamage(this, amount);
+        }
         this.health -= amount;
         if (this.health <= 0) {
             this.setState(this.dieState);

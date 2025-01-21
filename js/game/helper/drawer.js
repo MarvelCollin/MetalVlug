@@ -98,6 +98,14 @@ class Drawer {
     }
   }
 
+  static updateFrameLoop(imagesKey, startIndex, endIndex) {
+    if (this.currentFrames[imagesKey] >= endIndex) {
+      this.currentFrames[imagesKey] = startIndex;
+    } else {
+      this.currentFrames[imagesKey]++;
+    }
+  }
+
   static drawImageFromBottom(img, x, y, flip = false, scale = 1) {
     const scaledWidth = img.width * scale;
     const scaledHeight = img.height * scale;
@@ -175,6 +183,45 @@ class Drawer {
     }
   }
 
+  static drawLoop(
+    images,
+    x,
+    y,
+    delay,
+    startIndex = 0,
+    endIndex = null,
+    flip = false,
+    scale = 1
+  ) {
+    const imagesKey = images.toString() + startIndex + endIndex;
+
+    if (!this.currentFrames[imagesKey]) {
+      this.currentFrames[imagesKey] = startIndex;
+    }
+    if (!this.frameTimers[imagesKey]) {
+      this.frameTimers[imagesKey] = Date.now();
+    }
+
+    // Set endIndex to last frame if not specified
+    if (endIndex === null) {
+      endIndex = images.length - 1;
+    }
+
+    // Validate indices
+    startIndex = Math.max(0, Math.min(startIndex, images.length - 1));
+    endIndex = Math.max(startIndex, Math.min(endIndex, images.length - 1));
+
+    const img = Array.isArray(images) ? images[this.currentFrames[imagesKey]] : images;
+    if (img) {
+      this.drawImageFromBottom(img, x, y, flip, scale);
+
+      const now = Date.now();
+      if (now - this.frameTimers[imagesKey] >= delay) {
+        this.updateFrameLoop(imagesKey, startIndex, endIndex);
+        this.frameTimers[imagesKey] = now;
+      }
+    }
+  }
 
 }
 

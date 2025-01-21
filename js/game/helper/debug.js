@@ -7,7 +7,10 @@ const debugConfig = {
     collisionDetail: false,
     enemyDetail: true,
     playerStat: true,
-    showShadow: false
+    showShadow: false,
+    showEnemyType: true,    
+    showSpriteInfo: true, 
+    rocketGunner: true  // Enable rocket debug visualization
 };
 
 function drawDebugBorder(ctx, x, y, width, height) {

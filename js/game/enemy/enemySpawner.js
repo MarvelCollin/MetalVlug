@@ -4,13 +4,14 @@ import { enemyType } from "./types/enemyType.js";
 
 class EnemySpawner {
   constructor() {
-    this.minSpawnTime = 1000; 
-    this.maxSpawnTime = 3000; 
+    this.minSpawnTime = 10000000000; 
+    this.maxSpawnTime = 30000000000; 
     this.lastSpawnTime = Date.now();
     this.nextSpawnTime = this.getRandomSpawnTime();
     this.minEnemies = 1;
     this.maxEnemies = 3;
     this.enemyTypes = Object.values(enemyType);
+    this.flag = false;
   }
 
   getRandomSpawnTime() {
@@ -40,27 +41,40 @@ class EnemySpawner {
   }
 
   update() {
-    const currentTime = Date.now();
-    if (currentTime - this.lastSpawnTime > this.nextSpawnTime) {
-      const enemyCount = this.getRandomEnemyCount();
-      const newEnemies = [];
-
-      for (let i = 0; i < enemyCount; i++) {
-        const position = this.getRandomPosition();
-        const type = this.getRandomEnemyType();
-        const enemy = EnemyFactory.createEnemy(
-          type,
-          position.x,
-          position.y
-        );
-        newEnemies.push(enemy);
-      }
-
-      this.lastSpawnTime = currentTime;
-      this.nextSpawnTime = this.getRandomSpawnTime();
-      return newEnemies;
+    const newEnemies = []
+    if(!this.flag){
+      const enemy = EnemyFactory.createEnemy(
+        enemyType.GUNNER,
+        1000,
+        200
+      );
+      newEnemies.push(enemy);
+      this.flag = true
     }
-    return [];
+
+    return newEnemies
+
+    // const currentTime = Date.now();
+    // if (currentTime - this.lastSpawnTime > this.nextSpawnTime) {
+    //   const enemyCount = this.getRandomEnemyCount();
+    //   const newEnemies = [];
+
+    //   for (let i = 0; i < enemyCount; i++) {
+    //     const position = this.getRandomPosition();
+    //     const type = this.getRandomEnemyType();
+    //     const enemy = EnemyFactory.createEnemy(
+    //       type,
+    //       position.x,
+    //       position.y
+    //     );
+    //     newEnemies.push(enemy);
+    //   }
+
+    //   this.lastSpawnTime = currentTime;
+    //   this.nextSpawnTime = this.getRandomSpawnTime();
+    //   return newEnemies;
+    // }
+    // return [];
   }
 }
 
