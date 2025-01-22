@@ -362,6 +362,26 @@ export class Assets {
             }
         }
 
+        async getPartnerAgentAction() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.AGENT.ACTION;
+            } catch (error) {
+                console.error('Error in getPartnerAgentAction:', error);
+                return null;
+            }
+        }
+
+        async getPartnerAgentIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.AGENT.IDLE;
+            } catch (error) {
+                console.error('Error in getPartnerAgentIdle:', error);
+                return null;
+            }
+        }
+
         async getPartnerRalfAction() {
             try {
                 const assets = await this.fetchAssets();
@@ -758,6 +778,66 @@ export class Assets {
                 return assets.PLAYER.OTHER.GRENADE;
             } catch (error) {
                 console.error('Error in getPlayerOtherGrenade:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsAmmo() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.AMMO;
+            } catch (error) {
+                console.error('Error in getWorldItemsAmmo:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsAttack() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.ATTACK;
+            } catch (error) {
+                console.error('Error in getWorldItemsAttack:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsBomb() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.BOMB;
+            } catch (error) {
+                console.error('Error in getWorldItemsBomb:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsCoin() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.COIN;
+            } catch (error) {
+                console.error('Error in getWorldItemsCoin:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsGas() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.GAS;
+            } catch (error) {
+                console.error('Error in getWorldItemsGas:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsHealth() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.HEALTH;
+            } catch (error) {
+                console.error('Error in getWorldItemsHealth:', error);
                 return null;
             }
         }

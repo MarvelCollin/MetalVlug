@@ -25,11 +25,12 @@
             image-rendering: crisp-edges;
             -ms-interpolation-mode: nearest-neighbor;
             -webkit-font-smoothing: none;
-            border: 1px solid black;
         }
     </style>
     <link rel="stylesheet" href="../styles/hoverMenu.css">
     <link rel="stylesheet" href="../styles/game.css">
+    <link rel="stylesheet" href="../styles/modal.css">
+    <link rel="stylesheet" href="../styles/global.css">
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
@@ -50,11 +51,112 @@
     </div>
 
     <div class="modal-overlay" id="rumiAikawaModal">
-        <div class="modal">
-            <div class="modal-title">Rumi Aikawa</div>
-            <button class="modal-button">Trade</button>
-            <button class="modal-button">Talk</button>
-            <button class="modal-button">Cancel</button>
+        <div class="modal shop-modal">
+            <button class="close-btn"></button>
+            <div class="modal-title">Metal Shop</div>
+            <div class="player-balance">
+                <span>Balance</span>
+                <canvas class="coin-icon balance-coin" width="48" height="48"></canvas>
+                <span>1000</span>
+            </div>
+            <div class="shop-content">
+                <div class="shop-item" data-item-id="ammo">
+                    <div class="item-icon">
+                        <canvas id="ammoCanvas"></canvas>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Ammo Pack</div>
+                        <div class="item-description">
+                            <span class="buff">+50 Max Ammo</span>
+                            <span class="detail">Increases maximum ammunition capacity</span>
+                        </div>
+                        <div class="item-price">
+                            <canvas class="coin-icon" width="48" height="48"></canvas>
+                            <span>100</span>
+                        </div>
+                    </div>
+                    <div class="buy-hint">Hold to Buy</div>
+                    <div class="buy-progress"></div>
+                </div>
+                <div class="shop-item" data-item-id="attack">
+                    <div class="item-icon">
+                        <canvas id="attackCanvas"></canvas>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Attack Boost</div>
+                        <div class="item-description">
+                            <span class="buff">+25% Damage</span>
+                            <span class="detail">Enhances weapon damage output</span>
+                        </div>
+                        <div class="item-price">
+                            <canvas class="coin-icon" width="48" height="48"></canvas>
+                            <span>250</span>
+                        </div>
+                    </div>
+                    <div class="buy-hint">Hold to Buy</div>
+                    <div class="buy-progress"></div>
+                </div>
+                <div class="shop-item" data-item-id="bomb">
+                    <div class="item-icon">
+                        <canvas id="bombCanvas"></canvas>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Bomb Pack</div>
+                        <div class="item-description">
+                            <span class="buff">+35% Explosive Damage</span>
+                            <span class="detail">Increases explosive weapon damage</span>
+                        </div>
+                        <div class="item-price">
+                            <canvas class="coin-icon" width="48" height="48"></canvas>
+                            <span>300</span>
+                        </div>
+                    </div>
+                    <div class="buy-hint">Hold to Buy</div>
+                    <div class="buy-progress"></div>
+                </div>
+
+                <div class="shop-item" data-item-id="gas">
+                    <div class="item-icon">
+                        <canvas id="gasCanvas"></canvas>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Gas Tank</div>
+                        <div class="item-description">
+                            <span class="buff">+30% Slug Health</span>
+                            <span class="detail">Improves Metal Slug durability</span>
+                        </div>
+                        <div class="item-price">
+                            <canvas class="coin-icon" width="48" height="48"></canvas>
+                            <span>150</span>
+                        </div>
+                    </div>
+                    <div class="buy-hint">Hold to Buy</div>
+                    <div class="buy-progress"></div>
+                </div>
+
+                <div class="shop-item" data-item-id="health">
+                    <div class="item-icon">
+                        <canvas id="healthCanvas"></canvas>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">Health Pack</div>
+                        <div class="item-description">
+                            <span class="buff">+50 Max Health</span>
+                            <span class="detail">Increases maximum health points</span>
+                        </div>
+                        <div class="item-price">
+                            <canvas class="coin-icon" width="48" height="48"></canvas>
+                            <span>200</span>
+                        </div>
+                    </div>
+                    <div class="buy-hint">Hold to Buy</div>
+                    <div class="buy-progress"></div>
+                </div>
+            </div>
+            <div class="shop-actions">
+                <button class="shop-button">Purchase</button>
+                <button class="shop-button cancel">Close</button>
+            </div>
         </div>
     </div>
 

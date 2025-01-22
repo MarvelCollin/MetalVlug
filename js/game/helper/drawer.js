@@ -98,24 +98,24 @@ class Drawer {
     }
   }
 
-  static drawImageFromBottom(img, x, y, flip = false, scale = 1) {
+  static drawImageFromBottom(img, x, y, flip = false, scale = 1, context = ctx) {
     const scaledWidth = img.width * scale;
     const scaledHeight = img.height * scale;
     const realX = x;
     const realY = y - scaledHeight;
 
     if (flip) {
-      ctx.save();
-      ctx.translate(realX, realY);
-      ctx.scale(-1, 1);
-      ctx.drawImage(img, -100, 0, scaledWidth, scaledHeight);
-      ctx.restore();
+      context.save();
+      context.translate(realX, realY);
+      context.scale(-1, 1);
+      context.drawImage(img, -100, 0, scaledWidth, scaledHeight);
+      context.restore();
     } else {
-      ctx.drawImage(img, realX, realY, scaledWidth, scaledHeight);
+      context.drawImage(img, realX, realY, scaledWidth, scaledHeight);
     }
 
     if (debugConfig.enabled) {
-      drawDebugBorder(ctx, realX, realY, scaledWidth, scaledHeight);
+      drawDebugBorder(context, realX, realY, scaledWidth, scaledHeight);
     }
   }
 
@@ -126,7 +126,8 @@ class Drawer {
     delay,
     flip = false,
     scale = 1,
-    type = "LOOP"
+    type = "LOOP",
+    context = ctx
   ) {
     const imagesKey = images.toString();
 
@@ -144,7 +145,7 @@ class Drawer {
 
     const img = Array.isArray(images) ? images[this.currentFrames[imagesKey]] : images;
     if (img) {
-      this.drawImageFromBottom(img, x, y, flip, scale);
+      this.drawImageFromBottom(img, x, y, flip, scale, context);
 
       if (type !== "ONCE") {
         const now = Date.now();
@@ -155,8 +156,6 @@ class Drawer {
       }
     }
   }
-
-
 }
 
 export default Drawer;

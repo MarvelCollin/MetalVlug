@@ -140,7 +140,7 @@
                 "BULLET": {
                     "PATH": "../assets/enemy/soldier/rifle/bullet/bullet_",
                     "FRAMES": 1,
-                    "TYPE": "LOOP"
+                    "TYPE": "SINGLE"
                 },
                 "DIE": {
                     "PATH": "../assets/enemy/soldier/rifle/die/die_",
@@ -189,7 +189,7 @@
                 "IDLE": {
                     "PATH": "../assets/enemy/soldier/shield/idle/idle_",
                     "FRAMES": 1,
-                    "TYPE": "LOOP"
+                    "TYPE": "SINGLE"
                 },
                 "MELEE": {
                     "PATH": "../assets/enemy/soldier/shield/melee/melee_",
@@ -219,6 +219,20 @@
         }
     },
     "PARTNER": {
+        "AGENT": {
+            "ACTION": {
+                "PATH": "../assets/partner/agent/action/action_",
+                "FRAMES": 4,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "IDLE": {
+                "PATH": "../assets/partner/agent/idle/idle_",
+                "FRAMES": 10,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        },
         "RALF": {
             "ACTION": {
                 "PATH": "../assets/partner/ralf/action/action_",
@@ -277,7 +291,7 @@
             "BULLET": {
                 "PATH": "../assets/partner/taro/bullet/bullet_",
                 "FRAMES": 1,
-                "TYPE": "LOOP"
+                "TYPE": "SINGLE"
             },
             "IDLE": {
                 "PATH": "../assets/partner/taro/idle/idle_",
@@ -468,7 +482,7 @@
             "IDLE": {
                 "PATH": "../assets/player/metalslug/idle/idle_",
                 "FRAMES": 1,
-                "TYPE": "LOOP"
+                "TYPE": "SINGLE"
             },
             "MOVE": {
                 "PATH": "../assets/player/metalslug/move/move_",
@@ -486,6 +500,46 @@
             "GRENADE": {
                 "PATH": "../assets/player/other/grenade/grenade_",
                 "FRAMES": 19,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        }
+    },
+    "WORLD": {
+        "ITEMS": {
+            "AMMO": {
+                "PATH": "../assets/world/items/ammo/ammo_",
+                "FRAMES": 6,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "ATTACK": {
+                "PATH": "../assets/world/items/attack/attack_",
+                "FRAMES": 6,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "BOMB": {
+                "PATH": "../assets/world/items/bomb/bomb_",
+                "FRAMES": 6,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "COIN": {
+                "PATH": "../assets/world/items/coin/coin_",
+                "FRAMES": 9,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "GAS": {
+                "PATH": "../assets/world/items/gas/gas_",
+                "FRAMES": 6,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "HEALTH": {
+                "PATH": "../assets/world/items/health/health_",
+                "FRAMES": 6,
                 "TYPE": "LOOP",
                 "DELAY": 100
             }

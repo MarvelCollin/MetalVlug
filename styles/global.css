@@ -1,0 +1,14 @@
+@font-face {
+  font-family: "Metal Slug Latino";
+  src: url("../assets/web/fonts/metalslugfont.otf") format("opentype"),
+    url("../assets/web/fonts/metalslugfont.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Metal Slug Latino", sans-serif;
+  box-sizing: border-box;
+}

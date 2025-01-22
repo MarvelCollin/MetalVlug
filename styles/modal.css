@@ -1,0 +1,520 @@
+.modal-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #666;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+    height: 140px;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card canvas {
+    border: none;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: rgba(0, 0, 0, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    border: 2px solid #666;
+    min-width: 400px;
+    max-width: 600px;
+    text-align: center;
+}
+
+.modal-title {
+    font-family: 'Metal Slug Latino', sans-serif;
+    color: #ffd700;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+    border-bottom: 1px solid #666;
+    padding-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.modal-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #333;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-button:hover {
+    background: #444;
+}
+
+/* Shop specific styles */
+.shop-modal {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
+    padding: 25px;
+    border-radius: 20px;
+    border: 3px solid #ffd700;
+    width: min(95%, 900px); /* Wider but not scrolling */
+    position: relative;
+}
+
+/* Add close button */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    background: none;
+    border: none;
+    color: #ffd700;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.close-btn::before {
+    content: '×';
+}
+
+/* Move balance to top center */
+.player-balance {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: -5px auto 20px;
+    display: inline-flex;
+    padding: 8px 20px;
+}
+
+.shop-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Show all items in one row */
+    gap: 10px;
+    margin: 15px 0 0;
+}
+
+.shop-item {
+    background: linear-gradient(145deg, rgba(40, 40, 40, 0.8), rgba(30, 30, 30, 0.9));
+    border: 2px solid #ffd700;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.shop-item:hover {
+    transform: translateY(-5px) scale(1.02);
+    background: rgba(60, 60, 60, 0.6);
+    box-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.3),
+        inset 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.shop-item:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 215, 0, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.shop-item:hover:before {
+    left: 100%;
+}
+
+.item-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 6px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    padding: 5px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.item-icon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.item-icon canvas {
+    image-rendering: pixelated;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.item-details {
+    text-align: center;
+    width: 100%;
+}
+
+.item-name {
+    font-family: 'Metal Slug Latino', sans-serif;
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    font-weight: bold;
+    position: relative;
+    padding-bottom: 6px;
+}
+
+.item-name::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ffd700, transparent);
+}
+
+.item-price {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 16px;
+    margin-top: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    font-weight: 600;
+}
+
+.item-description {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 0;
+}
+
+.buff {
+    color: #00ff00;
+    font-size: 13px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.detail {
+    color: #aaa;
+    font-size: 10px;
+    font-family: 'Chakra Petch', sans-serif;
+}
+
+.coin-icon {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+.shop-actions {
+    display: none;
+}
+
+.shop-button {
+    flex: 1;
+    padding: 10px 25px;
+    font-size: 14px;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #ffd700, #daa520);
+    color: #000;
+    border: none;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.shop-button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.shop-button:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translate(-50%, -50%);
+}
+
+.shop-button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(45deg, #fff44f, #ffd700);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.shop-button.cancel {
+    background: linear-gradient(45deg, #444, #333);
+    color: #fff;
+}
+
+.shop-button.cancel:hover {
+    background: linear-gradient(45deg, #555, #444);
+    box-shadow: 0 0 20px rgba(80, 80, 80, 0.4);
+}
+
+.player-balance {
+    font-family: 'Metal Slug Latino', sans-serif;
+    color: #ffd700;
+    font-size: 24px;
+    text-align: right;
+    margin-bottom: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: -5px auto 20px;
+    display: inline-flex;
+    padding: 8px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 2px solid #ffd700;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .shop-modal {
+        padding: 20px;
+        width: 95%;
+    }
+
+    .modal-title {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .shop-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .item-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .item-name {
+        font-size: 16px;
+    }
+
+    .shop-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .shop-button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .player-balance {
+        position: static;
+        margin-bottom: 20px;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .coin-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .buff {
+        font-size: 14px;
+    }
+    
+    .detail {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .shop-modal {
+        padding: 15px;
+        width: 95%;
+    }
+
+    .shop-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .modal-title {
+        font-size: 24px;
+    }
+
+    .item-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .item-name {
+        font-size: 14px;
+    }
+
+    .item-price {
+        padding: 8px 15px;
+    }
+
+    .buff {
+        font-size: 12px;
+    }
+
+    .detail {
+        font-size: 10px;
+    }
+
+    .shop-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Add custom scrollbar for shop modal */
+.shop-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.shop-modal::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.shop-modal::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 4px;
+}
+
+.shop-modal::-webkit-scrollbar-thumb:hover {
+    background: #fff44f;
+}
+
+.buy-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 4px;
+    background: linear-gradient(90deg, #00ff00, #7fff00);
+    transition: width 0.1s linear;
+    border-radius: 0 0 15px 15px;
+}
+
+.buy-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border: 1px solid #ffd700;
+    white-space: nowrap;
+}
+
+.shop-item:hover .buy-hint {
+    opacity: 1;
+}
+
+.buying {
+    animation: buying-pulse 1s infinite;
+}
+
+@keyframes buying-pulse {
+    0% { border-color: #ffd700; }
+    50% { border-color: #00ff00; }
+    100% { border-color: #ffd700; }
+}
