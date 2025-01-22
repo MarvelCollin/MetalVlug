@@ -256,7 +256,7 @@
             },
             "IDLE": {
                 "PATH": "../assets/partner/rumiAikawa/idle/idle_",
-                "FRAMES": 3,
+                "FRAMES": 10,
                 "TYPE": "LOOP",
                 "DELAY": 100
             },
@@ -505,6 +505,7 @@
             }
         }
     },
+    "WEB": {},
     "WORLD": {
         "ITEMS": {
             "AMMO": {
@@ -529,7 +530,7 @@
                 "PATH": "../assets/world/items/coin/coin_",
                 "FRAMES": 9,
                 "TYPE": "LOOP",
-                "DELAY": 100
+                "DELAY": 200
             },
             "GAS": {
                 "PATH": "../assets/world/items/gas/gas_",
