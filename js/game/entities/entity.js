@@ -1,6 +1,8 @@
 import { DIRECTION, ACTION } from "./components/actions.js";
 import { ctx, canvas } from "../ctx.js";
-import { defaultObstacles } from "../world/obstacle.js";
+import { Obstacle } from "../world/obstacle.js";
+import { gameObstacles } from "../world/obstacles/gameObstacles.js";
+import { baseObstacles } from "../world/obstacles/baseObstacles.js";
 import Collision from "./components/collision.js";
 import Renderer from "./components/renderer.js";
 import StateManager from "./components/stateManager.js";
@@ -40,7 +42,10 @@ class Entity {
     // this.velocityY = 0;
   }
 
-  update(obstacles = defaultObstacles) {
+  update() {
+    const obstacles = window.location.pathname.includes('base.html') ? 
+        baseObstacles : gameObstacles;
+
     this.collision.handleCollision(obstacles);
 
     if(debugConfig.actionPlayer) {  
@@ -62,7 +67,7 @@ class Entity {
     }
   }
 
-  draw(obstacles = defaultObstacles) {
+  draw(obstacles = gameObstacles) {
     this.renderer.draw();
     this.collision.drawDebug(ctx, obstacles);
   }

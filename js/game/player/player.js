@@ -9,7 +9,6 @@ import Assets from "../helper/assets.js";
 import PlayerInputHandler from "./components/playerInputHandler.js";
 import PlayerMoveHandler from "./components/playerMoveHandler.js";
 import PlayerSpriteHandler from "./components/playerSpriteHandler.js";
-import { defaultObstacles } from "../world/obstacle.js";
 import { debugConfig } from "../helper/debug.js";
 import { ctx } from "../ctx.js";
 import { playerConfig } from "./components/playerConfig.js";

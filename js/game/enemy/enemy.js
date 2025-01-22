@@ -7,38 +7,15 @@ import { DIRECTION } from '../entities/components/actions.js';
 import Drawer from '../helper/drawer.js';
 import { debugConfig } from '../helper/debug.js';
 import { ctx } from '../ctx.js';
-import { enemyType, enemyTypeToSprite } from './types/enemyType.js';
-import { NormalSoldier } from './types/normalSoldier/normalSoldier.js';
-import { BazookaSoldier } from './types/bazookaSoldier/bazookaSoldier.js';
-import { ShieldSoldier } from './types/shieldSoldier/shieldSoldier.js';
-import { RifleSoldier } from './types/rifleSoldier/rifleSoldier.js';
-import { Gunner } from './types/gunner/gunner.js';
 
 class Enemy extends Entity {
     constructor(x, y, type) {
         super(x, y, 100, 100);
         this.type = type;
-        
-        switch(type) {
-            case enemyType.GUNNER:
-                this.behavior = new Gunner();
-                break;
-            case enemyType.RIFLE:
-                this.behavior = new RifleSoldier();
-                break;
-            case enemyType.BAZOOKA:
-                this.behavior = new BazookaSoldier();
-                break;
-            case enemyType.SHIELD:
-                this.behavior = new ShieldSoldier();
-                break;
-            case enemyType.NORMAL:
-            default:
-                this.behavior = new NormalSoldier();
-                break;
-        }
-        
-        this.setStat(this.behavior.stats);
+        this.health = 100;
+        this.speed = 10;
+        this.detectionRange = 700;
+        this.attackRange = 150;
         
         this.idleState = new EnemyIdleState(this);
         this.moveState = new EnemyMoveState(this);
@@ -48,6 +25,7 @@ class Enemy extends Entity {
         this.state = this.idleState;
         this.state.enter();
 
+        this.scale = 5;
         this.currentFrame = 0;
         this.frameAccumulator = 0;
         
@@ -56,50 +34,17 @@ class Enemy extends Entity {
         this.grounded = false;
         this.previousY = y;
 
-        this.target = null;
-        this.sprites = this.behavior.sprites;
-        this.lastAttackTime = 0;
-        this.attackCooldown = 1000;
-        this.damageAmount = 10;
+        this.target = null; 
     }
 
     async setSprite(sprite) {
         try {
-            const typeSprites = enemyTypeToSprite[this.type];
-            if (typeSprites) {
-                switch(this.state.constructor) {
-                    case EnemyIdleState:
-                        this.currentSprite = await Drawer.loadImage(() => typeSprites.idle);
-                        break;
-                    case EnemyMoveState:
-                        this.currentSprite = await Drawer.loadImage(() => typeSprites.walk);
-                        break;
-                    case EnemyAttackState:
-                        this.currentSprite = await Drawer.loadImage(() => typeSprites.attack);
-                        break;
-                    case EnemyDieState:
-                        this.currentSprite = await Drawer.loadImage(() => typeSprites.die);
-                        break;
-                    default:
-                        this.currentSprite = await Drawer.loadImage(() => sprite);
-                }
-            } else {
-                this.currentSprite = await Drawer.loadImage(() => sprite);
-            }
+            this.currentSprite = await Drawer.loadImage(() => sprite);
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }
     }
 
-    setStat(stat) {
-        this.health = stat.health;
-        this.speed = stat.speed;
-        this.detectionRange = stat.detectionRange;
-        this.attackRange = stat.attackRange;
-        this.scale = stat.scale;
-    }
-
-    
     draw() {
         super.draw();
         if (this.currentSprite && this.currentSprite.images) {
@@ -112,10 +57,6 @@ class Enemy extends Entity {
                 flip,
                 this.scale
             );
-        }
-
-        if (this.behavior.draw) {
-            this.behavior.draw(this);
         }
 
         if (debugConfig.enemyDetail) {
@@ -133,30 +74,10 @@ class Enemy extends Entity {
 
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
-            let textY = this.y - this.height - 20;
+            ctx.fillText(`Health: ${this.health}`, this.x, this.y - this.height - 20);
+            ctx.fillText(`State: ${this.state.constructor.name}`, this.x, this.y - this.height - 5);
+            ctx.fillText(`Grounded: ${this.grounded}`, this.x, this.y - this.height + 10);
 
-            ctx.fillText(`Health: ${this.health}`, this.x, textY);
-            textY += 15;
-            
-            if (debugConfig.showEnemyType) {
-                ctx.fillStyle = 'yellow';
-                ctx.fillText(`Type: ${this.type}`, this.x, textY);
-                textY += 15;
-            }
-
-            if (debugConfig.showSpriteInfo) {
-                ctx.fillStyle = 'cyan';
-                const currentSpriteName = this.state.constructor.name.replace('Enemy', '').replace('State', '');
-                ctx.fillText(`Sprite: ${currentSpriteName}`, this.x, textY);
-                textY += 15;
-            }
-
-            ctx.fillStyle = 'white';
-            ctx.fillText(`State: ${this.state.constructor.name}`, this.x, textY);
-            textY += 15;
-            ctx.fillText(`Grounded: ${this.grounded}`, this.x, textY);
-
-            // Velocity indicator
             if (this.velocityX !== 0 || this.velocityY !== 0) {
                 ctx.beginPath();
                 ctx.strokeStyle = 'cyan';
@@ -190,7 +111,25 @@ class Enemy extends Entity {
             this.velocityY = 0;
         }
 
-        this.behavior.updateBehavior(this);
+        if (this.grounded) {
+            this.velocityY = 0;
+            const distanceToPlayer = this.getDistanceToPlayer(player);
+            
+            if (this.health <= 0) {
+                this.setState(this.dieState);
+            } else if (distanceToPlayer <= this.attackRange) {
+                this.setState(this.attackState);
+                this.velocityX = 0;
+            } else if (distanceToPlayer <= this.detectionRange) {
+                this.setState(this.moveState);
+                this.moveTowardsPlayer(player);
+            } else {
+                this.setState(this.idleState);
+                this.velocityX = 0;
+            }
+        } else {
+            this.velocityX = 0;
+        }
 
         this.x += this.velocityX;
         this.state.update();
@@ -209,9 +148,6 @@ class Enemy extends Entity {
     }
 
     takeDamage(amount) {
-        if (this.behavior.takeDamage) {
-            amount = this.behavior.takeDamage(this, amount);
-        }
         this.health -= amount;
         if (this.health <= 0) {
             this.setState(this.dieState);

@@ -4,8 +4,8 @@ import { enemyType } from "./types/enemyType.js";
 
 class EnemySpawner {
   constructor() {
-    this.minSpawnTime = 10000000000; 
-    this.maxSpawnTime = 30000000000; 
+    this.minSpawnTime = 1000; 
+    this.maxSpawnTime = 3000; 
     this.lastSpawnTime = Date.now();
     this.nextSpawnTime = this.getRandomSpawnTime();
     this.minEnemies = 1;
@@ -44,7 +44,7 @@ class EnemySpawner {
     const newEnemies = []
     if(!this.flag){
       const enemy = EnemyFactory.createEnemy(
-        enemyType.GUNNER,
+        enemyType.NORMAL,
         1000,
         200
       );

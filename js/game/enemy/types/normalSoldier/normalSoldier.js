@@ -9,7 +9,7 @@ export class NormalSoldier extends EnemyAbstract {
             speed: 10,
             detectionRange: 700,
             attackRange: 150,
-            scale: 4
+            scale: 1
         };
     }
 

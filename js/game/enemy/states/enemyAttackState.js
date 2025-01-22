@@ -13,7 +13,9 @@ class EnemyAttackState {
     }
 
     update() {
-        this.enemy.behavior.attack(this.enemy);
+        if (this.enemy.behavior && this.enemy.behavior.attack) {
+            this.enemy.behavior.attack(this.enemy);
+        }
     }
 
     exit() {}

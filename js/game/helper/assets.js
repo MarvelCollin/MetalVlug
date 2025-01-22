@@ -362,6 +362,76 @@ export class Assets {
             }
         }
 
+        async getPartnerRalfAction() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.RALF.ACTION;
+            } catch (error) {
+                console.error('Error in getPartnerRalfAction:', error);
+                return null;
+            }
+        }
+
+        async getPartnerRalfIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.RALF.IDLE;
+            } catch (error) {
+                console.error('Error in getPartnerRalfIdle:', error);
+                return null;
+            }
+        }
+
+        async getPartnerRumiaikawaBack() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.RUMIAIKAWA.BACK;
+            } catch (error) {
+                console.error('Error in getPartnerRumiaikawaBack:', error);
+                return null;
+            }
+        }
+
+        async getPartnerRumiaikawaIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.RUMIAIKAWA.IDLE;
+            } catch (error) {
+                console.error('Error in getPartnerRumiaikawaIdle:', error);
+                return null;
+            }
+        }
+
+        async getPartnerRumiaikawaTrading() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.RUMIAIKAWA.TRADING;
+            } catch (error) {
+                console.error('Error in getPartnerRumiaikawaTrading:', error);
+                return null;
+            }
+        }
+
+        async getPartnerSilversoldierAction() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.SILVERSOLDIER.ACTION;
+            } catch (error) {
+                console.error('Error in getPartnerSilversoldierAction:', error);
+                return null;
+            }
+        }
+
+        async getPartnerSilversoldierIdle() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.PARTNER.SILVERSOLDIER.IDLE;
+            } catch (error) {
+                console.error('Error in getPartnerSilversoldierIdle:', error);
+                return null;
+            }
+        }
+
         async getPartnerTaroAttack() {
             try {
                 const assets = await this.fetchAssets();

@@ -4,11 +4,12 @@ import PlayerInputHandler from './player/components/playerInputHandler.js';
 import Camera from './world/camera.js';
 import { debugConfig, logCursorPosition } from './helper/debug.js';
 import Drawer from './helper/drawer.js';
-import { Obstacle, defaultObstacles } from './world/obstacle.js';
+import { Obstacle } from './world/obstacle.js';
 import WebSocketClient from './server/websocket.js';
 import EnemySpawner from './enemy/enemySpawner.js'; 
 import Assets from './helper/assets.js';
 import { PauseModal } from './modal/pauseModal.js';
+import { gameObstacles } from './world/obstacles/gameObstacles.js';
 
 let player;
 let camera;
@@ -39,7 +40,6 @@ class Game {
 
     resume() {
         this.isPaused = false;
-        // Continue game loop
         this.gameLoop();
     }
 
@@ -62,11 +62,11 @@ class Game {
     }
 
     initializeObstacles() {
-        obstacles = [...defaultObstacles];  
+        obstacles = [...gameObstacles];  
     }
 
     async startAnimation() {
-        player = new Player(100, 300);
+        player = new Player(1000, 300);
         camera = new Camera(player);
         enemySpawner = new EnemySpawner(); 
         this.initializeObstacles();
@@ -80,7 +80,7 @@ class Game {
     gameLoop(timestamp) {
         if (this.isPaused) return;
 
-        const deltaTime = timestamp - lastTimestamp;
+        const lastTime = timestamp - lastTimestamp;
         lastTimestamp = timestamp;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -113,15 +113,15 @@ class Game {
                 return false;
             }
             enemy.update(player);
-            enemy.draw();
+            enemy.draw(obstacles);
             return true;
         });
 
         player.update(enemies);
-        player.draw();
+        player.draw(obstacles);
 
         WebSocketClient.players.forEach(otherPlayer => {
-            otherPlayer.draw();
+            otherPlayer.draw(obstacles);
         });
 
         WebSocketClient.sendPlayerState(player);

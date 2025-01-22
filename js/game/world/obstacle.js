@@ -1,7 +1,7 @@
 import { debugConfig } from "../helper/debug.js";
 import { canvas } from "../ctx.js";
 
-class Obstacle {
+export class Obstacle {
   constructor(
     x,
     y,
@@ -68,24 +68,6 @@ class Obstacle {
           break;  
       }
       ctx.fillRect(this.x, this.y , this.width, this.height);
-
-
     }
   }
 }
-
-const obstacles = [
-  // floor
-  new Obstacle(0, 910, 3000, 20, "normal"),
-
-  // left stair (going up left to right)
-  new Obstacle(420, 550, 300, 250, "stair"),
-
-  // right stair (going up right to left)
-  new Obstacle(1800, 570, 300, 250, "reverseStair"),
-
-  // mid
-  new Obstacle(750, 560, 1100, 20, "normal"),
-];
-
-export { Obstacle, obstacles as defaultObstacles };

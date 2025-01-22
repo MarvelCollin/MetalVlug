@@ -8,7 +8,7 @@ export class RifleSoldier {
             speed: 8,
             detectionRange: 900,
             attackRange: 700,
-            scale: 4
+            scale: 1
         };
         this.sprites = enemyTypeToSprite[this.type];
         this.optimalRange = 500;

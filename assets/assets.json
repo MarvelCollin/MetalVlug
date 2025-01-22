@@ -140,7 +140,7 @@
                 "BULLET": {
                     "PATH": "../assets/enemy/soldier/rifle/bullet/bullet_",
                     "FRAMES": 1,
-                    "TYPE": "SINGLE"
+                    "TYPE": "LOOP"
                 },
                 "DIE": {
                     "PATH": "../assets/enemy/soldier/rifle/die/die_",
@@ -189,7 +189,7 @@
                 "IDLE": {
                     "PATH": "../assets/enemy/soldier/shield/idle/idle_",
                     "FRAMES": 1,
-                    "TYPE": "SINGLE"
+                    "TYPE": "LOOP"
                 },
                 "MELEE": {
                     "PATH": "../assets/enemy/soldier/shield/melee/melee_",
@@ -219,6 +219,54 @@
         }
     },
     "PARTNER": {
+        "RALF": {
+            "ACTION": {
+                "PATH": "../assets/partner/ralf/action/action_",
+                "FRAMES": 9,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "IDLE": {
+                "PATH": "../assets/partner/ralf/idle/idle_",
+                "FRAMES": 4,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        },
+        "RUMIAIKAWA": {
+            "BACK": {
+                "PATH": "../assets/partner/rumiAikawa/back/back_",
+                "FRAMES": 4,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "IDLE": {
+                "PATH": "../assets/partner/rumiAikawa/idle/idle_",
+                "FRAMES": 3,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "TRADING": {
+                "PATH": "../assets/partner/rumiAikawa/trading/trading_",
+                "FRAMES": 7,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        },
+        "SILVERSOLDIER": {
+            "ACTION": {
+                "PATH": "../assets/partner/silverSoldier/action/action_",
+                "FRAMES": 7,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "IDLE": {
+                "PATH": "../assets/partner/silverSoldier/idle/idle_",
+                "FRAMES": 4,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        },
         "TARO": {
             "ATTACK": {
                 "PATH": "../assets/partner/taro/attack/attack_",
@@ -229,7 +277,7 @@
             "BULLET": {
                 "PATH": "../assets/partner/taro/bullet/bullet_",
                 "FRAMES": 1,
-                "TYPE": "SINGLE"
+                "TYPE": "LOOP"
             },
             "IDLE": {
                 "PATH": "../assets/partner/taro/idle/idle_",
@@ -420,7 +468,7 @@
             "IDLE": {
                 "PATH": "../assets/player/metalslug/idle/idle_",
                 "FRAMES": 1,
-                "TYPE": "SINGLE"
+                "TYPE": "LOOP"
             },
             "MOVE": {
                 "PATH": "../assets/player/metalslug/move/move_",

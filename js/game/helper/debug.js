@@ -6,11 +6,11 @@ const debugConfig = {
     actionPlayer: false,
     collisionDetail: false,
     enemyDetail: true,
-    playerStat: true,
+    playerStat: false,
     showShadow: false,
     showEnemyType: true,    
     showSpriteInfo: true, 
-    rocketGunner: true  // Enable rocket debug visualization
+    rocketGunner: true  
 };
 
 function drawDebugBorder(ctx, x, y, width, height) {
@@ -31,3 +31,4 @@ function logCursorPosition(event) {
 }
 
 export { debugConfig, drawDebugBorder, logCursorPosition };
+ 

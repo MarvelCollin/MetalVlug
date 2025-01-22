@@ -1,0 +1,79 @@
+.hover-menu {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #666;
+    border-radius: 8px;
+    padding: 10px;
+    display: none;
+    z-index: 1000;
+}
+
+.hover-menu-item {
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-align: left;
+    background: none;
+    border: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+.hover-menu-item:hover {
+    background: #444;
+}
+
+.hover-menu-title {
+    color: #ffd700;
+    padding: 5px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #666;
+    text-align: center;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid #666;
+    min-width: 300px;
+}
+
+.modal-title {
+    color: #ffd700;
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 1px solid #666;
+    padding-bottom: 10px;
+}
+
+.modal-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    background: #333;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-button:hover {
+    background: #444;
+}

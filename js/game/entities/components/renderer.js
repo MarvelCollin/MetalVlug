@@ -8,7 +8,6 @@ class Renderer {
     }
 
     draw() {
-        // Check if entity has a currentSprite instead of state
         if (this.entity.currentSprite && this.entity.currentSprite.images) {
             const flip = this.entity.lastDirection === 'left';
             Drawer.drawToCanvas(

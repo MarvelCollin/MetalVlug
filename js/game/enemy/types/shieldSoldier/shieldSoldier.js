@@ -8,7 +8,7 @@ export class ShieldSoldier {
             speed: 7,
             detectionRange: 600,
             attackRange: 200,
-            scale: 4
+            scale: 1
         };
         this.sprites = enemyTypeToSprite[this.type];
         this.isDefending = false;
