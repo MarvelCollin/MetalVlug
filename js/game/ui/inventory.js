@@ -4,7 +4,18 @@ export class Inventory {
     constructor(gameCanvas) {
         this.gameCanvas = gameCanvas;
         this.inventoryModal = null;
-        this.isVisible = false;
+        this._isVisible = false; 
+        this.player = null; 
+    }
+
+    
+    setPlayer(player) {
+        this.player = player;
+    }
+
+    
+    get isVisible() {
+        return this._isVisible;
     }
 
     populateInventory(itemIds, slots) {
@@ -30,49 +41,77 @@ export class Inventory {
     }
 
     createConsumeEffect(slot, item) {
+        const slotRect = slot.getBoundingClientRect();
+        const centerX = slotRect.left + slotRect.width / 2;
+        const centerY = slotRect.top + slotRect.height / 2;
+
+        
         const img = new Image();
         img.src = item.path;
         img.className = 'consume-effect';
-        
-        const slotRect = slot.getBoundingClientRect();
-
-        img.style.position = 'absolute';
         img.style.left = `${slotRect.left}px`;
         img.style.top = `${slotRect.top}px`;
         img.style.width = `${slotRect.width}px`;
         img.style.height = `${slotRect.height}px`;
-
         document.body.appendChild(img);
 
-        for (let i = 0; i < 20; i++) {
-            this.createParticle(slotRect);
+        
+        const effectText = document.createElement('div');
+        effectText.className = 'effect-text';
+        effectText.textContent = item.buff;
+        effectText.style.left = `${centerX}px`;
+        effectText.style.top = `${centerY}px`;
+        document.body.appendChild(effectText);
+
+        
+        for (let i = 0; i < 6; i++) {
+            setTimeout(() => {
+                this.createParticle(slotRect, i * 60); 
+            }, i * 50);
         }
 
-        img.style.animation = 'consumeAnimation 0.5s ease-out forwards';
-        setTimeout(() => img.remove(), 500);
+        img.style.animation = 'consumeAnimation 0.6s ease-out forwards';
+        setTimeout(() => {
+            img.remove();
+            effectText.remove();
+        }, 600);
     }
 
-    createParticle(rect) {
+    createParticle(rect, angleOffset = 0) {
         const particle = document.createElement('div');
         particle.className = 'consume-particles';
         
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 100;
+        const angle = (Math.PI * 2 / 6) * angleOffset + (Math.random() * 0.5);
+        const distance = Math.random() * 40 + 20;
         const x = Math.cos(angle) * distance;
         const y = Math.sin(angle) * distance;
-
+        
         particle.style.left = `${rect.left + rect.width / 2}px`;
         particle.style.top = `${rect.top + rect.height / 2}px`;
-        particle.style.setProperty('--x', `${x}px`);
-        particle.style.setProperty('--y', `${y}px`);
+        particle.style.width = `${Math.random() * 3 + 2}px`;
+        particle.style.height = particle.style.width;
 
         document.body.appendChild(particle);
+        
         particle.animate([
-            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-            { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
+            { 
+                transform: 'translate(0, 0) scale(1)',
+                opacity: 1,
+                offset: 0
+            },
+            {
+                transform: `translate(${x * 0.5}px, ${y * 0.5}px) scale(1.2)`,
+                opacity: 0.8,
+                offset: 0.4
+            },
+            {
+                transform: `translate(${x}px, ${y}px) scale(0)`,
+                opacity: 0,
+                offset: 1
+            }
         ], {
             duration: 500,
-            easing: 'ease-out'
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
         });
 
         setTimeout(() => particle.remove(), 500);
@@ -82,6 +121,8 @@ export class Inventory {
         this.inventoryModal = document.querySelector('.inventory-modal');
         this.setupSlots();
         this.setupEventListeners();
+        this.setupKeyboardNavigation();
+        this.currentSelectedIndex = -1;
     }
 
     setupSlots() {
@@ -96,11 +137,75 @@ export class Inventory {
         if (consumeButton) {
             consumeButton.addEventListener('click', () => this.consumeSelectedItem());
         }
+
+        
+        this.inventoryModal.addEventListener('click', (e) => {
+            if (e.target === this.inventoryModal) {
+                this.hide();
+            }
+        });
+    }
+
+    setupKeyboardNavigation() {
+        document.addEventListener('keydown', (e) => {
+            if (!this._isVisible) return;
+
+            const slots = Array.from(this.inventoryModal.querySelectorAll('.inventory-slot:not(.empty)'));
+            if (slots.length === 0) return;
+
+            switch (e.key) {
+                case 'ArrowRight':
+                    e.preventDefault();
+                    this.currentSelectedIndex = Math.min(this.currentSelectedIndex + 1, slots.length - 1);
+                    this.selectSlotByIndex(slots);
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    this.currentSelectedIndex = Math.max(this.currentSelectedIndex - 1, 0);
+                    this.selectSlotByIndex(slots);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    this.currentSelectedIndex = Math.min(this.currentSelectedIndex + 5, slots.length - 1);
+                    this.selectSlotByIndex(slots);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    this.currentSelectedIndex = Math.max(this.currentSelectedIndex - 5, 0);
+                    this.selectSlotByIndex(slots);
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (this.currentSelectedIndex >= 0) {
+                        this.consumeSelectedItem();
+                    }
+                    break;
+            }
+        });
+    }
+
+    selectSlotByIndex(slots) {
+        if (this.currentSelectedIndex < 0) this.currentSelectedIndex = 0;
+        
+        
+        this.inventoryModal.querySelectorAll('.inventory-slot').forEach(s => 
+            s.classList.remove('selected'));
+        
+        
+        const selectedSlot = slots[this.currentSelectedIndex];
+        if (selectedSlot) {
+            selectedSlot.classList.add('selected');
+            this.updateItemDetails(selectedSlot);
+            selectedSlot.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     }
 
     handleSlotClick(slot) {
         if (slot.classList.contains('empty')) return;
 
+        const slots = Array.from(this.inventoryModal.querySelectorAll('.inventory-slot:not(.empty)'));
+        this.currentSelectedIndex = slots.indexOf(slot);
+        
         this.inventoryModal.querySelectorAll('.inventory-slot').forEach(s => 
             s.classList.remove('selected'));
         slot.classList.add('selected');
@@ -130,45 +235,29 @@ export class Inventory {
             consumeButton.disabled = false;
         }
 
-        this.updatePreviewImage(preview, item, stack);
+        this.updatePreviewImage(preview, item);
     }
 
-    updatePreviewImage(preview, item, stack) {
+    updatePreviewImage(preview, item) {
         const img = new Image();
         img.src = item.path;
         img.onload = () => {
             const ctx = preview.getContext('2d');
             ctx.clearRect(0, 0, preview.width, preview.height);
             ctx.drawImage(img, 0, 0, preview.width, preview.height);
-
-            if (parseInt(stack) > 1) {
-                this.drawStackCount(ctx, stack, preview.width, preview.height);
-            }
         };
-    }
-
-    drawStackCount(ctx, stack, width, height) {
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 16px Arial';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 3;
-        const text = stack.toString();
-        const x = width - 20;
-        const y = height - 10;
-        ctx.strokeText(text, x, y);
-        ctx.fillText(text, x, y);
     }
 
     consumeSelectedItem() {
         const selectedSlot = this.inventoryModal.querySelector('.inventory-slot.selected');
-        if (!selectedSlot) return;
+        if (!selectedSlot || !this.player) return;
 
         const itemId = selectedSlot.dataset.itemId;
         const item = INVENTORY_ITEMS[itemId.toUpperCase()];
         const stack = parseInt(selectedSlot.dataset.stack);
 
         this.createConsumeEffect(selectedSlot, item);
-        applyItemEffect(this.player, itemId);
+        applyItemEffect(this.player, itemId); 
 
         if (stack > 1) {
             selectedSlot.dataset.stack = stack - 1;
@@ -207,19 +296,27 @@ export class Inventory {
     toggle() {
         if (!this.inventoryModal) return;
         
-        if (!this.isVisible) {
+        if (!this._isVisible) { 
             this.show();
         } else {
             this.hide();
         }
+        return this._isVisible;
     }
 
     show() {
         this.inventoryModal.style.display = 'flex';
         requestAnimationFrame(() => {
             this.inventoryModal.classList.add('show');
+            
+            
+            const slots = Array.from(this.inventoryModal.querySelectorAll('.inventory-slot:not(.empty)'));
+            if (slots.length > 0) {
+                this.currentSelectedIndex = 0;
+                this.selectSlotByIndex(slots);
+            }
         });
-        this.isVisible = true;
+        this._isVisible = true; 
     }
 
     hide() {
@@ -227,7 +324,7 @@ export class Inventory {
         setTimeout(() => {
             this.inventoryModal.style.display = 'none';
         }, 300);
-        this.isVisible = false;
+        this._isVisible = false; 
     }
 
     handleResize() {

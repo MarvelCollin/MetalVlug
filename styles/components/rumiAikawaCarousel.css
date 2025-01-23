@@ -301,10 +301,6 @@
     content: '';
     position: absolute;
     inset: 0;
-        transparent 0%,
-        rgba(255, 255, 255, 0.03) 50%,
-        transparent 100%
-    );
     pointer-events: none;
 }
 
@@ -426,7 +422,7 @@
     object-fit: contain;
 }
 
-.item-details {
+.item-shop-details {
     text-align: center;
     width: 100%;
     margin-bottom: 5px;
@@ -1046,4 +1042,3 @@
         opacity: 0;
     }
 }
-

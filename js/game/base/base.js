@@ -16,7 +16,7 @@ class Base {
     this.background = null;
     this.camera = new Camera(null);
     this.player = new Player(1400, 1000);
-    this.camera.setTarget(this.player); // Changed from camera.target = this.player
+    this.camera.setTarget(this.player); 
     this.lastTimestamp = 0;
     this.playerInput = new PlayerInputHandler(this.player);
     this.obstacles = [...baseObstacles];
@@ -24,7 +24,7 @@ class Base {
       new RumiAikawa(150, 605, this.camera),   
       new SilverSoldier(1800, 923, this.camera),
       new Ralf(200  , 923, this.camera),
-      new Agent(1000, 385, this.camera)
+      new Agent(1000, 385, this.camera, this.camera.achievementSystem)
     ];
     this.loadAssets();
     this.setupEventListeners();

@@ -67,7 +67,7 @@ export class RumiAikawa extends BaseNPC {
                 <div class="item-icon">
                     <canvas id="${item.id}Canvas"></canvas>
                 </div>
-                <div class="item-details">
+                <div class="item-shop-details">
                     <div class="item-name">${item.name}</div>
                     <div class="item-description">
                         <span class="buff">${item.buff}</span>

@@ -26,7 +26,7 @@ export const INVENTORY_ITEMS = {
     BAKPAO_LEGEND: {
         id: 'bakpao_legend',
         path: '../assets/world/items/inventory/bakpao_legend.png',
-        name: 'Legendary Bakpao',
+        name: 'Bakpao Legend',
         buff: '+100 HP, +50 MP',
         effect: 'Full Recovery',
         description: 'A mystical steamed bun that fully restores health and energy.'
@@ -100,7 +100,7 @@ export const applyItemEffect = (player, itemId) => {
         banana: (player) => {
             player.health = Math.min(player.health + 15, player.maxHealth);
             player.speed *= 1.05;
-            setTimeout(() => player.speed /= 1.05, 10000); // Remove speed boost after 10s
+            setTimeout(() => player.speed /= 1.05, 10000); 
         },
         bakpao_legend: (player) => {
             player.health = player.maxHealth;
@@ -108,7 +108,7 @@ export const applyItemEffect = (player, itemId) => {
         },
         bone: (player) => {
             player.defense += 20;
-            setTimeout(() => player.defense -= 20, 30000); // 30s duration
+            setTimeout(() => player.defense -= 20, 30000); 
         },
         chicken: (player) => {
             player.health = Math.min(player.health + 75, player.maxHealth);
@@ -122,12 +122,12 @@ export const applyItemEffect = (player, itemId) => {
         },
         green_potion: (player) => {
             player.isPoisonImmune = true;
-            setTimeout(() => player.isPoisonImmune = false, 60000); // 60s immunity
+            setTimeout(() => player.isPoisonImmune = false, 60000); 
         },
         yellow_potion: (player) => {
-            const speedBoost = 1.3; // 30% speed boost
+            const speedBoost = 1.3; 
             player.speed *= speedBoost;
-            setTimeout(() => player.speed /= speedBoost, 15000); // 15s duration
+            setTimeout(() => player.speed /= speedBoost, 15000); 
         },
         lettuce: (player) => {
             const regenInterval = setInterval(() => {
@@ -136,22 +136,18 @@ export const applyItemEffect = (player, itemId) => {
                 } else {
                     clearInterval(regenInterval);
                 }
-            }, 1000); // Heal 5 HP every second
-            setTimeout(() => clearInterval(regenInterval), 10000); // 10s duration
+            }, 1000); 
+            setTimeout(() => clearInterval(regenInterval), 10000); 
         }
     };
 
     const effect = effects[itemId];
     if (effect) {
         effect(player);
-        // Play consume sound
-        // playSound('item_consume');
         
-        // Show effect indicator
-        const effectText = document.createElement('div');
-        effectText.className = 'effect-text';
-        effectText.textContent = `Used ${INVENTORY_ITEMS[itemId.toUpperCase()].name}!`;
-        document.body.appendChild(effectText);
-        setTimeout(() => effectText.remove(), 2000);
+        
+        
+        
+  
     }
 };

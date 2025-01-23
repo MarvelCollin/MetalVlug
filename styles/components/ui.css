@@ -5,7 +5,7 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 9999; /* Ensure it's above everything */
+    z-index: 9999;
     display: flex;
     justify-content: space-between;
     padding: 20px;
@@ -90,6 +90,7 @@
     backdrop-filter: blur(4px);
     opacity: 0;
     transition: opacity 0.3s ease;
+    cursor: pointer; /* Makes it clear the background is clickable */
 }
 
 .inventory-modal.show {
@@ -97,20 +98,17 @@
 }
 
 .inventory-container {
-    background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
-    border: 4px solid #c4a434;
     padding: 30px;
     border-radius: 12px;
-    width: 1200px; /* Increased from 800px */
+    width: 1200px; 
     max-width: 90vw;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 20px rgba(196, 164, 52, 0.3),
-                inset 0 0 30px rgba(0, 0, 0, 0.5);
     position: relative;
     transform: scale(0.95);
     opacity: 0;
     transition: all 0.3s ease;
+    cursor: default; /* Resets cursor for the container */
 }
 
 .inventory-container::before {
@@ -120,7 +118,6 @@
     left: -2px;
     right: -2px;
     bottom: -2px;
-    border: 2px solid #fff;
     border-radius: 10px;
     pointer-events: none;
 }
@@ -156,7 +153,7 @@
 }
 
 .item-details {
-    flex: 0 0 400px; /* Fixed width for details panel */
+    flex: 0 0 400px; 
     background: rgba(0, 0, 0, 0.3);
     border-radius: 8px;
     padding: 20px;
@@ -248,6 +245,7 @@
 .inventory-slot.selected {
     border-color: #ffd700;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    transform: scale(1.05);
 }
 
 .inventory-slot .item-icon {
@@ -326,30 +324,63 @@
     position: fixed;
     pointer-events: none;
     z-index: 10001;
+    filter: drop-shadow(0 0 8px gold);
 }
 
 @keyframes consumeAnimation {
     0% { 
-        transform: scale(1);
+        transform: scale(1) translateY(0);
         opacity: 1;
+        filter: brightness(1.5) drop-shadow(0 0 8px gold);
     }
     50% {
-        transform: scale(2);
-        opacity: 0.5;
+        transform: scale(1.5) translateY(-20px);
+        opacity: 0.8;
+        filter: brightness(2) drop-shadow(0 0 12px gold);
     }
     100% {
-        transform: scale(3);
+        transform: scale(1) translateY(-40px);
         opacity: 0;
+        filter: brightness(1) drop-shadow(0 0 4px gold);
     }
 }
 
 .consume-particles {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 4px;
+    height: 4px;
     background: gold;
     border-radius: 50%;
     pointer-events: none;
+    box-shadow: 0 0 4px gold;
+    z-index: 10002;
+}
+
+.effect-text {
+    position: fixed;
+    color: gold;
+    font-family: 'Metal Slug Latino', sans-serif;
+    font-size: 16px;
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.8);
+    pointer-events: none;
+    z-index: 10003;
+    animation: floatText 1s ease-out forwards;
+    white-space: nowrap;
+}
+
+@keyframes floatText {
+    0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0;
+    }
+    20% {
+        transform: translateY(-10px) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-30px) scale(0.9);
+        opacity: 0;
+    }
 }
 
 @keyframes particleAnimation {

@@ -1,0 +1,257 @@
+.achievements-modal {
+    background: rgba(0, 0, 0, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    border: 2px solid #666;
+    width: min(90%, 800px);
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.achievements-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(80vh - 100px); /* Subtract header height */
+    scrollbar-width: thin;
+    scrollbar-color: #ffd700 rgba(0, 0, 0, 0.3);
+    scroll-behavior: smooth; /* Add smooth scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Scrollbar styling for Webkit browsers */
+.achievements-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.achievements-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.achievements-list::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.achievements-list::-webkit-scrollbar-thumb:hover {
+    background: #fff44f;
+}
+
+.achievement-card {
+    background: linear-gradient(135deg, 
+        rgba(35, 35, 45, 0.95) 0%, 
+        rgba(20, 20, 25, 0.98) 100%
+    );
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    transition: all 0.3s ease;
+    min-height: 150px;
+    animation: none; /* Remove default animation */
+    transform: translateZ(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Add staggered animation for cards */
+.achievements-modal.show .achievement-card {
+    animation: cardFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+}
+
+.achievements-modal.show .achievement-card:nth-child(1) { animation-delay: 0.1s; }
+.achievements-modal.show .achievement-card:nth-child(2) { animation-delay: 0.15s; }
+.achievements-modal.show .achievement-card:nth-child(3) { animation-delay: 0.2s; }
+.achievements-modal.show .achievement-card:nth-child(4) { animation-delay: 0.25s; }
+.achievements-modal.show .achievement-card:nth-child(5) { animation-delay: 0.3s; }
+.achievements-modal.show .achievement-card:nth-child(6) { animation-delay: 0.35s; }
+.achievements-modal.show .achievement-card:nth-child(7) { animation-delay: 0.4s; }
+.achievements-modal.show .achievement-card:nth-child(8) { animation-delay: 0.45s; }
+/* Add more if needed */
+
+.achievement-card.locked {
+    filter: grayscale(1);
+    opacity: 0.7;
+}
+
+.achievement-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(51, 51, 51, 0.5);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.achievement-icon img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.achievement-symbol {
+    font-size: 32px;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+}
+
+.achievement-card.locked .achievement-symbol {
+    opacity: 0.3;
+}
+
+.achievement-info {
+    flex: 1;
+}
+
+.achievement-name {
+    color: #ffd700;
+    font-size: 18px;
+    margin-bottom: 5px;
+    font-family: 'Metal Slug Latino', sans-serif;
+}
+
+.achievement-description {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.achievement-progress {
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.achievement-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ff9900);
+    transition: width 0.3s ease;
+}
+
+.achievement-status {
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.achievement-card.completed {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.achievement-card.completed .achievement-status {
+    color: #ffd700;
+}
+
+/* Add new styles for secret achievement */
+.achievement-card[data-id="secret_code"] {
+    background: linear-gradient(135deg, 
+        rgba(50, 0, 60, 0.95) 0%, 
+        rgba(30, 0, 40, 0.98) 100%
+    );
+    border-color: #9932CC;
+}
+
+.achievement-card[data-id="secret_code"].completed {
+    border-color: #9932CC;
+    box-shadow: 
+        0 0 15px rgba(153, 50, 204, 0.3),
+        0 0 30px rgba(153, 50, 204, 0.2);
+}
+
+.achievement-card[data-id="secret_code"] .achievement-name {
+    color: #9932CC;
+    text-shadow: 
+        0 0 10px rgba(153, 50, 204, 0.4),
+        0 0 20px rgba(153, 50, 204, 0.2);
+}
+
+.achievement-card[data-id="secret_code"] .achievement-progress-bar {
+    background: linear-gradient(90deg, #9932CC, #800080);
+}
+
+.claim-reward-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+    border: 2px solid #ffd700;
+    border-radius: 6px;
+    color: #000;
+    font-family: 'Metal Slug Latino', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.claim-reward-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.claim-reward-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.4);
+}
+
+.claim-reward-btn:hover::before {
+    left: 100%;
+}
+
+.claim-reward-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(255, 215, 0, 0.2);
+}
+
+.claim-reward-btn:disabled {
+    background: linear-gradient(180deg, #808080 0%, #4a4a4a 100%);
+    border-color: #808080;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

@@ -3,9 +3,10 @@ import Assets from "../../helper/assets.js";
 import Drawer from "../../helper/drawer.js";
 
 export class Agent extends BaseNPC {
-    constructor(x, y, camera) {
+    constructor(x, y, camera, achievementSystem) {
         super(x, y, camera, 4);
         this.isFlipped = false;
+        this.achievementSystem = achievementSystem; 
         this.loadSprites();
     }
 
@@ -20,6 +21,13 @@ export class Agent extends BaseNPC {
     }
 
     onInteract() {
-        console.log("Interacting with Agent");
+        this.achievementSystem.showModal();
+
+        const modal = document.getElementById('achievementsModal');
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                this.achievementSystem.hideModal();
+            }
+        };
     }
 }

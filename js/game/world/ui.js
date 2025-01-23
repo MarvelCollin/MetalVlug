@@ -3,6 +3,9 @@ import Assets from "../helper/assets.js";
 import Drawer from "../helper/drawer.js";
 import { Inventory } from '../ui/inventory.js';
 import { INVENTORY_ITEMS } from '../ui/items.js';
+import { AchievementSystem } from './achievement.js';  // Add this import
+import { AdminPanel } from './admin.js';
+import { CheatHandler } from './cheatcode.js';
 
 export const UI_IMAGES = {
   ITEMS: {
@@ -20,8 +23,12 @@ export class UI {
         this.gameCanvas = document.getElementById('gameCanvas');
         this.uiElement = null;
         this.inventory = new Inventory(this.gameCanvas);
-        this.images = {}; // Initialize empty images object
-        
+        this.inventory.setPlayer(player); 
+        this.images = {}; 
+        this.achievementSystem = new AchievementSystem();
+        this.achievementSystem.onAchievementUnlocked = this.showAchievementNotification.bind(this);
+        this.adminPanel = new AdminPanel(this.achievementSystem);
+        this.cheatHandler = new CheatHandler(this.achievementSystem);
         this.init();
     }
 
@@ -35,7 +42,7 @@ export class UI {
     }
 
     async loadSprites() {
-        // Load the basic UI sprites
+        
         this.images = {
             ammo: await Drawer.loadImage(() => Assets.getWorldItemsAmmo()),
             bomb: await Drawer.loadImage(() => Assets.getWorldItemsBomb()),
@@ -45,7 +52,7 @@ export class UI {
 
     async loadUI() {
         try {
-            // Load sprites first
+            
             await this.loadSprites();
 
             const response = await fetch('../html/ui.html');
@@ -53,29 +60,29 @@ export class UI {
             
             const html = await response.text();
             
-            // Clean up existing UI elements
+            
             document.querySelectorAll('.game-ui, .inventory-modal').forEach(el => el.remove());
             
-            // Create container and add to DOM
+            
             const container = document.createElement('div');
             container.innerHTML = html;
             
-            // Get canvas position
+            
             const canvasRect = this.gameCanvas.getBoundingClientRect();
             
-            // Add UI elements to DOM first
+            
             while (container.firstChild) {
                 document.body.appendChild(container.firstChild);
             }
 
-            // Cache UI elements after they're in the DOM
+            
             this.uiElement = document.querySelector('.game-ui');
             this.ammoCount = document.querySelector('.ammo-count');
             this.bombCount = document.querySelector('.bomb-count');
             this.scoreCount = document.querySelector('.score-count');
             this.healthFill = document.querySelector('.health-fill');
 
-            // Set positions based on canvas
+            
             if (this.uiElement) {
                 this.uiElement.style.width = `${canvasRect.width}px`;
                 this.uiElement.style.height = `${canvasRect.height}px`;
@@ -85,7 +92,7 @@ export class UI {
 
             window.addEventListener('resize', () => this.handleResize());
 
-            // Setup static images (using async version)
+            
             await Promise.all(
                 Object.entries(this.images).map(([type, sprite]) => {
                     if (sprite) {
@@ -99,8 +106,13 @@ export class UI {
                 })
             );
 
-            // Initialize inventory
             await this.inventory.initialize(this.player);
+
+            const slots = document.querySelectorAll('.inventory-slot');
+            this.inventory.populateInventory(
+              ['APPLE', 'BANANA', 'RED_POTION', 'CHICKEN', 'LETTUCE', 'BAKPAO_LEGEND'],
+              slots
+            );
 
             console.log('UI setup complete');
         } catch (error) {
@@ -122,7 +134,7 @@ export class UI {
         };
     }
 
-    // Alternative approach using async/await
+    
     async setupUIAsync(element, sprite) {
         if (!element || !sprite?.images?.[0]) return;
         
@@ -138,14 +150,16 @@ export class UI {
             if (e.key.toLowerCase() === 'e') {
                 this.inventory.toggle();
             }
-            if (e.key === 'Escape' && this.inventory.isVisible()) {
+            if (e.key === 'Escape' && this.inventory.isVisible) { 
                 this.inventory.hide();
             }
         });
 
-        // Close inventory when clicking outside
+        
         document.addEventListener('click', (e) => {
-            if (this.inventory.isVisible() && !e.target.closest('.inventory-container')) {
+            if (this.inventory.isVisible && 
+                this.inventoryModal && 
+                !e.target.closest('.inventory-container')) {
                 this.inventory.hide();
             }
         });
@@ -167,7 +181,7 @@ export class UI {
     draw() {
         if (!this.uiElement) return;
         
-        // Update basic UI elements (health, ammo, etc.)
+        
         this.updateBasicUI();
     }
 
@@ -178,5 +192,35 @@ export class UI {
         
         const healthPercent = ((this.player.health || 100) / 100) * 100;
         this.healthFill.style.width = `${healthPercent}%`;
+    }
+
+    showAchievementNotification(achievement) {
+        const notification = document.createElement('div');
+        notification.className = `achievement-notification ${achievement.id === 'secret_code' ? 'secret' : ''}`;
+        notification.innerHTML = `
+            <div class="notification-icon">${achievement.symbol}</div>
+            <div class="notification-content">
+                <div class="notification-title">Achievement Unlocked!</div>
+                <div class="notification-message">${achievement.name}</div>
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+        
+        // Trigger animation
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+            
+            // Play achievement sound
+            const achievementSound = new Audio('../assets/sounds/achievement.mp3');
+            achievementSound.volume = 0.5;
+            achievementSound.play().catch(() => {}); // Ignore if sound fails to play
+        });
+
+        // Remove notification after delay
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 600);
+        }, 3000);
     }
 }

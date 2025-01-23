@@ -14,6 +14,7 @@ class Camera {
         this.worldWidth = 0;
         this.worldHeight = 0;
         this.ui = null;
+        this.achievementSystem = null; // Add achievement system reference
     }
 
     setWorldSize(width, height) {
@@ -24,7 +25,9 @@ class Camera {
 
     setTarget(target) {
         this.target = target;
-        this.ui = new UI(target, this);  // Pass camera instance to UI
+        // Create UI with shared achievement system
+        this.ui = new UI(target, this);
+        this.achievementSystem = this.ui.achievementSystem; // Store reference to achievement system
     }
 
     follow() {
