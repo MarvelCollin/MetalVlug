@@ -1,7 +1,7 @@
 {
     "BACKGROUND": {
         "ARCADE": {
-            "PATH": "../assets/background/arcade/arcade",
+            "PATH": "../assets/background/arcade_2/arcade_",
             "FRAMES": 1,
             "TYPE": "SINGLE"
         },
@@ -543,6 +543,44 @@
                 "FRAMES": 6,
                 "TYPE": "LOOP",
                 "DELAY": 100
+            },
+            "POTION": {
+                "BLUE": {
+                    "PATH": "../assets/world/items/potion/blue/blue_",
+                    "FRAMES": 6,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "GREEN": {
+                    "PATH": "../assets/world/items/potion/green/green_",
+                    "FRAMES": 12,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "RED": {
+                    "PATH": "../assets/world/items/potion/red/red_",
+                    "FRAMES": 5,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                },
+                "YELLOW": {
+                    "PATH": "../assets/world/items/potion/yellow/yellow_",
+                    "FRAMES": 5,
+                    "TYPE": "LOOP",
+                    "DELAY": 100
+                }
+            }
+        },
+        "MARK": {
+            "PATH": "../assets/world/mark/mark",
+            "FRAMES": 1,
+            "TYPE": "SINGLE"
+        },
+        "SLOT": {
+            "EMPTY": {
+                "PATH": "../assets/world/slot/empty/empty",
+                "FRAMES": 1,
+                "TYPE": "SINGLE"
             }
         }
     }

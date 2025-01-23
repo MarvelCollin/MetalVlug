@@ -842,6 +842,66 @@ export class Assets {
             }
         }
 
+        async getWorldItemsPotionBlue() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.POTION.BLUE;
+            } catch (error) {
+                console.error('Error in getWorldItemsPotionBlue:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsPotionGreen() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.POTION.GREEN;
+            } catch (error) {
+                console.error('Error in getWorldItemsPotionGreen:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsPotionRed() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.POTION.RED;
+            } catch (error) {
+                console.error('Error in getWorldItemsPotionRed:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsPotionYellow() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.POTION.YELLOW;
+            } catch (error) {
+                console.error('Error in getWorldItemsPotionYellow:', error);
+                return null;
+            }
+        }
+
+        async getWorldMark() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.MARK;
+            } catch (error) {
+                console.error('Error in getWorldMark:', error);
+                return null;
+            }
+        }
+
+        async getWorldSlotEmpty() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.SLOT.EMPTY;
+            } catch (error) {
+                console.error('Error in getWorldSlotEmpty:', error);
+                return null;
+            }
+        }
+
 }
 
 const assetsInstance = new Assets();

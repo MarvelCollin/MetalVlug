@@ -6,9 +6,11 @@ export class RumiAikawa extends BaseNPC {
     constructor(x, y, camera) {
         super(x, y, camera, 4);
         this.modal = document.getElementById('rumiAikawaModal');
+        this.shopContent = this.modal.querySelector('.shop-content');
         this.currentSlide = 2; // Set to middle index (0-based, so 2 is middle of 5 items)
         this.itemsPerView = 3;
         this.loadSprites();
+        this.generateShopItems();
         this.setupShopInteractions();
         this.setupCarousel();
         
@@ -62,8 +64,33 @@ export class RumiAikawa extends BaseNPC {
         });
     }
 
+    generateShopItems() {
+        this.shopContent.innerHTML = SHOP_ITEMS.map((item, index) => `
+            <div class="shop-item" data-item-id="${item.id}">
+                <div class="item-icon">
+                    <canvas id="${item.id}Canvas"></canvas>
+                </div>
+                <div class="item-details">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-description">
+                        <span class="buff">${item.buff}</span>
+                        <span class="detail">${item.detail}</span>
+                    </div>
+                    <div class="item-price">
+                        <div class="coin-icon-container">
+                            <canvas class="coin-icon" width="32" height="32"></canvas>
+                        </div>
+                        <span>${item.price}</span>
+                    </div>
+                </div>
+                <button class="card-purchase-btn">Purchase</button>
+            </div>
+        `).join('');
+    }
+
     setupShopInteractions() {
-        const shopItems = document.querySelectorAll('.shop-item');
+        // Update to select from newly generated items
+        const shopItems = this.shopContent.querySelectorAll('.shop-item');
         
         shopItems.forEach(item => {
             const purchaseBtn = item.querySelector('.card-purchase-btn');

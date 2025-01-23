@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="../styles/game.css">
     <link rel="stylesheet" href="../styles/components/rumiAikawaCarousel.css">
     <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components/silverSoldier.css">
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
@@ -42,11 +43,16 @@
     </div>
     
     <div class="modal-overlay" id="silverSoldierModal">
-        <div class="modal">
+        <div class="modal-silver-soldier">
             <div class="modal-title">Mission Control</div>
-            <button class="modal-button">Mission</button>
-            <button class="modal-button">Arcade</button>
-            <button class="modal-button">Cancel</button>
+            <div class="modal-layout">
+                <div class="modal-sidebar">
+                    <button class="modal-button active" data-content="mission">Mission</button>
+                    <button class="modal-button" data-content="arcade">Arcade</button>
+                </div>
+                <div class="modal-content-area">
+                </div>
+            </div>  
         </div>
     </div>
 
@@ -64,103 +70,6 @@
             <div class="carousel-container">
                 <button class="carousel-button prev" id="prevBtn">‹</button>
                 <div class="shop-content">
-                    <div class="shop-item" data-item-id="ammo">
-                        <div class="item-icon">
-                            <canvas id="ammoCanvas"></canvas>
-                        </div>
-                        <div class="item-details">
-                            <div class="item-name">Ammo Pack</div>
-                            <div class="item-description">
-                                <span class="buff">+50 Max Ammo</span>
-                                <span class="detail">Increases maximum ammunition capacity</span>
-                            </div>
-                            <div class="item-price">
-                                <div class="coin-icon-container">
-                                    <canvas class="coin-icon" width="32" height="32"></canvas>
-                                </div>
-                                <span>100</span>
-                            </div>
-                        </div>
-                        <button class="card-purchase-btn">Purchase</button>
-                    </div>
-                    <div class="shop-item" data-item-id="attack">
-                        <div class="item-icon">
-                            <canvas id="attackCanvas"></canvas>
-                        </div>
-                        <div class="item-details">
-                            <div class="item-name">Attack Boost</div>
-                            <div class="item-description">
-                                <span class="buff">+25% Damage</span>
-                                <span class="detail">Enhances weapon damage output</span>
-                            </div>
-                            <div class="item-price">
-                                <div class="coin-icon-container">
-                                    <canvas class="coin-icon" width="32" height="32"></canvas>
-                                </div>
-                                <span>250</span>
-                            </div>
-                        </div>
-                        <button class="card-purchase-btn">Purchase</button>
-                    </div>
-                    <div class="shop-item" data-item-id="bomb">
-                        <div class="item-icon">
-                            <canvas id="bombCanvas"></canvas>
-                        </div>
-                        <div class="item-details">
-                            <div class="item-name">Bomb Pack</div>
-                            <div class="item-description">
-                                <span class="buff">+35% Explosive Damage</span>
-                                <span class="detail">Increases explosive weapon damage</span>
-                            </div>
-                            <div class="item-price">
-                                <div class="coin-icon-container">
-                                    <canvas class="coin-icon" width="32" height="32"></canvas>
-                                </div>
-                                <span>300</span>
-                            </div>
-                        </div>
-                        <button class="card-purchase-btn">Purchase</button>
-                    </div>
-
-                    <div class="shop-item" data-item-id="gas">
-                        <div class="item-icon">
-                            <canvas id="gasCanvas"></canvas>
-                        </div>
-                        <div class="item-details">
-                            <div class="item-name">Gas Tank</div>
-                            <div class="item-description">
-                                <span class="buff">+30% Slug Health</span>
-                                <span class="detail">Improves Metal Slug durability</span>
-                            </div>
-                            <div class="item-price">
-                                <div class="coin-icon-container">
-                                    <canvas class="coin-icon" width="32" height="32"></canvas>
-                                </div>
-                                <span>150</span>
-                            </div>
-                        </div>
-                        <button class="card-purchase-btn">Purchase</button>
-                    </div>
-
-                    <div class="shop-item" data-item-id="health">
-                        <div class="item-icon">
-                            <canvas id="healthCanvas"></canvas>
-                        </div>
-                        <div class="item-details">
-                            <div class="item-name">Health Pack</div>
-                            <div class="item-description">
-                                <span class="buff">+50 Max Health</span>
-                                <span class="detail">Increases maximum health points</span>
-                            </div>
-                            <div class="item-price">
-                                <div class="coin-icon-container">
-                                    <canvas class="coin-icon" width="32" height="32"></canvas>
-                                </div>
-                                <span>200</span>
-                            </div>
-                        </div>
-                        <button class="card-purchase-btn">Purchase</button>
-                    </div>
                 </div>
                 <button class="carousel-button next" id="nextBtn">›</button>
             </div>
