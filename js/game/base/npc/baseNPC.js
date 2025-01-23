@@ -1,5 +1,6 @@
 import Drawer from "../../helper/drawer.js";
 import { ctx } from "../../ctx.js";
+import Assets from "../../helper/assets.js";
 
 export class BaseNPC {
     constructor(x, y, camera, scale = 4) {
@@ -17,9 +18,17 @@ export class BaseNPC {
         this.popupText = "Press ENTER to interact";
         this.popupY = 0;
         this.popupActive = false;
+        this.markSprite = null;
+        this.loadMark();
     }
 
     async loadSprites() {
+    }
+
+    async loadMark() {
+        this.markSprite = await Drawer.loadImage(() => 
+            Assets.getWorldMark()
+        );
     }
 
     isPlayerInRange(player) {
@@ -38,6 +47,21 @@ export class BaseNPC {
     }
 
     draw() {
+        // Draw the mark above NPC if loaded
+        if (this.markSprite?.images) {
+            const markY = this.y - (this.currentSprite?.images[0]?.height * this.scale || 0) - 30;
+            const markOffsetY = Math.sin(Date.now() / 500) * 5; // Floating animation
+            
+            Drawer.drawToCanvas(
+                this.markSprite.images,
+                this.x + (this.currentSprite?.images[0]?.width * this.scale / 2 || 0) - 20, // Center the mark
+                markY + markOffsetY,
+                this.markSprite.delay,
+                false,
+                2 // Smaller scale for the mark
+            );
+        }
+
         if (this.currentSprite?.images) {
             Drawer.drawToCanvas(
                 this.currentSprite.images,

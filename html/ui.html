@@ -1,0 +1,75 @@
+<div class="game-ui">
+    <div class="left-ui">
+        <div class="ammo-container">
+            <canvas class="ui-icon ammo-icon" width="32" height="32"></canvas>
+            <span class="ui-text ammo-count">50</span>
+        </div>
+        <div class="bomb-container">
+            <canvas class="ui-icon bomb-icon" width="32" height="32"></canvas>
+            <span class="ui-text bomb-count">10</span>
+        </div>
+    </div>
+
+    <div class="right-ui">
+        <div class="score-container">
+            <canvas class="ui-icon coin-icon" width="32" height="32"></canvas>
+            <span class="ui-text score-count">1000</span>
+        </div>
+        <div class="health-container">
+            <div class="health-bar">
+                <div class="health-fill"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay inventory-modal" id="inventoryModal">
+    <div class="inventory-container">
+        <h2 class="inventory-title">Inventory</h2>
+        <div class="inventory-layout">
+            <div class="inventory-grid">
+                <div class="inventory-slot empty" data-slot="1"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+            </div>
+            <div class="item-details">
+                <div class="item-preview">
+                    <canvas class="item-preview-icon" width="96" height="96"></canvas>
+                </div>
+                <h3 class="item-name">No item selected</h3>
+                <div class="item-stats">
+                    <div class="stat-row buff">
+                        <span class="stat-label">Buff:</span>
+                        <span class="stat-value">-</span>
+                    </div>
+                    <div class="stat-row effect">
+                        <span class="stat-label">Effect:</span>
+                        <span class="stat-value">-</span>
+                    </div>
+                </div>
+                <div class="item-description">
+                    Select an item to view its details.
+                </div>
+                <button class="consume-button" disabled>Consume Item</button>
+                <div class="consume-effect"></div>
+            </div>
+        </div>
+    </div>
+</div>

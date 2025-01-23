@@ -22,6 +22,7 @@ class Game {
     constructor() {
         this.pauseModal = new PauseModal(this);
         this.isPaused = false;
+        this.inventoryPaused = false;
         
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Escape') {
@@ -29,6 +30,14 @@ class Game {
                     this.pauseModal.continue();
                 } else {
                     this.pauseModal.show();
+                }
+            }
+            if (e.key.toLowerCase() === 'e') {
+                this.inventoryPaused = !this.inventoryPaused;
+                if (this.inventoryPaused) {
+                    this.pause();
+                } else {
+                    this.resume();
                 }
             }
         });
@@ -67,7 +76,8 @@ class Game {
 
     async startAnimation() {
         player = new Player(1000, 300);
-        camera = new Camera(player);
+        camera = new Camera(null);
+        camera.setTarget(player); // Changed from camera.target = player
         enemySpawner = new EnemySpawner(); 
         this.initializeObstacles();
         const bgData = await this.loadBackground();
@@ -130,6 +140,14 @@ class Game {
 
         ctx.restore();
 
+        // Add debug logging
+        if (this.camera.ui) {
+            console.log('Drawing UI...'); // Debug log
+            this.camera.ui.draw();
+        } else {
+            console.log('No UI available'); // Debug log
+        }
+
         requestAnimationFrame(this.gameLoop.bind(this));
     }
 
@@ -144,6 +162,11 @@ const gameState = {
 
 const game = new Game();
 game.startAnimation();
+
+export {     game, 
+    gameState 
+game.startAnimation();
+};
 
 export {     game, 
     gameState 

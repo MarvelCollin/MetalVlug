@@ -63,6 +63,12 @@ class Player extends Entity {
     this.initialX = x;
     this.initialY = y;
     this.isDead = false;
+
+    // Add these properties for UI
+    this.health = 100;
+    this.ammo = 50;
+    this.bombs = 10;
+    this.coins = 1000;
   }
 
   setState(state, sprite = Assets.getPlayerMarcoPistolStandIdleNormal()) {

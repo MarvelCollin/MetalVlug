@@ -7,14 +7,14 @@ export class RumiAikawa extends BaseNPC {
         super(x, y, camera, 4);
         this.modal = document.getElementById('rumiAikawaModal');
         this.shopContent = this.modal.querySelector('.shop-content');
-        this.currentSlide = 2; // Set to middle index (0-based, so 2 is middle of 5 items)
+        this.currentSlide = 2; 
         this.itemsPerView = 3;
+        this.isFlipped = true;
         this.loadSprites();
         this.generateShopItems();
         this.setupShopInteractions();
         this.setupCarousel();
         
-        // Add resize handler
         window.addEventListener('resize', () => {
             if (this.modal.style.display === 'flex') {
                 this.drawWorldItems();
@@ -31,7 +31,6 @@ export class RumiAikawa extends BaseNPC {
         );
         this.currentSprite = this.idleSprite;
 
-        // Load world items
         this.ammoSprite = await Drawer.loadImage(() => 
             Assets.getWorldItemsAmmo()
         );
@@ -48,17 +47,15 @@ export class RumiAikawa extends BaseNPC {
             Assets.getWorldItemsHealth()
         );
 
-        // Add coin sprite loading
         this.coinSprite = await Drawer.loadImage(() => 
             Assets.getWorldItemsCoin()
         );
         
-        // Load and setup currency display with smaller scale
         const currencyIcons = document.querySelectorAll('.coin-icon');
         currencyIcons.forEach(icon => {
             if (icon.tagName === 'CANVAS') {
                 const ctx = icon.getContext('2d');
-                const scale = icon.classList.contains('balance-coin') ? 1.5 : 1.5; // Smaller scale for coins
+                const scale = icon.classList.contains('balance-coin') ? 1.5 : 1.5;
                 this.animateSprite(ctx, this.coinSprite, scale);
             }
         });
@@ -110,20 +107,16 @@ export class RumiAikawa extends BaseNPC {
             const shopItem = document.querySelector(`[data-item-id="${itemId}"]`);
             const purchaseBtn = shopItem.querySelector('.card-purchase-btn');
             
-            // Disable all buttons during animation
             document.querySelectorAll('.card-purchase-btn').forEach(btn => {
                 btn.disabled = true;
             });
             
-            // Add success state
             purchaseBtn.textContent = 'Purchased!';
             purchaseBtn.classList.add('success');
             
-            // Update balance immediately
             const newBalance = currentBalance - item.price;
             this.updateBalance(newBalance);
             
-            // Reset but don't animate if carousel is changing
             const resetPurchaseState = () => {
                 purchaseBtn.textContent = 'Purchase';
                 purchaseBtn.classList.remove('success');
@@ -131,13 +124,11 @@ export class RumiAikawa extends BaseNPC {
                 const successIcon = shopItem.querySelector('.success-icon');
                 if (successIcon) successIcon.remove();
                 
-                // Re-enable all buttons
                 document.querySelectorAll('.card-purchase-btn').forEach(btn => {
                     btn.disabled = false;
                 });
             };
 
-            // Reset immediately if user navigates carousel
             const carouselButtons = document.querySelectorAll('.carousel-button');
             carouselButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -145,29 +136,23 @@ export class RumiAikawa extends BaseNPC {
                 }, { once: true });
             });
 
-            // Add keyboard navigation cleanup
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                     resetPurchaseState();
                 }
             }, { once: true });
 
-            // Normal success animation if no navigation
             shopItem.classList.add('purchase-success', 'showing-success');
             const successIcon = document.createElement('div');
             successIcon.className = 'success-icon';
             shopItem.appendChild(successIcon);
             
-            // Create floating coins
             this.createFloatingCoins(shopItem, item.price);
             
-            // Create success particles
             this.createSuccessParticles(shopItem);
             
-            // Auto reset after delay if no navigation occurs
             setTimeout(resetPurchaseState, 1500);
         } else {
-            // Show insufficient funds feedback
             const purchaseBtn = document.querySelector(`[data-item-id="${itemId}"] .card-purchase-btn`);
             purchaseBtn.textContent = 'Not enough coins!';
             purchaseBtn.style.background = 'linear-gradient(45deg, #ff4444, #cc0000)';

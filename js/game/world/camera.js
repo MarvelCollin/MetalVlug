@@ -1,4 +1,5 @@
 import { GAME_WIDTH, GAME_HEIGHT } from '../config.js';
+import { UI } from './ui.js';
 
 export const VIEWPORT_WIDTH = GAME_WIDTH;
 export const VIEWPORT_HEIGHT = GAME_HEIGHT;
@@ -12,6 +13,7 @@ class Camera {
         this.height = VIEWPORT_HEIGHT;
         this.worldWidth = 0;
         this.worldHeight = 0;
+        this.ui = null;
     }
 
     setWorldSize(width, height) {
@@ -20,12 +22,21 @@ class Camera {
         this.height = height; 
     }
 
+    setTarget(target) {
+        this.target = target;
+        this.ui = new UI(target, this);  // Pass camera instance to UI
+    }
+
     follow() {
         this.x = this.target.x - this.width / 2;
         
         this.y = 0;
 
         this.x = Math.max(0, Math.min(this.x, this.worldWidth - this.width));
+
+        if (this.ui) {
+            this.ui.draw();
+        }
     }
 
     getViewport() {

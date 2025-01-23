@@ -8,19 +8,23 @@ import { debugConfig } from "../helper/debug.js";
 import { baseObstacles } from '../world/obstacles/baseObstacles.js';
 import { RumiAikawa } from './npc/rumiAikawa.js';
 import { SilverSoldier } from './npc/silverSoldier.js';
+import { Ralf } from './npc/ralf.js';
+import { Agent } from './npc/agent.js';
 
 class Base {
   constructor() {
     this.background = null;
     this.camera = new Camera(null);
     this.player = new Player(1400, 1000);
-    this.camera.target = this.player;
+    this.camera.setTarget(this.player); // Changed from camera.target = this.player
     this.lastTimestamp = 0;
     this.playerInput = new PlayerInputHandler(this.player);
     this.obstacles = [...baseObstacles];
     this.npcs = [
       new RumiAikawa(150, 605, this.camera),   
-      new SilverSoldier(1800, 923, this.camera) 
+      new SilverSoldier(1800, 923, this.camera),
+      new Ralf(200  , 923, this.camera),
+      new Agent(1000, 385, this.camera)
     ];
     this.loadAssets();
     this.setupEventListeners();
@@ -126,6 +130,11 @@ class Base {
     });
 
     ctx.restore();
+
+    // Draw UI after restoring context so it stays fixed on screen
+    if (this.camera.ui) {
+      this.camera.ui.draw();
+    }
 
     requestAnimationFrame(this.gameLoop.bind(this));
   }
