@@ -51,12 +51,12 @@ export class RumiAikawa extends BaseNPC {
             Assets.getWorldItemsCoin()
         );
         
-        // Load and setup currency display with larger scale
+        // Load and setup currency display with smaller scale
         const currencyIcons = document.querySelectorAll('.coin-icon');
         currencyIcons.forEach(icon => {
             if (icon.tagName === 'CANVAS') {
                 const ctx = icon.getContext('2d');
-                const scale = icon.classList.contains('balance-coin') ? 3 : 3; // Larger scale for coins
+                const scale = icon.classList.contains('balance-coin') ? 1.5 : 1.5; // Smaller scale for coins
                 this.animateSprite(ctx, this.coinSprite, scale);
             }
         });
@@ -77,41 +77,68 @@ export class RumiAikawa extends BaseNPC {
 
     completePurchase(itemId) {
         const item = SHOP_ITEMS.find(i => i.id === itemId);
-        if (item && player.coins >= item.price) {
-            player.coins -= item.price;
-            item.effect(player);
-            
-            // Visual feedback
+        const currentBalance = parseInt(document.querySelector('.player-balance span:last-child').textContent);
+        
+        if (item && currentBalance >= item.price) {
             const shopItem = document.querySelector(`[data-item-id="${itemId}"]`);
             const purchaseBtn = shopItem.querySelector('.card-purchase-btn');
+            
+            // Disable all buttons during animation
+            document.querySelectorAll('.card-purchase-btn').forEach(btn => {
+                btn.disabled = true;
+            });
             
             // Add success state
             purchaseBtn.textContent = 'Purchased!';
             purchaseBtn.classList.add('success');
-            shopItem.classList.add('purchase-success');
             
-            // Add and animate success icon
-            const successIcon = document.createElement('div');
-            successIcon.className = 'success-icon';
-            shopItem.appendChild(successIcon);
-            shopItem.classList.add('showing-success');
-
-            // Play success sound (if you have one)
-            // this.playSuccessSound();
+            // Update balance immediately
+            const newBalance = currentBalance - item.price;
+            this.updateBalance(newBalance);
             
-            // Reset after animation
-            setTimeout(() => {
+            // Reset but don't animate if carousel is changing
+            const resetPurchaseState = () => {
                 purchaseBtn.textContent = 'Purchase';
                 purchaseBtn.classList.remove('success');
                 shopItem.classList.remove('purchase-success', 'showing-success');
-                successIcon.remove();
-            }, 1500);
+                const successIcon = shopItem.querySelector('.success-icon');
+                if (successIcon) successIcon.remove();
+                
+                // Re-enable all buttons
+                document.querySelectorAll('.card-purchase-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+            };
 
-            // Update balance display
-            this.updateBalance(player.coins);
+            // Reset immediately if user navigates carousel
+            const carouselButtons = document.querySelectorAll('.carousel-button');
+            carouselButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    resetPurchaseState();
+                }, { once: true });
+            });
+
+            // Add keyboard navigation cleanup
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    resetPurchaseState();
+                }
+            }, { once: true });
+
+            // Normal success animation if no navigation
+            shopItem.classList.add('purchase-success', 'showing-success');
+            const successIcon = document.createElement('div');
+            successIcon.className = 'success-icon';
+            shopItem.appendChild(successIcon);
             
-            // Add floating coins effect
+            // Create floating coins
             this.createFloatingCoins(shopItem, item.price);
+            
+            // Create success particles
+            this.createSuccessParticles(shopItem);
+            
+            // Auto reset after delay if no navigation occurs
+            setTimeout(resetPurchaseState, 1500);
         } else {
             // Show insufficient funds feedback
             const purchaseBtn = document.querySelector(`[data-item-id="${itemId}"] .card-purchase-btn`);
@@ -126,33 +153,104 @@ export class RumiAikawa extends BaseNPC {
     }
 
     createFloatingCoins(element, amount) {
-        const numCoins = Math.min(5, Math.ceil(amount / 50)); // 1 coin per 50 price, max 5
+        const numCoins = Math.min(5, Math.ceil(amount / 50));
+        const balanceElement = document.querySelector('.player-balance');
+        const balanceCoin = balanceElement.querySelector('.coin-icon-container');
+        const balanceRect = balanceCoin.getBoundingClientRect();
+        const targetRect = element.getBoundingClientRect();
         
         for (let i = 0; i < numCoins; i++) {
             const coin = document.createElement('div');
             coin.className = 'floating-coin';
             coin.innerHTML = `<canvas width="32" height="32"></canvas>`;
-            element.appendChild(coin);
+            document.body.appendChild(coin);
             
-            // Position randomly within the element
-            const x = Math.random() * 80 - 40; // -40 to 40px
-            const delay = i * 100; // Stagger the animations
+            const startX = balanceRect.left + balanceRect.width / 2;
+            const startY = balanceRect.top + balanceRect.height / 2;
+            const endX = targetRect.left + targetRect.width / 2;
+            const endY = targetRect.top + targetRect.height / 2;
             
-            // Animate the coin
+            const arcHeight = -(100 + Math.random() * 100);
+            const delay = i * 100;
+            
             coin.style.cssText = `
-                position: absolute;
-                left: 50%;
-                bottom: 50%;
-                transform: translate(${x}px, 0);
-                animation: floatCoin 1s ${delay}ms ease-out forwards;
+                position: fixed;
+                left: ${startX}px;
+                top: ${startY}px;
+                transform: translate(-50%, -50%);
+                z-index: 9999;
+                pointer-events: none;
             `;
             
-            // Setup coin sprite animation
             const ctx = coin.querySelector('canvas').getContext('2d');
             this.animateSprite(ctx, this.coinSprite, 1.5);
             
+            coin.animate([
+                {
+                    left: `${startX}px`,
+                    top: `${startY}px`,
+                    offset: 0
+                },
+                {
+                    left: `${(startX + endX) / 2}px`,
+                    top: `${(startY + endY) / 2 + arcHeight}px`,
+                    offset: 0.5
+                },
+                {
+                    left: `${endX}px`,
+                    top: `${endY}px`,
+                    offset: 1
+                }
+            ], {
+                duration: 1000,
+                delay: delay,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                fill: 'forwards'
+            });
+            
             // Remove after animation
             setTimeout(() => coin.remove(), 1000 + delay);
+        }
+    }
+
+    createSuccessParticles(element) {
+        const numParticles = 20;
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        for (let i = 0; i < numParticles; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'success-particles';
+            document.body.appendChild(particle);
+
+            // Random position around the center
+            const angle = (Math.PI * 2 * i) / numParticles;
+            const distance = 100 + Math.random() * 50;
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+
+            particle.style.left = `${centerX}px`;
+            particle.style.top = `${centerY}px`;
+            particle.style.setProperty('--x', `${x}px`);
+            particle.style.setProperty('--y', `${y}px`);
+
+            particle.animate([
+                {
+                    transform: 'translate(0, 0) scale(1)',
+                    opacity: 1
+                },
+                {
+                    transform: `translate(${x}px, ${y}px) scale(0)`,
+                    opacity: 0
+                }
+            ], {
+                duration: 1000,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                fill: 'forwards'
+            });
+
+            setTimeout(() => particle.remove(), 1000);
         }
     }
 
@@ -166,16 +264,23 @@ export class RumiAikawa extends BaseNPC {
     onInteract() {
         if (this.modal) {
             this.modal.style.display = 'flex';
+            requestAnimationFrame(() => {
+                this.modal.classList.add('show');
+            });
+            
             this.drawWorldItems();
-            // Force carousel to update and show middle item immediately
+            
             const items = this.modal.querySelectorAll('.shop-item');
-            this.currentSlide = Math.floor((items.length - 1) / 2); // Ensures middle item (index 2)
+            items.forEach((item, index) => {
+                item.style.setProperty('--index', index);
+            });
+            
+            this.currentSlide = Math.floor((items.length - 1) / 2);
             this.updateCarousel();
 
             const handleClick = (e) => {
-                if (e.target.classList.contains('close-btn') || 
-                    e.target.classList.contains('modal-overlay')) {
-                    this.modal.style.display = 'none';
+                if (e.target.classList.contains('modal-overlay')) {
+                    this.closeModal();
                 }
             };
 
@@ -183,14 +288,18 @@ export class RumiAikawa extends BaseNPC {
         }
     }
 
-    drawWorldItems() {
-        const getScale = () => {
-            const width = window.innerWidth;
-            if (width <= 480) return 1.2;  // Further reduced scales
-            if (width <= 768) return 1.5;
-            return 2;  // Reduced from 3
-        };
+    closeModal() {
+        this.modal.classList.add('closing');
+        this.modal.classList.remove('show');
+        
+        // Wait for animations to finish
+        setTimeout(() => {
+            this.modal.classList.remove('closing');
+            this.modal.style.display = 'none';
+        }, 500);
+    }
 
+    drawWorldItems() {
         const items = [
             { canvasId: 'ammoCanvas', sprite: this.ammoSprite },
             { canvasId: 'attackCanvas', sprite: this.attackSprite },
@@ -199,154 +308,123 @@ export class RumiAikawa extends BaseNPC {
             { canvasId: 'healthCanvas', sprite: this.healthSprite }
         ];
 
-        const scale = getScale();
-
         items.forEach(item => {
             const canvas = document.getElementById(item.canvasId);
             if (canvas && item.sprite) {
                 const ctx = canvas.getContext('2d');
-                canvas.width = item.sprite.images[0].width * scale;
-                canvas.height = item.sprite.images[0].height * scale;
-                this.animateSprite(ctx, item.sprite, scale);
+                canvas.width = 80;
+                canvas.height = 80;
+                this.animateSprite(ctx, item.sprite, 2);
             }
         });
-
-        // Update coin icons scale
-        const currencyIcons = document.querySelectorAll('.coin-icon');
-        currencyIcons.forEach(icon => {
-            if (icon.tagName === 'CANVAS') {
-                const ctx = icon.getContext('2d');
-                const coinScale = window.innerWidth <= 768 ? 1.2 : 1.5;  // Reduced scales
-                this.animateSprite(ctx, this.coinSprite, coinScale);
-            }
-        });
+        
     }
 
     animateSprite(ctx, sprite, scale = 1) {
+        const canvas = ctx.canvas;
+        
         let frameIndex = 0;
         const drawFrame = () => {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.save();
-            ctx.scale(scale, scale);
-            Drawer.drawImageFromBottom(
-                sprite.images[frameIndex], 
-                0, 
-                ctx.canvas.height / scale, 
-                false, 
-                1, 
-                ctx
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const imgWidth = sprite.images[frameIndex].width * scale;
+            const imgHeight = sprite.images[frameIndex].height * scale;
+            
+            const x = (canvas.width - imgWidth) / 2;
+            const y = (canvas.height - imgHeight) / 2;
+            
+            ctx.drawImage(
+                sprite.images[frameIndex],
+                x,
+                y,
+                imgWidth,
+                imgHeight
             );
-            ctx.restore();
+            
             frameIndex = (frameIndex + 1) % sprite.images.length;
             setTimeout(drawFrame, sprite.delay);
         };
         drawFrame();
     }
 
-    setupCarousel() {
-        // Move updateCarousel to class level so it can be called from other methods
-        this.updateCarousel = () => {
-            const items = this.modal.querySelectorAll('.shop-item');
-            const itemWidth = items[0].offsetWidth;
-            const gap = 20;
-            const containerWidth = this.modal.querySelector('.carousel-container').offsetWidth;
-            const centerOffset = (containerWidth - itemWidth) / 2;
-            
-            const offset = -(this.currentSlide * (itemWidth + gap)) + centerOffset;
-            const content = this.modal.querySelector('.shop-content');
-            content.style.transform = `translateX(${offset}px)`;
+    updateCarousel() {
+        const items = [...this.modal.querySelectorAll('.shop-item')];
+        const totalItems = items.length;
 
-            // Update active states
-            items.forEach((item, index) => {
-                if (index === this.currentSlide) {
+        items.forEach((item, index) => {
+            item.classList.remove('active', 'prev-1', 'prev-2', 'next-1', 'next-2');
+            
+            const position = (index - this.currentSlide + totalItems) % totalItems;
+            
+            switch (position) {
+                case 0:
                     item.classList.add('active');
-                    item.style.opacity = '1';
-                    item.style.transform = 'scale(1.05)';
-                } else {
-                    item.classList.remove('active');
-                    item.style.opacity = '0.6';
-                    item.style.transform = 'scale(1)';
-                }
-            });
-
-            // Update button states
-            const prevBtn = this.modal.querySelector('#prevBtn');
-            const nextBtn = this.modal.querySelector('#nextBtn');
-            prevBtn.style.opacity = this.currentSlide === 0 ? '0.5' : '1';
-            prevBtn.style.pointerEvents = this.currentSlide === 0 ? 'none' : 'auto';
-            
-            nextBtn.style.opacity = this.currentSlide >= items.length - 1 ? '0.5' : '1';
-            nextBtn.style.pointerEvents = this.currentSlide >= items.length - 1 ? 'none' : 'auto';
-        };
-
-        const prevBtn = this.modal.querySelector('#prevBtn');
-        const nextBtn = this.modal.querySelector('#nextBtn');
-        const content = this.modal.querySelector('.shop-content');
-        const items = content.querySelectorAll('.shop-item');
-        
-        this.currentSlide = Math.floor((items.length - 1) / 2);
-        
-        const updateCarousel = () => {
-            const itemWidth = items[0].offsetWidth;
-            const gap = 20;
-            const containerWidth = this.modal.querySelector('.carousel-container').offsetWidth;
-            const centerOffset = (containerWidth - itemWidth) / 2;
-            
-            const offset = -(this.currentSlide * (itemWidth + gap)) + centerOffset;
-            content.style.transform = `translateX(${offset}px)`;
-
-            items.forEach((item, index) => {
-                if (index === this.currentSlide) {
-                    item.classList.add('active');
-                    item.style.opacity = '1';
-                    item.style.transform = 'scale(1.05)';
-                } else {
-                    item.classList.remove('active');
-                    item.style.opacity = '0.6';
-                    item.style.transform = 'scale(1)';
-                }
-            });
-
-            prevBtn.style.opacity = this.currentSlide === 0 ? '0.5' : '1';
-            prevBtn.style.pointerEvents = this.currentSlide === 0 ? 'none' : 'auto';
-            
-            nextBtn.style.opacity = this.currentSlide >= items.length - 1 ? '0.5' : '1';
-            nextBtn.style.pointerEvents = this.currentSlide >= items.length - 1 ? 'none' : 'auto';
-        };
-
-        prevBtn.addEventListener('click', () => {
-            if (this.currentSlide > 0) {
-                this.currentSlide--;
-                updateCarousel();
+                    item.style.zIndex = 5;
+                    break;
+                case totalItems - 1:
+                    item.classList.add('prev-1');
+                    item.style.zIndex = 4;
+                    break;
+                case totalItems - 2:
+                    item.classList.add('prev-2');
+                    item.style.zIndex = 3;
+                    break;
+                case 1:
+                    item.classList.add('next-1');
+                    item.style.zIndex = 4;
+                    break;
+                case 2:
+                    item.classList.add('next-2');
+                    item.style.zIndex = 3;
+                    break;
+                default:
+                    item.style.opacity = '0';
+                    item.style.zIndex = 1;
             }
         });
 
+        const prevBtn = this.modal.querySelector('#prevBtn');
+        const nextBtn = this.modal.querySelector('#nextBtn');
+        prevBtn.style.opacity = '1';
+        nextBtn.style.opacity = '1';
+        prevBtn.style.pointerEvents = 'auto';
+        nextBtn.style.pointerEvents = 'auto';
+    }
+
+    setupCarousel() {
+        const prevBtn = this.modal.querySelector('#prevBtn');
+        const nextBtn = this.modal.querySelector('#nextBtn');
+        const items = this.modal.querySelectorAll('.shop-item');
+        
+        prevBtn.addEventListener('click', () => {
+            this.currentSlide = (this.currentSlide - 1 + items.length) % items.length;
+            this.updateCarousel();
+        });
+
         nextBtn.addEventListener('click', () => {
-            if (this.currentSlide < items.length - 1) {
-                this.currentSlide++;
-                updateCarousel();
-            }
+            this.currentSlide = (this.currentSlide + 1) % items.length;
+            this.updateCarousel();
         });
 
         // Add keyboard navigation
         window.addEventListener('keydown', (e) => {
             if (this.modal.style.display === 'flex') {
-                if (e.key === 'ArrowLeft' && this.currentSlide > 0) {
-                    this.currentSlide--;
-                    updateCarousel();
-                } else if (e.key === 'ArrowRight' && this.currentSlide < items.length - 1) {
-                    this.currentSlide++;
-                    updateCarousel();
+                if (e.key === 'ArrowLeft') {
+                    this.currentSlide = (this.currentSlide - 1 + items.length) % items.length;
+                    this.updateCarousel();
+                } else if (e.key === 'ArrowRight') {
+                    this.currentSlide = (this.currentSlide + 1) % items.length;
+                    this.updateCarousel();
                 }
             }
         });
 
         // Initial setup
-        updateCarousel();
+        this.updateCarousel();
 
         // Update on window resize
         window.addEventListener('resize', () => {
-            updateCarousel();
+            this.updateCarousel();
         });
     }
 }

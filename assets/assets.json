@@ -530,7 +530,7 @@
                 "PATH": "../assets/world/items/coin/coin_",
                 "FRAMES": 9,
                 "TYPE": "LOOP",
-                "DELAY": 200
+                "DELAY": 100
             },
             "GAS": {
                 "PATH": "../assets/world/items/gas/gas_",

@@ -29,7 +29,7 @@
     </style>
     <link rel="stylesheet" href="../styles/hoverMenu.css">
     <link rel="stylesheet" href="../styles/game.css">
-    <link rel="stylesheet" href="../styles/modal.css">
+    <link rel="stylesheet" href="../styles/components/rumiAikawaCarousel.css">
     <link rel="stylesheet" href="../styles/global.css">
 </head>
 <body>
@@ -53,10 +53,12 @@
     <div class="modal-overlay" id="rumiAikawaModal">
         <div class="modal shop-modal">
             <button class="close-btn"></button>
-            <div class="modal-title">Metal Shop</div>
+            <div class="modal-title">Rumi Aikawa's Shop</div>
             <div class="player-balance">
                 <span>Balance</span>
-                <canvas class="coin-icon balance-coin" width="48" height="48"></canvas>
+                <div class="coin-icon-container">
+                    <canvas class="coin-icon" width="32" height="32"></canvas>
+                </div>
                 <span>1000</span>
             </div>
             <div class="carousel-container">
@@ -73,7 +75,9 @@
                                 <span class="detail">Increases maximum ammunition capacity</span>
                             </div>
                             <div class="item-price">
-                                <canvas class="coin-icon" width="48" height="48"></canvas>
+                                <div class="coin-icon-container">
+                                    <canvas class="coin-icon" width="32" height="32"></canvas>
+                                </div>
                                 <span>100</span>
                             </div>
                         </div>
@@ -90,7 +94,9 @@
                                 <span class="detail">Enhances weapon damage output</span>
                             </div>
                             <div class="item-price">
-                                <canvas class="coin-icon" width="48" height="48"></canvas>
+                                <div class="coin-icon-container">
+                                    <canvas class="coin-icon" width="32" height="32"></canvas>
+                                </div>
                                 <span>250</span>
                             </div>
                         </div>
@@ -107,7 +113,9 @@
                                 <span class="detail">Increases explosive weapon damage</span>
                             </div>
                             <div class="item-price">
-                                <canvas class="coin-icon" width="48" height="48"></canvas>
+                                <div class="coin-icon-container">
+                                    <canvas class="coin-icon" width="32" height="32"></canvas>
+                                </div>
                                 <span>300</span>
                             </div>
                         </div>
@@ -125,7 +133,9 @@
                                 <span class="detail">Improves Metal Slug durability</span>
                             </div>
                             <div class="item-price">
-                                <canvas class="coin-icon" width="48" height="48"></canvas>
+                                <div class="coin-icon-container">
+                                    <canvas class="coin-icon" width="32" height="32"></canvas>
+                                </div>
                                 <span>150</span>
                             </div>
                         </div>
@@ -143,7 +153,9 @@
                                 <span class="detail">Increases maximum health points</span>
                             </div>
                             <div class="item-price">
-                                <canvas class="coin-icon" width="48" height="48"></canvas>
+                                <div class="coin-icon-container">
+                                    <canvas class="coin-icon" width="32" height="32"></canvas>
+                                </div>
                                 <span>200</span>
                             </div>
                         </div>
@@ -151,10 +163,6 @@
                     </div>
                 </div>
                 <button class="carousel-button next" id="nextBtn">›</button>
-            </div>
-            <div class="shop-actions">
-                <button class="shop-button">Purchase</button>
-                <button class="shop-button cancel">Close</button>
             </div>
         </div>
     </div>
