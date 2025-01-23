@@ -842,6 +842,26 @@ export class Assets {
             }
         }
 
+        async getWorldItemsApple() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.APPLE;
+            } catch (error) {
+                console.error('Error in getWorldItemsApple:', error);
+                return null;
+            }
+        }
+
+        async getWorldItemsMedal() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.ITEMS.MEDAL;
+            } catch (error) {
+                console.error('Error in getWorldItemsMedal:', error);
+                return null;
+            }
+        }
+
         async getWorldItemsPotionBlue() {
             try {
                 const assets = await this.fetchAssets();

@@ -59,3 +59,26 @@
         0 0 10px rgba(153, 50, 204, 0.4),
         0 0 20px rgba(153, 50, 204, 0.2);
 }
+
+.cheat-notification {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: 2px solid #ffd700;
+    font-family: 'Metal Slug Latino', sans-serif;
+    font-size: 20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10000;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.cheat-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}

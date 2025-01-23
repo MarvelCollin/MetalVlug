@@ -252,19 +252,22 @@ export class AchievementSystem {
         achievement.progress = Math.min(progress, achievementData.target);
         achievement.completed = achievement.progress >= achievementData.target;
         
+        // Initialize rewardClaimed if it doesn't exist
+        if (achievement.rewardClaimed === undefined) {
+            achievement.rewardClaimed = false;
+        }
+        
         this.saveAchievements();
         this.updateUI();
         
-        
         if (wasNotCompleted && achievement.completed) {
-            
             if (this.onAchievementUnlocked) {
                 this.onAchievementUnlocked(achievementData);
             }
-            
-            if (!achievement.rewardClaimed) {
-                this.claimReward(achievementId);
-            }
+            // Remove this line to prevent auto-claiming
+            // if (!achievement.rewardClaimed) {
+            //     this.claimReward(achievementId);
+            // }
         }
     }
 
@@ -303,16 +306,11 @@ export class AchievementSystem {
             </div>
         `;
 
-        
         const claimBtn = card.querySelector('.claim-reward-btn');
-        claimBtn.style.display = 'none'; 
         claimBtn.onclick = () => this.claimReward(achievement.id);
 
-        
-        const savedAchievement = this.achievements[achievement.id];
-        if (savedAchievement?.completed && !savedAchievement?.rewardClaimed) {
-            claimBtn.style.display = 'block';
-        }
+        // Initially hide the button - will be shown in updateUI if needed
+        claimBtn.style.display = 'none';
 
         return card;
     }
@@ -340,12 +338,8 @@ export class AchievementSystem {
             card.classList.toggle('completed', achievement.completed);
             card.classList.toggle('locked', !achievement.completed);
 
-            
-            if (achievement.completed && !achievement.rewardClaimed) {
-                claimBtn.style.display = 'block';
-            } else {
-                claimBtn.style.display = 'none';
-            }
+            // Show claim button if achievement is completed and reward not claimed
+            claimBtn.style.display = (achievement.completed && !achievement.rewardClaimed) ? 'block' : 'none';
         });
     }
 

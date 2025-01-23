@@ -2,15 +2,12 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
     pointer-events: none;
-    z-index: 9999;
+    z-index: 100; /* Lower value */
     display: flex;
     justify-content: space-between;
     padding: 20px;
     font-family: 'Metal Slug Latino', sans-serif;
-    overflow: hidden;
     image-rendering: pixelated;
 }
 
@@ -38,9 +35,19 @@
     gap: 10px;
 }
 
+.score-container, .medal-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.medal-container {
+    margin-top: -5px; /* Add some spacing between coin and medal */
+}
+
 .ui-text {
     position: relative;
-    z-index: 1001;
+    z-index: 101;  /* Lower value */
     color: white;
     font-family: 'Metal Slug Latino', sans-serif;
     font-size: 24px;
@@ -56,7 +63,7 @@
 
 .ui-icon {
     position: relative;
-    z-index: 1001;
+    z-index: 101;  /* Lower value */
     width: 32px;
     height: 32px;
     image-rendering: pixelated;
@@ -68,6 +75,7 @@
     background: rgba(0, 0, 0, 0.5);
     border: 2px solid white;
     box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    z-index: 101; /* Lower value */
 }
 
 .health-fill {
@@ -85,7 +93,7 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.8);
-    z-index: 10000;
+    z-index: 9000; /* Lower value */
     pointer-events: all;
     backdrop-filter: blur(4px);
     opacity: 0;
@@ -392,4 +400,18 @@
         transform: translate(var(--x), var(--y)) scale(0);
         opacity: 0;
     }
+}
+
+.achievements-modal {
+    z-index: 9000; /* Lower value */
+}
+
+/* Optional: Add for shop modal if needed */
+.shop-modal {
+    z-index: 9000; /* Lower value */
+}
+
+/* Optional: Add for admin modal if needed */
+.admin-modal {
+    z-index: 9001; /* Highest z-index to be above all other modals */
 }

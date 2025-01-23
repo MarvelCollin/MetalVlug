@@ -544,28 +544,39 @@
                 "TYPE": "LOOP",
                 "DELAY": 100
             },
+            "APPLE": {
+                "PATH": "../assets/world/items/inventory/apple",
+                "FRAMES": 11,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "MEDAL": {
+                "PATH": "../assets/world/items/medal/medal",
+                "FRAMES": 1,
+                "TYPE": "SINGLE"
+            },
             "POTION": {
                 "BLUE": {
                     "PATH": "../assets/world/items/potion/blue/blue_",
-                    "FRAMES": 6,
+                    "FRAMES": 5,
                     "TYPE": "LOOP",
                     "DELAY": 100
                 },
                 "GREEN": {
                     "PATH": "../assets/world/items/potion/green/green_",
-                    "FRAMES": 12,
+                    "FRAMES": 11,
                     "TYPE": "LOOP",
                     "DELAY": 100
                 },
                 "RED": {
                     "PATH": "../assets/world/items/potion/red/red_",
-                    "FRAMES": 5,
+                    "FRAMES": 4,
                     "TYPE": "LOOP",
                     "DELAY": 100
                 },
                 "YELLOW": {
                     "PATH": "../assets/world/items/potion/yellow/yellow_",
-                    "FRAMES": 5,
+                    "FRAMES": 4,
                     "TYPE": "LOOP",
                     "DELAY": 100
                 }

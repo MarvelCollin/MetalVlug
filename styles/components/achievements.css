@@ -8,6 +8,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    position: fixed;  /* Add this */
+    top: 50%;        /* Add this */
+    left: 50%;       /* Add this */
+    transform: translate(-50%, -50%); /* Add this */
+    z-index: 100000; /* Increase z-index */
 }
 
 .achievements-list {
@@ -129,6 +134,9 @@
 
 .achievement-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;  /* Add gap between elements */
 }
 
 .achievement-name {
@@ -200,7 +208,7 @@
 }
 
 .claim-reward-btn {
-    margin-top: 10px;
+    margin-top: auto;  /* Push button to bottom */
     padding: 8px 16px;
     background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
     border: 2px solid #ffd700;
@@ -213,9 +221,11 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    width: 100%;
     position: relative;
     overflow: hidden;
+    min-height: 36px;  /* Ensure minimum height */
+    width: 100%;       /* Full width */
+    z-index: 1;        /* Ensure button is above other elements */
 }
 
 .claim-reward-btn::before {

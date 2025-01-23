@@ -1,3 +1,5 @@
+import { ACHIEVEMENTS } from './achievement.js';
+
 export class AdminPanel {
     constructor(achievementSystem) {
         this.achievementSystem = achievementSystem;
@@ -51,21 +53,41 @@ export class AdminPanel {
         const closeBtn = modal.querySelector('.close-admin');
 
         resetBtn.onclick = () => {
+            
             localStorage.removeItem('achievements');
+            
+            
+            const oldAchievements = this.achievementSystem.achievements;
             this.achievementSystem.achievements = this.achievementSystem.loadAchievements();
+            
+            
+            Object.keys(this.achievementSystem.achievements).forEach(id => {
+                if (oldAchievements[id]?.rewardClaimed) {
+                    this.achievementSystem.achievements[id].rewardClaimed = oldAchievements[id].rewardClaimed;
+                }
+            });
+            
+            this.achievementSystem.saveAchievements();
             this.achievementSystem.updateUI();
             this.showNotification('Achievements Reset');
         };
 
         unlockAllBtn.onclick = () => {
-            Object.keys(this.achievementSystem.achievements).forEach(id => {
-                const achievementData = Object.values(this.achievementSystem.ACHIEVEMENTS)
-                    .find(a => a.id === id);
-                if (achievementData) {
-                    this.achievementSystem.updateProgress(id, achievementData.target);
-                }
+            const currentAchievements = this.achievementSystem.achievements;
+            
+            Object.values(ACHIEVEMENTS).forEach(achievement => {
+                
+                const rewardClaimed = currentAchievements[achievement.id]?.rewardClaimed || false;
+                this.achievementSystem.achievements[achievement.id] = {
+                    progress: achievement.target,
+                    completed: true,
+                    rewardClaimed: rewardClaimed 
+                };
             });
-            this.showNotification('All Achievements Unlocked');
+            
+            this.achievementSystem.saveAchievements();
+            this.achievementSystem.updateUI();
+            this.showNotification('All Achievements Unlocked!');
         };
 
         closeBtn.onclick = () => this.hideAdminModal();

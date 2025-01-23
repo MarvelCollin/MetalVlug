@@ -30,6 +30,15 @@ export class UI {
         this.adminPanel = new AdminPanel(this.achievementSystem);
         this.cheatHandler = new CheatHandler(this.achievementSystem);
         this.init();
+        this.setupMedalListener();
+    }
+
+    setupMedalListener() {
+        document.addEventListener('medalUpdate', (e) => {
+            if (this.medalCount) {
+                this.medalCount.textContent = e.detail.medals;
+            }
+        });
     }
 
     async init() {
@@ -46,7 +55,8 @@ export class UI {
         this.images = {
             ammo: await Drawer.loadImage(() => Assets.getWorldItemsAmmo()),
             bomb: await Drawer.loadImage(() => Assets.getWorldItemsBomb()),
-            coin: await Drawer.loadImage(() => Assets.getWorldItemsCoin())
+            coin: await Drawer.loadImage(() => Assets.getWorldItemsCoin()),
+            medal: await Drawer.loadImage(() => Assets.getWorldItemsMedal()) // Add medal
         };
     }
 
@@ -80,6 +90,7 @@ export class UI {
             this.ammoCount = document.querySelector('.ammo-count');
             this.bombCount = document.querySelector('.bomb-count');
             this.scoreCount = document.querySelector('.score-count');
+            this.medalCount = document.querySelector('.medal-count'); // Add this line
             this.healthFill = document.querySelector('.health-fill');
 
             
@@ -186,12 +197,17 @@ export class UI {
     }
 
     updateBasicUI() {
-        this.ammoCount.textContent = this.player.ammo || 50;
-        this.bombCount.textContent = this.player.bombs || 10;
-        this.scoreCount.textContent = this.player.coins || 1000;
+        if (!this.uiElement) return; // Add safety check
         
-        const healthPercent = ((this.player.health || 100) / 100) * 100;
-        this.healthFill.style.width = `${healthPercent}%`;
+        // Add null checks for all UI elements
+        if (this.ammoCount) this.ammoCount.textContent = this.player.ammo || 50;
+        if (this.bombCount) this.bombCount.textContent = this.player.bombs || 10;
+        if (this.scoreCount) this.scoreCount.textContent = this.player.coins || 1000;
+        if (this.medalCount) this.medalCount.textContent = this.player.medals || 0;
+        if (this.healthFill) {
+            const healthPercent = ((this.player.health || 100) / 100) * 100;
+            this.healthFill.style.width = `${healthPercent}%`;
+        }
     }
 
     showAchievementNotification(achievement) {
