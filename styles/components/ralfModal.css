@@ -4,57 +4,97 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.8);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 9000;
     opacity: 0;
     transition: opacity 0.3s ease;
-    backdrop-filter: blur(4px);
 }
 
 .modal-overlay#ralfModal.show {
     opacity: 1;
 }
 
+
 .ralf-modal {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.98) 0%, rgba(20, 20, 20, 0.98) 100%);
-    padding: 25px; 
-    border-radius: 16px;
-    width: 700px; 
-    max-width: 90vw;
+    padding: 35px; 
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    overflow: visible;
     color: white;
     position: relative;
     transform: scale(0.95);
     transition: transform 0.3s ease;
-    border: 1px solid rgba(196, 164, 52, 0.3);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+
+.modal-inner-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 30px;
+    padding-top: 40px;
+}
+
+.ralf-modal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ralf-modal::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+.ralf-modal::-webkit-scrollbar-thumb {
+    background: #c4a434;
+    border-radius: 3px;
 }
 
 .modal-overlay#ralfModal.show .ralf-modal {
     transform: scale(1);
 }
 
+
 .modal-title {
     font-size: 32px;
     color: #ffd700;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 2px;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    position: sticky;
+    top: 0;
+    padding: 20px 0;
+    z-index: 10;
 }
+
 
 .ralf-modal-layout {
     display: flex;
+    gap: 50px;
+    margin-top: 50px;
+    max-width: 1000px;
+    margin: 30px auto 0;
+    display: flex;
     gap: 40px;
-    margin-top: 40px;
-   
+    border-radius: 12px;
+    padding: 20px;
 }
 
 .skill-container {
-    flex: 0 0 55%; 
+    flex: 0 0 60%; 
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     gap: 15px; 
@@ -77,11 +117,8 @@
 }
 
 .skill-details {
-    flex: 0 0 40%; 
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    padding: 15px; 
-    border: 2px solid rgba(196, 164, 52, 0.3);
+    flex: 0 0 35%; 
+    padding: 20px; 
     display: flex;
     flex-direction: column;
     position: relative;
@@ -98,6 +135,15 @@
     margin-bottom: 15px; 
     text-align: center;
     filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+    width: 40px; 
+    height: 40px;
+    margin: 0 auto 10px;
+}
+
+.selected-skill-icon img {
+    width: 80%;
+    height: 80%;
+    margin: auto;
 }
 
 .skill-container {
@@ -134,6 +180,8 @@
     transition: all 0.3s ease;
     cursor: pointer;
     height: 90px; 
+    width: 45px; 
+    height: 45px;
 }
 
 .skill-slot:hover {
@@ -148,16 +196,25 @@
 }
 
 .skill-icon {
-    width: 50px; 
-    height: 50px; 
-    font-size: 32px; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    border: 1px solid rgba(196, 164, 52, 0.3);
-    flex-shrink: 0;
+    width: 45px;
+    height: 45px;
+    font-size: 28px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #1a1a1a 0%, #000000 100%);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+    width: 35px; 
+    height: 35px;
+}
+
+.skill-icon img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    margin: auto;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+    width: 70%;   
+    height: 70%;  
+    padding: 2px; 
 }
 
 .skill-info {
@@ -171,7 +228,6 @@
     color: #ffd700;
     font-size: 20px; 
     margin-bottom: 10px; 
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .skill-description {
@@ -182,7 +238,6 @@
 }
 
 .skill-stats {
-    background: rgba(0, 0, 0, 0.2);
     padding: 12px; 
     border-radius: 8px;
     margin: 15px 0; 
@@ -238,53 +293,259 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(0, 0, 0, 0.7);
     padding: 5px 10px;
     border-radius: 4px;
     font-size: 14px;
     color: #ffd700;
 }
 
+
 .all-skills-container {
-    margin-top: 40px;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px; 
-    max-height: 55vh; 
-    overflow-y: auto;
-    padding-right: 15px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .all-skills-container .skill-slot {
-    height: auto; 
-    min-height: 120px;
-    padding: 15px;
-}
-
-.all-skills-container .skill-info {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    min-height: unset;
+    padding: 4px;
+    border-radius: 12px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.all-skills-container .skill-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 8px;
-    border-radius: 4px;
-    margin-top: 8px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 11;
 }
 
 .all-skills-container .skill-icon {
-    min-width: 80px;
+    width: 35px;
+    height: 35px;
 }
 
-.view-all-skills {
+.all-skills-container .skill-icon img {
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+}
+
+
+.all-skills-container .skill-slot .skill-tooltip {
+    display: none;
     position: absolute;
-    top: 20px;
-    right: 20px;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    border: 1px solid;
+    border-color: inherit;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;
+    z-index: 13;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
+    border: 1px solid rgba(196, 164, 52, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+
+.all-skills-container .skill-slot .skill-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid rgba(20, 20, 20, 0.95);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.all-skills-container .skill-slot:hover .skill-tooltip {
+    display: block;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    z-index: 100;
+}
+
+
+.skill-tooltip .skill-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #ffd700;
+    text-align: center;
+}
+
+.skill-tooltip .rarity-badge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-size: 10px;
+    padding: 3px 8px;
+}
+
+.skill-tooltip .skill-description {
+    font-size: 12px;
+    color: #fff;
+    margin: 6px 0;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.skill-tooltip .skill-stats {
+    font-size: 11px;
+    color: #aaa;
+    padding: 6px;
+    border-radius: 4px;
+    margin-top: 6px;
+}
+
+
+.all-skills-container .skill-slot {
+    transform: scale(1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.all-skills-container .skill-slot:hover {
+    transform: scale(1.1);
+    z-index: 12;
+}
+
+
+.all-skills-container .skill-slot:hover::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 14px;
+    background: inherit;
+    filter: blur(10px);
+    opacity: 0.5;
+    z-index: -1;
+}
+
+
+@keyframes skillPulse {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+.all-skills-container .skill-slot:hover .skill-icon {
+    animation: skillPulse 1s ease-in-out infinite;
+}
+
+.all-skills-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.all-skills-container::-webkit-scrollbar-track {
+    border-radius: 3px;
+}
+
+.all-skills-container::-webkit-scrollbar-thumb {
+    background: #c4a434;
+    border-radius: 3px;
+}
+
+
+.all-skills-section {
+    padding: 15px;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 12px;
+    position: relative;
+    z-index: 11;
+}
+
+
+.rarity-title {
+    font-size: 24px;
+    color: #ffd700;
+    margin: 25px 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(196, 164, 52, 0.3);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.rarity-title:first-child {
+    margin-top: 0;
+}
+
+.skill-slot[data-rarity="common"] {
+    border-color: #4caf50;
+    box-shadow: 
+        0 0 15px rgba(76, 175, 80, 0.2),
+        inset 0 0 10px rgba(76, 175, 80, 0.1);
+}
+
+.skill-slot[data-rarity="rare"] {
+    border-color: #ff4444;
+    box-shadow: 
+        0 0 20px rgba(255, 68, 68, 0.2),
+        inset 0 0 15px rgba(255, 68, 68, 0.1);
+}
+
+.skill-slot[data-rarity="unique"] {
+    border-color: #ffd700;
+    box-shadow: 
+        0 0 25px rgba(255, 215, 0, 0.2),
+        inset 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.rarity-badge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.skill-slot[data-rarity="common"] .rarity-badge {
+    background: linear-gradient(45deg, #388e3c, #4caf50);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.skill-slot[data-rarity="rare"] .rarity-badge {
+    background: linear-gradient(45deg, #d32f2f, #ff4444);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.skill-slot[data-rarity="unique"] .rarity-badge {
+    background: linear-gradient(45deg, #ffd700, #ffeb3b);
+    color: black;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+
+.view-all-skills {
+    position: fixed;
+    top: 30px;
+    right: 30px;
     background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
     border: 2px solid #c4a434;
     color: #ffd700;
@@ -294,12 +555,14 @@
     font-family: 'Metal Slug Latino', sans-serif;
     font-size: 12px; 
     transition: all 0.3s ease;
+    z-index: 11;
 }
 
 .view-all-skills:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(196, 164, 52, 0.2);
 }
+
 
 .back-button {
     position: absolute;
@@ -314,6 +577,7 @@
     font-family: 'Metal Slug Latino', sans-serif;
     font-size: 12px; 
     transition: all 0.3s ease;
+    z-index: 11;
 }
 
 .back-button:hover {
@@ -384,17 +648,20 @@
 
 .skill-flow-container {
     position: relative;
-    height: 350px;
+        height: 350px;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(196, 164, 52, 0.15);
 }
 
 .player-node {
-    width: 80px;
-    height: 80px;
+    width: 75px;
+    height: 75px;
     background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%);
     border: 3px solid #ffd700;
     border-radius: 50%;
@@ -406,7 +673,15 @@
     z-index: 3;
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     margin-bottom: 0;
-    margin-top: 40px;
+    margin-top: 30px;
+}
+
+.player-node img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    padding: 5px;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
 }
 
 .skill-paths {
@@ -421,24 +696,25 @@
 .skill-path {
     position: absolute;
     width: 3px;
-    height: 160px;
+    height: 140px;
     background: linear-gradient(0deg, 
-        rgba(196, 164, 52, 0.1),
-        rgba(255, 215, 0, 0.8) 50%,
-        rgba(196, 164, 52, 0.1)
+        rgba(196, 164, 52, 0),
+        rgba(255, 215, 0, 0.6) 50%,
+        rgba(196, 164, 52, 0)
     );
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
     transform-origin: top center;
+    animation: flowingLight 2s linear infinite;
 }
 
 .path-left {
     top: 0;
     left: 40%;
-    transform: rotate(15deg);
+    transform: rotate(25deg);
 }
 
 .path-middle {
-    height: 180px;
+    height: 160px;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -447,7 +723,7 @@
 .path-right {
     top: 0;
     right: 40%;
-    transform: rotate(-15deg);
+    transform: rotate(-25deg);
 }
 
 .skill-nodes {
@@ -459,7 +735,7 @@
 }
 
 .skill-slot.node-0 {
-    left: calc(20% - 35px);
+    left: calc(20% - 45px);
     top: 250px;
     transform: translateX(25px);
 }
@@ -471,16 +747,16 @@
 }
 
 .skill-slot.node-2 {
-    right: calc(20% - 35px);
+    right: calc(20% - 45px);
     top: 250px;
     transform: translateX(-25px);
 }
 
 .skill-slot {
     position: absolute;
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%);
+    width: 65px; 
+    height: 65px;
+    background: linear-gradient(145deg, #1a1a1a 0%, #000000 100%);
     border: 2px solid #c4a434;
     border-radius: 50%;
     display: flex;
@@ -488,15 +764,24 @@
     justify-content: center;
     transition: all 0.3s ease;
     z-index: 2;
+    box-shadow: 
+        0 0 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .skill-slot .skill-icon {
     font-size: 32px;
-    width: 100%;
-    height: 100%;
+    width: 50px; 
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.skill-slot .skill-icon img {
+    width: 85%;  
+    height: 85%; 
+    padding: 4px;
 }
 
 .skill-slot .skill-cooldown {
@@ -507,6 +792,31 @@
     color: #ffd700;
     font-size: 12px;
     white-space: nowrap;
+}
+
+.rarity-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.skill-slot[data-rarity="common"] {
+    border-color: #aaaaaa;
+}
+
+.skill-slot[data-rarity="rare"] {
+    border-color: #4488ff;
+    box-shadow: 0 0 10px rgba(68, 136, 255, 0.3);
+}
+
+.skill-slot[data-rarity="unique"] {
+    border-color: #ffaa00;
+    box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
 }
 
 @keyframes flowingLight {
@@ -530,4 +840,15 @@
 
 .skill-path {
     animation: flowingLight 2s linear infinite;
+}
+
+.modal-inner-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    max-height: calc(90vh - 70px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 15px;
 }

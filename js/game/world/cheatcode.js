@@ -17,7 +17,7 @@ export class CheatHandler {
                 this.secretCode = '';
             }, RESET_DELAY);
 
-            if (this.checkCheat('blackout')) {
+            if (this.checkCheat('womp')) {
                 console.log('blackout cheat');
                 this.incrementCheatAchievements();
             }
@@ -37,7 +37,7 @@ export class CheatHandler {
                 const gameCanvas = document.querySelector('#gameCanvas');
                 const player = gameCanvas?.__gameInstance?.player;
                 if (player) {
-                    player.medals += 200; // Use the setter which will trigger the event
+                    player.medals += 200; 
                     this.showCheatNotification('🏅 +200 Medals');
                 }
                 this.incrementCheatAchievements();
