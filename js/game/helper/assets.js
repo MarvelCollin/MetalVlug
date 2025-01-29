@@ -782,6 +782,86 @@ export class Assets {
             }
         }
 
+        async getWebDark() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.DARK;
+            } catch (error) {
+                console.error('Error in getWebDark:', error);
+                return null;
+            }
+        }
+
+        async getWebUfoAfraid() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.UFO.AFRAID;
+            } catch (error) {
+                console.error('Error in getWebUfoAfraid:', error);
+                return null;
+            }
+        }
+
+        async getWebUfoBullet() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.UFO.BULLET;
+            } catch (error) {
+                console.error('Error in getWebUfoBullet:', error);
+                return null;
+            }
+        }
+
+        async getWebUfoEffect() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.UFO.EFFECT;
+            } catch (error) {
+                console.error('Error in getWebUfoEffect:', error);
+                return null;
+            }
+        }
+
+        async getWebUfoEnemy() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.UFO.ENEMY;
+            } catch (error) {
+                console.error('Error in getWebUfoEnemy:', error);
+                return null;
+            }
+        }
+
+        async getWebUfoExplode() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.UFO.EXPLODE;
+            } catch (error) {
+                console.error('Error in getWebUfoExplode:', error);
+                return null;
+            }
+        }
+
+        async getWebUfoLaugh() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.UFO.LAUGH;
+            } catch (error) {
+                console.error('Error in getWebUfoLaugh:', error);
+                return null;
+            }
+        }
+
+        async getWebUfoWave() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WEB.UFO.WAVE;
+            } catch (error) {
+                console.error('Error in getWebUfoWave:', error);
+                return null;
+            }
+        }
+
         async getWorldItemsAmmo() {
             try {
                 const assets = await this.fetchAssets();
@@ -908,6 +988,16 @@ export class Assets {
                 return assets.WORLD.MARK;
             } catch (error) {
                 console.error('Error in getWorldMark:', error);
+                return null;
+            }
+        }
+
+        async getWorldSkillsBomb() {
+            try {
+                const assets = await this.fetchAssets();
+                return assets.WORLD.SKILLS.BOMB;
+            } catch (error) {
+                console.error('Error in getWorldSkillsBomb:', error);
                 return null;
             }
         }

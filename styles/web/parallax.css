@@ -1,0 +1,159 @@
+.parallax-container {
+    position: relative;
+    height: 200vh;
+    overflow-x: hidden;
+    background-color: #87CEEB;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+}
+
+#ufoCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.night-bg {
+    background: linear-gradient(to bottom, 
+        #000000 0%,
+        #1a237e 40%,
+        #283593 100%);
+    z-index: 0;
+}
+
+.day-bg {
+    background: linear-gradient(to bottom, 
+        #4FC3F7 0%,
+        #87CEEB 40%,
+        #B3E5FC 100%);
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.ground {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 200px;
+    background-repeat: no-repeat; 
+    background-position: center bottom; 
+    background-size: 100% 100%; 
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.dark-ground {
+    z-index: 2;
+    background-image: url('../../assets/web/parallax/dark_ground.png');
+}
+
+.light-ground {
+    z-index: 1;
+    background-image: url('../../assets/web/parallax/light_ground.png');
+}
+
+.star {
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    box-shadow: 0 0 3px #fff,
+                0 0 6px #fff;
+}
+
+.star.blue { background-color: #8ff7ff; }
+.star.gold { background-color: #ffd700; }
+.star.white { background-color: white; }
+
+
+@keyframes float {
+    0% { 
+        transform: translateX(0) translateY(0);
+    }
+    50% { 
+        transform: translateX(100px) translateY(-15px);
+    }
+    100% { 
+        transform: translateX(0) translateY(0);
+    }
+}
+
+@keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+    pointer-events: none;
+}
+
+.game-title {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Arial Black', sans-serif;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 0 10px #000;
+    transition: all 0.8s ease;
+    z-index: 3;
+}
+
+.game-title.night {
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    text-shadow: 
+        0 0 10px #00f,
+        0 0 20px #00f,
+        0 0 30px #00f;
+}
+
+.game-title.day {
+    top: 5%;
+    font-size: 48px;
+    text-shadow: 
+        0 0 10px #f00,
+        0 0 20px #f00,
+        0 0 30px #f00;
+}
+
+@keyframes titleGlow {
+    0% { text-shadow: 0 0 10px currentColor; }
+    50% { text-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
+    100% { text-shadow: 0 0 10px currentColor; }
+}
+
+.game-title {
+    animation: titleGlow 2s infinite;
+}
+

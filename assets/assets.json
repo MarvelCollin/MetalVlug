@@ -505,7 +505,58 @@
             }
         }
     },
-    "WEB": {},
+    "WEB": {
+        "DARK": {
+            "PATH": "../assets/web/parallax/dark_",
+            "FRAMES": 2,
+            "TYPE": "LOOP",
+            "DELAY": 100
+        },
+        "UFO": {
+            "AFRAID": {
+                "PATH": "../assets/web/ufo/afraid/afraid_",
+                "FRAMES": 16,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "BULLET": {
+                "PATH": "../assets/web/ufo/bullet/bullet_",
+                "FRAMES": 3,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "EFFECT": {
+                "PATH": "../assets/web/ufo/effect/effect_",
+                "FRAMES": 7,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "ENEMY": {
+                "PATH": "../assets/web/ufo/enemy/enemy_",
+                "FRAMES": 14,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "EXPLODE": {
+                "PATH": "../assets/web/ufo/explode/explode_",
+                "FRAMES": 10,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "LAUGH": {
+                "PATH": "../assets/web/ufo/laugh/laugh_",
+                "FRAMES": 16,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            },
+            "WAVE": {
+                "PATH": "../assets/web/ufo/wave/wave_",
+                "FRAMES": 16,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
+        }
+    },
     "WORLD": {
         "ITEMS": {
             "AMMO": {
@@ -586,6 +637,14 @@
             "PATH": "../assets/world/mark/mark",
             "FRAMES": 1,
             "TYPE": "SINGLE"
+        },
+        "SKILLS": {
+            "BOMB": {
+                "PATH": "../assets/world/skills/unique/bomb",
+                "FRAMES": 5,
+                "TYPE": "LOOP",
+                "DELAY": 100
+            }
         },
         "SLOT": {
             "EMPTY": {

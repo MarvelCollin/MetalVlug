@@ -9,9 +9,20 @@ export class SilverSoldier extends BaseNPC {
         this.isFlipped = true;
         this.modal = document.getElementById('silverSoldierModal');
         this.missionData = {
-            title: 'Story Mission',
-            description: 'Embark on an epic journey through various challenging missions. Fight against enemies and save the world!',
-            image: '../assets/background/mission/mission.png',
+            missions: [
+                {
+                    id: 'mission1',
+                    title: 'Operation Desert Storm',
+                    description: 'Infiltrate enemy territory and gather intel on their operations.',
+                    image: '../assets/background/mission/mission.png'
+                },
+                {
+                    id: 'mission2',
+                    title: 'Urban Assault',
+                    description: 'Clear the city of hostile forces and protect civilians.',
+                    image: '../assets/background/mission/mission.png'
+                }
+            ],
             difficulties: [
                 { 
                     id: 'easy', 
@@ -96,23 +107,30 @@ export class SilverSoldier extends BaseNPC {
         const contentArea = this.modal.querySelector('.modal-content-area');
         contentArea.innerHTML = `
             <div class="content-section active" id="mission-content">
-                <div class="content-image">
-                    <img src="${this.missionData.image}" alt="Mission Preview">
-                </div>
-                <div class="content-description">
-                    <h3>${this.missionData.title}</h3>
-                    <p>${this.missionData.description}</p>
-                    <div class="difficulty-selector">
-                        ${this.missionData.difficulties.map(diff => `
-                            <button class="difficulty-btn ${diff.id === 'easy' ? 'active' : ''} ${diff.special ? 'asian' : ''}" 
-                                    data-difficulty="${diff.id}">${diff.name}</button>
+                <div class="mission-layout">
+                    <div class="mission-panel">
+                        ${this.missionData.missions.map(mission => `
+                            <div class="mission-card" data-mission="${mission.id}">
+                                <div class="mission-image">
+                                    <img src="${mission.image}" alt="${mission.title}">
+                                </div>
+                                <div class="mission-info">
+                                    <h3>${mission.title}</h3>
+                                    <p>${mission.description}</p>
+                                </div>
+                            </div>
                         `).join('')}
                     </div>
-                    <div class="difficulty-description">
-                        ${this.missionData.difficulties[0].description}
-                    </div>
-                    <div class="mission-actions">
-                        <button class="start-button">Start Mission</button>
+                    <div class="difficulty-panel">
+                        <h3 class="panel-title">Select Difficulty</h3>
+                        <div class="difficulty-selector">
+                            ${this.missionData.difficulties.map(diff => `
+                                <button class="difficulty-btn ${diff.special ? 'asian' : ''}" 
+                                        data-difficulty="${diff.id}">${diff.name}</button>
+                            `).join('')}
+                        </div>
+                        <div class="difficulty-description"></div>
+                        <button class="start-button" style="display: none;">Start Mission</button>
                     </div>
                 </div>
             </div>
@@ -143,6 +161,47 @@ export class SilverSoldier extends BaseNPC {
                 </div>
             </div>
         `;
+
+        // Add event listeners for mission selection
+        const missionCards = this.modal.querySelectorAll('.mission-card');
+        const difficultyPanel = this.modal.querySelector('.difficulty-panel');
+        const startButton = this.modal.querySelector('.start-button');
+        let selectedMission = null;
+
+        missionCards.forEach(card => {
+            card.addEventListener('click', () => {
+                missionCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                selectedMission = card.dataset.mission;
+                difficultyPanel.classList.add('active');
+            });
+        });
+
+        // Add event listeners for difficulty selection
+        const difficultyBtns = this.modal.querySelectorAll('.difficulty-btn');
+        const difficultyDescription = this.modal.querySelector('.difficulty-description');
+        let selectedDifficulty = null;
+
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedDifficulty = btn.dataset.difficulty;
+                
+                const diffData = this.missionData.difficulties.find(d => d.id === selectedDifficulty);
+                difficultyDescription.textContent = diffData.description;
+                
+                // Show start button once difficulty is selected
+                startButton.style.display = 'block';
+            });
+        });
+
+        // Update start button click handler
+        startButton.addEventListener('click', () => {
+            if (selectedMission && selectedDifficulty) {
+                window.location.href = `./game.html?mission=${selectedMission}&difficulty=${selectedDifficulty}`;
+            }
+        });
     }
 
     onInteract() {

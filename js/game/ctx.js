@@ -1,10 +1,22 @@
 import { VIEWPORT_WIDTH, VIEWPORT_HEIGHT } from './world/camera.js';
 import { GAME_WIDTH, GAME_HEIGHT } from './config.js';
 
-export const canvas = document.getElementById('gameCanvas');
-export const ctx = canvas.getContext('2d');
+export let canvas;
+export let ctx;
+
+function initializeCanvas() {
+    canvas = document.getElementById('gameCanvas');
+    if (!canvas) {
+        console.error('Canvas element not found');
+        return;
+    }
+    ctx = canvas.getContext('2d');
+    resizeCanvas();
+}
 
 function resizeCanvas() {
+    if (!canvas) return;
+    
     const scale = Math.min(
         window.innerWidth / GAME_WIDTH,
         window.innerHeight / GAME_HEIGHT
@@ -23,12 +35,16 @@ function resizeCanvas() {
     canvas.style.left = `${(window.innerWidth - displayWidth) / 2}px`;
     canvas.style.top = `${(window.innerHeight - displayHeight) / 2}px`;
 
-    ctx.imageSmoothingEnabled = false;
+    if (ctx) {
+        ctx.imageSmoothingEnabled = false;
+    }
 }
 
-resizeCanvas();
+// Initialize after DOM loads
+document.addEventListener('DOMContentLoaded', initializeCanvas);
 window.addEventListener('resize', resizeCanvas);
 
+// Prevent zooming
 window.addEventListener('keydown', function(event) {
     if (event.ctrlKey || event.metaKey) {
         if (['+', '-', '=', '_'].includes(event.key) || event.wheelDelta) {
