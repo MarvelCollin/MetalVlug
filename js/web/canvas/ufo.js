@@ -81,12 +81,33 @@ export class UfoCanvas {
             scale: 1.8,
             state: 'afraid',
             dayState: Math.random() < 0.5 ? 'laugh' : 'wave',
-            isEntering: true 
+            isEntering: true,
+            glowColor: this.isDay ? '#FFD700' : '#4FC3F7',
+            glowIntensity: 0.6 + Math.random() * 0.4
         };
     }
 
     async init() {
         try {
+            if (!assetsInstance) {
+                throw new Error('Assets instance not initialized');
+            }
+
+            // Verify that the required methods exist
+            const requiredMethods = [
+                'getWebUfoAfraid',
+                'getWebUfoLaugh',
+                'getWebUfoWave',
+                'getWebUfoExplode',
+                'getWebUfoEffect'
+            ];
+
+            requiredMethods.forEach(method => {
+                if (typeof assetsInstance[method] !== 'function') {
+                    throw new Error(`Missing required method: ${method}`);
+                }
+            });
+
             const [afraidData, laughData, waveData, explodeData, effectData] = await Promise.all([
                 Drawer.loadImage(assetsInstance.getWebUfoAfraid.bind(assetsInstance)),
                 Drawer.loadImage(assetsInstance.getWebUfoLaugh.bind(assetsInstance)),
@@ -122,6 +143,7 @@ export class UfoCanvas {
             this.startAnimation();
         } catch (error) {
             console.error('Error in init:', error);
+            throw error; // Propagate the error up
         }
 
         this.resizeCanvas();
@@ -132,6 +154,11 @@ export class UfoCanvas {
         this.isDay = isDay;
         this.ufos.forEach(ufo => {
             ufo.state = isDay ? ufo.dayState : 'afraid';
+            // Add smooth transition for glow
+            ufo.targetGlowIntensity = isDay ? 0 : (0.6 + Math.random() * 0.4);
+            ufo.currentGlowIntensity = ufo.glowIntensity || 0;
+            ufo.glowTransitionSpeed = 0.05; // Controls how fast the glow changes
+            ufo.glowColor = '#4FC3F7';
         });
         
         this.enemyUfo.setDayTime(isDay);
@@ -202,6 +229,24 @@ export class UfoCanvas {
             }
         });
 
+        // Update glow transitions
+        this.ufos.forEach(ufo => {
+            if (ufo.currentGlowIntensity !== ufo.targetGlowIntensity) {
+                if (ufo.currentGlowIntensity < ufo.targetGlowIntensity) {
+                    ufo.glowIntensity = Math.min(
+                        ufo.targetGlowIntensity,
+                        ufo.currentGlowIntensity + ufo.glowTransitionSpeed
+                    );
+                } else {
+                    ufo.glowIntensity = Math.max(
+                        ufo.targetGlowIntensity,
+                        ufo.currentGlowIntensity - ufo.glowTransitionSpeed
+                    );
+                }
+                ufo.currentGlowIntensity = ufo.glowIntensity;
+            }
+        });
+
         this.enemyUfo.updatePositions(this.ufos);
     }
 
@@ -255,6 +300,16 @@ export class UfoCanvas {
             this.ufos.forEach((ufo, index) => {
                 const currentState = this.ufoStates[ufo.state];
                 if (currentState?.images) {
+                    const ctx = webCtx.getContext();
+                    ctx.save();
+                    
+                    // Only apply glow if it's night or if glowIntensity > 0
+                    if (!this.isDay && ufo.glowIntensity > 0) {
+                        ctx.shadowBlur = 20;
+                        ctx.shadowColor = ufo.glowColor;
+                        ctx.globalAlpha = 0.8 * ufo.glowIntensity;
+                    }
+
                     Drawer.drawToCanvas(
                         currentState.images,
                         ufo.x,
@@ -263,8 +318,10 @@ export class UfoCanvas {
                         false,
                         ufo.scale,
                         'LOOP',
-                        webCtx.getContext() // Use webCtx directly
+                        ctx
                     );
+
+                    ctx.restore();
                 }
             });
         }

@@ -8,63 +8,76 @@ export class SilverSoldier extends BaseNPC {
         super(x, y, camera, 4);
         this.isFlipped = true;
         this.modal = document.getElementById('silverSoldierModal');
-        this.missionData = {
-            missions: [
-                {
-                    id: 'mission1',
-                    title: 'Operation Desert Storm',
-                    description: 'Infiltrate enemy territory and gather intel on their operations.',
-                    image: '../assets/background/mission/mission.png'
-                },
-                {
-                    id: 'mission2',
-                    title: 'Urban Assault',
-                    description: 'Clear the city of hostile forces and protect civilians.',
-                    image: '../assets/background/mission/mission.png'
-                }
-            ],
-            difficulties: [
-                { 
-                    id: 'easy', 
-                    name: 'Easy',
-                    description: 'Perfect for beginners. Enemies deal less damage and have reduced health.'
-                },
-                { 
-                    id: 'normal', 
-                    name: 'Normal',
-                    description: 'Balanced difficulty for experienced players. Standard enemy stats.'
-                },
-                { 
-                    id: 'hard', 
-                    name: 'Hard',
-                    description: 'Challenging mode with tougher enemies and limited resources.'
-                },
-                { 
-                    id: 'asian', 
-                    name: 'Asian', 
-                    special: true,
-                    description: 'Extreme difficulty. One hit = Game Over. Good luck!'
-                }
-            ]
-        };
         
-        this.arcadeMaps = [
-            {
-                id: 'desert',
-                name: 'Desert Storm',
-                description: 'Battle through endless waves in a scorching desert environment.',
-                image: '../assets/background/arcade/arcade.png'
+        this.difficulties = [
+            { 
+                id: 'easy', 
+                name: 'Easy',
+                description: 'Perfect for beginners. Enemies deal less damage and have reduced health.',
+                image: '../assets/background/difficulty/easy.jpg'
             },
-            {
-                id: 'city',
-                name: 'Urban Combat',
-                description: 'Fight through city ruins in intense urban warfare.',
-                image: '../assets/background/arcade_2/arcade_2.png'
+            { 
+                id: 'normal', 
+                name: 'Normal',
+                description: 'Balanced difficulty for experienced players. Standard enemy stats.',
+                image: '../assets/background/difficulty/normal.jpg'
+            },
+            { 
+                id: 'hard', 
+                name: 'Hard',
+                description: 'Challenging mode with tougher enemies and limited resources.',
+                image: '../assets/background/difficulty/hard.jpg'
             }
         ];
-        
+
+        // Load difficulty images
+        this.difficultyImages = {};
+        this.difficulties.forEach(diff => {
+            const img = new Image();
+            img.src = diff.image;
+            this.difficultyImages[diff.id] = img;
+        });
+
+        this.locations = [
+            {
+                id: 'mission1',
+                type: 'mission',
+                title: 'Operation Desert Storm',
+                description: 'Infiltrate enemy territory and gather intel on their operations.',
+                position: { x: 200, y: 300 }, // Absolute positions instead of percentages
+                image: '../assets/background/mission/mission.png',
+                connections: ['mission2', 'arcade1']
+            },
+            {
+                id: 'mission2',
+                type: 'mission',
+                title: 'Urban Assault',
+                description: 'Clear the city of hostile forces and protect civilians.',
+                position: { x: 600, y: 400 },
+                image: '../assets/background/mission/mission2.png',
+                connections: ['mission1', 'arcade2']
+            },
+            {
+                id: 'arcade1',
+                type: 'arcade',
+                title: 'Desert Arena',
+                description: 'Endless waves of enemies in a desert environment.',
+                position: { x: 400, y: 350 },
+                image: '../assets/background/arcade/arcade.png',
+                connections: ['mission1']
+            },
+            {
+                id: 'arcade2',
+                type: 'arcade',
+                title: 'Urban Warfare',
+                description: 'Survive waves of enemies in urban ruins.',
+                position: { x: 800, y: 300 },
+                image: '../assets/background/arcade_2/arcade_2.png',
+                connections: ['mission2']
+            }
+        ];
         this.currentMapIndex = 0;
-        this.currentMap = this.arcadeMaps[0].id;
+        this.currentMap = this.locations[0].id;
         this.loadSprites();
 
         window.addEventListener('keydown', (e) => {
@@ -72,6 +85,20 @@ export class SilverSoldier extends BaseNPC {
                 this.onInteract();
             }
         });
+
+        this.mapCanvas = document.createElement('canvas');
+        this.mapCtx = this.mapCanvas.getContext('2d');
+        this.mapImage = new Image();
+        this.mapImage.src = '../assets/background/map/map.png';
+        this.mapScale = 1;
+        this.mapOffset = { x: 0, y: 0 };
+        this.baseMapWidth = 1024; // Base width for calculations
+        this.baseMapHeight = 576; // Base height for calculations
+        this.isDragging = false;
+        this.lastMousePos = { x: 0, y: 0 };
+        this.selectedLocation = null;
+        this.locationHovered = null;
+        this.pulsePhase = 0;
     }
 
     async loadSprites() {
@@ -106,308 +133,427 @@ export class SilverSoldier extends BaseNPC {
     generateModalContent() {
         const contentArea = this.modal.querySelector('.modal-content-area');
         contentArea.innerHTML = `
-            <div class="content-section active" id="mission-content">
-                <div class="mission-layout">
-                    <div class="mission-panel">
-                        ${this.missionData.missions.map(mission => `
-                            <div class="mission-card" data-mission="${mission.id}">
-                                <div class="mission-image">
-                                    <img src="${mission.image}" alt="${mission.title}">
+            <div class="game-map-container">
+                <div class="game-map">
+                    ${this.generateLocations()}
+                    ${this.generateConnections()}
+                </div>
+                <div class="difficulty-selector-panel">
+                    <h3>Select Difficulty</h3>
+                    <div class="difficulty-options">
+                        ${this.difficulties.map(diff => `
+                            <div class="difficulty-option" data-difficulty="${diff.id}">
+                                <div class="difficulty-preview">
+                                    <img src="${diff.image}" alt="${diff.name}">
+                                    <div class="difficulty-name">${diff.name}</div>
                                 </div>
-                                <div class="mission-info">
-                                    <h3>${mission.title}</h3>
-                                    <p>${mission.description}</p>
-                                </div>
+                                <div class="difficulty-description">${diff.description}</div>
                             </div>
                         `).join('')}
-                    </div>
-                    <div class="difficulty-panel">
-                        <h3 class="panel-title">Select Difficulty</h3>
-                        <div class="difficulty-selector">
-                            ${this.missionData.difficulties.map(diff => `
-                                <button class="difficulty-btn ${diff.special ? 'asian' : ''}" 
-                                        data-difficulty="${diff.id}">${diff.name}</button>
-                            `).join('')}
-                        </div>
-                        <div class="difficulty-description"></div>
-                        <button class="start-button" style="display: none;">Start Mission</button>
-                    </div>
-                </div>
-            </div>
-            <div class="content-section" id="arcade-content">
-                <div class="arcade-preview">
-                    <div class="map-carousel">
-                        <button class="map-nav prev">&lt;&lt;</button>
-                        <div class="map-slides">
-                            ${this.arcadeMaps.map((map, index) => `
-                                <div class="map-slide ${index === 0 ? 'active' : ''}" data-map="${map.id}">
-                                    ${this.createMapSlideHTML(map)}
-                                </div>
-                            `).join('')}
-                        </div>
-                        <button class="map-nav next">&gt;&gt;</button>
-                        <div class="map-dots">
-                            ${this.arcadeMaps.map((_, index) => `
-                                <div class="map-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <div class="map-info-container">
-                        <p>${this.arcadeMaps[0].description}</p>
-                    </div>
-                    <div class="arcade-actions">
-                        <button class="start-button">Start Arcade</button>
                     </div>
                 </div>
             </div>
         `;
 
-        // Add event listeners for mission selection
-        const missionCards = this.modal.querySelectorAll('.mission-card');
-        const difficultyPanel = this.modal.querySelector('.difficulty-panel');
-        const startButton = this.modal.querySelector('.start-button');
-        let selectedMission = null;
+        this.setupMapInteractions();
+    }
 
-        missionCards.forEach(card => {
-            card.addEventListener('click', () => {
-                missionCards.forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                selectedMission = card.dataset.mission;
-                difficultyPanel.classList.add('active');
-            });
-        });
+    generateLocations() {
+        return this.locations.map(location => `
+            <div class="map-location ${location.type}"
+                 data-location="${location.id}"
+                 data-type="${location.type}"
+                 style="left: ${location.position.x}px; top: ${location.position.y}px">
+            </div>
+        `).join('');
+    }
 
-        // Add event listeners for difficulty selection
-        const difficultyBtns = this.modal.querySelectorAll('.difficulty-btn');
-        const difficultyDescription = this.modal.querySelector('.difficulty-description');
-        let selectedDifficulty = null;
-
-        difficultyBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                difficultyBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedDifficulty = btn.dataset.difficulty;
-                
-                const diffData = this.missionData.difficulties.find(d => d.id === selectedDifficulty);
-                difficultyDescription.textContent = diffData.description;
-                
-                // Show start button once difficulty is selected
-                startButton.style.display = 'block';
-            });
-        });
-
-        // Update start button click handler
-        startButton.addEventListener('click', () => {
-            if (selectedMission && selectedDifficulty) {
-                window.location.href = `./game.html?mission=${selectedMission}&difficulty=${selectedDifficulty}`;
+    generateConnections() {
+        const connections = [];
+        this.locations.forEach(location => {
+            if (location.connections) {
+                location.connections.forEach(targetId => {
+                    const target = this.locations.find(l => l.id === targetId);
+                    if (target) {
+                        // Replace createConnection call with direct connection creation
+                        const angle = Math.atan2(
+                            target.position.y - location.position.y,
+                            target.position.x - location.position.x
+                        ) * 180 / Math.PI;
+                        
+                        const distance = Math.sqrt(
+                            Math.pow(target.position.x - location.position.x, 2) +
+                            Math.pow(target.position.y - location.position.y, 2)
+                        );
+                        
+                        const connection = `
+                            <div class="mission-path"
+                                 data-from="${location.id}"
+                                 data-to="${targetId}"
+                                 style="
+                                    left: ${location.position.x}px;
+                                    top: ${location.position.y}px;
+                                    width: ${distance}px;
+                                    transform: rotate(${angle}deg);
+                                 ">
+                            </div>
+                        `;
+                        connections.push(connection);
+                    }
+                });
             }
         });
+        return connections.join('');
+    }
+
+    setupMapInteractions() {
+        this.mapCanvas.addEventListener('mousedown', (e) => {
+            this.isDragging = true;
+            this.lastMousePos = { x: e.clientX, y: e.clientY };
+        });
+
+        this.mapCanvas.addEventListener('mousemove', (e) => {
+            if (this.isDragging) {
+                const dx = e.clientX - this.lastMousePos.x;
+                const dy = e.clientY - this.lastMousePos.y;
+                this.mapOffset.x += dx;
+                this.mapOffset.y += dy;
+                this.lastMousePos = { x: e.clientX, y: e.clientY };
+                this.drawMap();
+            }
+        });
+
+        this.mapCanvas.addEventListener('mouseup', () => {
+            this.isDragging = false;
+        });
+
+        this.mapCanvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = -Math.sign(e.deltaY) * 0.1;
+            const newScale = Math.max(0.5, Math.min(2, this.mapScale + delta));
+            
+            // Scale around mouse position
+            const rect = this.mapCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            this.mapOffset.x = x - (x - this.mapOffset.x) * (newScale / this.mapScale);
+            this.mapOffset.y = y - (y - this.mapOffset.y) * (newScale / this.mapScale);
+            
+            this.mapScale = newScale;
+            this.drawMap();
+        });
+
+        // Add hover detection
+        this.mapCanvas.addEventListener('mousemove', (e) => {
+            const rect = this.mapCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - this.mapOffset.x) / this.mapScale;
+            const y = (e.clientY - rect.top - this.mapOffset.y) / this.mapScale;
+
+            this.locationHovered = null;
+            this.locations.forEach(location => {
+                const dx = x - location.position.x;
+                const dy = y - location.position.y;
+                if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+                    this.locationHovered = location.id;
+                }
+            });
+
+            this.drawMap();
+        });
+
+        // Update click handler
+        this.mapCanvas.addEventListener('click', (e) => {
+            if (this.locationHovered) {
+                const prevSelected = this.selectedLocation;
+                this.selectedLocation = this.locationHovered;
+                
+                // If selecting a new location, set default difficulty
+                if (prevSelected !== this.selectedLocation) {
+                    this.selectedDifficulty = 'easy';
+                }
+                
+                this.drawMap();
+            }
+        });
+
+        // Add difficulty cycling on right click
+        this.mapCanvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            if (this.selectedLocation) {
+                const difficulties = ['easy', 'normal', 'hard', 'asian'];
+                const currentIndex = difficulties.indexOf(this.selectedDifficulty || 'easy');
+                this.selectedDifficulty = difficulties[(currentIndex + 1) % difficulties.length];
+                this.drawMap();
+            }
+        });
+
+        // Update difficulty selection
+        const difficultyOptions = this.modal.querySelectorAll('.difficulty-option');
+        difficultyOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                if (this.selectedLocation && 
+                    this.locations.find(l => l.id === this.selectedLocation)?.type === 'mission') {
+                    difficultyOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    this.selectedDifficulty = option.dataset.difficulty;
+                    this.drawMap();
+                }
+            });
+        });
+    }
+
+    drawMap() {
+        if (!this.mapCanvas || !this.mapCtx) return;
+        
+        // Update canvas size while maintaining aspect ratio
+        const containerWidth = window.innerWidth;
+        const containerHeight = window.innerHeight;
+        const aspectRatio = this.baseMapWidth / this.baseMapHeight;
+        
+        let canvasWidth = containerWidth;
+        let canvasHeight = containerWidth / aspectRatio;
+        
+        if (canvasHeight > containerHeight) {
+            canvasHeight = containerHeight;
+            canvasWidth = containerHeight * aspectRatio;
+        }
+        
+        this.mapCanvas.width = canvasWidth;
+        this.mapCanvas.height = canvasHeight;
+        
+        // Calculate scale factor
+        const scaleFactor = canvasWidth / this.baseMapWidth;
+        
+        // Clear canvas
+        this.mapCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+        
+        // Draw map with proper scaling
+        this.mapCtx.save();
+        this.mapCtx.translate(this.mapOffset.x, this.mapOffset.y);
+        this.mapCtx.scale(this.mapScale * scaleFactor, this.mapScale * scaleFactor);
+        
+        // Draw background
+        this.mapCtx.drawImage(this.mapImage, 0, 0, this.baseMapWidth, this.baseMapHeight);
+        
+        // Draw connections with scaled coordinates
+        this.locations.forEach(location => {
+            if (location.connections) {
+                location.connections.forEach(targetId => {
+                    const target = this.locations.find(l => l.id === targetId);
+                    if (target) {
+                        this.drawConnection(location, target);
+                    }
+                });
+            }
+        });
+        
+        // Draw locations with scaled coordinates
+        this.locations.forEach(location => {
+            this.drawLocation(location);
+        });
+        
+        this.mapCtx.restore();
+    }
+
+    drawConnection(from, to) {
+        // Only draw connections if 'from' is a mission type
+        if (from.type !== 'mission') return;
+        
+        this.mapCtx.beginPath();
+        this.mapCtx.moveTo(from.position.x, from.position.y);
+        this.mapCtx.lineTo(to.position.x, to.position.y);
+        this.mapCtx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+        this.mapCtx.lineWidth = 2;
+        this.mapCtx.stroke();
+    }
+
+    drawLocation(location) {
+        const size = 20; // Reduced from 30 to 20
+        const x = location.position.x;
+        const y = location.position.y;
+        const isSelected = location.id === this.selectedLocation;
+        const isHovered = location.id === this.locationHovered;
+
+        // Draw connection glow for selected missions only
+        if (isSelected && location.type === 'mission') {
+            this.locations.forEach(connectedLoc => {
+                if (location.connections.includes(connectedLoc.id)) {
+                    this.drawConnectionGlow(location, connectedLoc);
+                }
+            });
+        }
+
+        this.mapCtx.save();
+        this.mapCtx.translate(x, y);
+
+        // Draw outer glow
+        const glowSize = size + 8 + Math.sin(this.pulsePhase) * 3; // Reduced glow size and pulse amplitude
+        const gradient = this.mapCtx.createRadialGradient(0, 0, 0, 0, 0, glowSize);
+        
+        if (location.type === 'mission') {
+            // Mission location (hexagon)
+            gradient.addColorStop(0, 'rgba(255, 215, 0, 0.4)');
+            gradient.addColorStop(1, 'transparent');
+            
+            // Draw hexagon shapes
+            const drawHexagon = (size) => {
+                this.mapCtx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = ((i * Math.PI) / 3) + (Math.PI / 6); // Add PI/6 (30 degrees) for flat top
+                    const xPos = size * Math.cos(angle);
+                    const yPos = size * Math.sin(angle);
+                    if (i === 0) {
+                        this.mapCtx.moveTo(xPos, yPos);
+                    } else {
+                        this.mapCtx.lineTo(xPos, yPos);
+                    }
+                }
+                this.mapCtx.closePath();
+            };
+
+            // Outer glow hexagon
+            drawHexagon(glowSize);
+            this.mapCtx.fillStyle = gradient;
+            this.mapCtx.fill();
+
+            // Main hexagon
+            drawHexagon(size);
+            this.mapCtx.fillStyle = '#ffd700';
+            this.mapCtx.strokeStyle = isSelected || isHovered 
+                ? '#ffffff' 
+                : 'rgba(255, 215, 0, 0.6)';
+            this.mapCtx.lineWidth = isSelected ? 3 : 2;
+            this.mapCtx.fill();
+            this.mapCtx.stroke();
+
+            // Inner hexagon
+            drawHexagon(size * 0.6);
+            this.mapCtx.strokeStyle = '#000';
+            this.mapCtx.lineWidth = 1;
+            this.mapCtx.stroke();
+        } else {
+            // Arcade location (diamond)
+            gradient.addColorStop(0, 'rgba(255, 0, 85, 0.4)');
+            gradient.addColorStop(1, 'transparent');
+
+            // Draw diamond shape
+            const drawDiamond = (size) => {
+                this.mapCtx.beginPath();
+                this.mapCtx.moveTo(0, -size);
+                this.mapCtx.lineTo(size, 0);
+                this.mapCtx.lineTo(0, size);
+                this.mapCtx.lineTo(-size, 0);
+                this.mapCtx.closePath();
+            };
+
+            // Outer glow
+            drawDiamond(glowSize);
+            this.mapCtx.fillStyle = gradient;
+            this.mapCtx.fill();
+
+            // Main diamond
+            drawDiamond(size);
+            this.mapCtx.fillStyle = '#ff0055';
+            this.mapCtx.strokeStyle = isSelected || isHovered ? '#ffffff' : 'rgba(255, 0, 85, 0.6)';
+            this.mapCtx.lineWidth = isSelected ? 3 : 2;
+            this.mapCtx.fill();
+            this.mapCtx.stroke();
+
+            // Inner diamond
+            drawDiamond(size * 0.6);
+            this.mapCtx.strokeStyle = '#000';
+            this.mapCtx.lineWidth = 1;
+            this.mapCtx.stroke();
+        }
+
+        // Draw difficulty indicator (only for missions)
+        if (location.type === 'mission') {
+            const difficulty = this.selectedDifficulty || 'easy'; // Default to 'easy'
+            const difficultySymbols = {
+                'easy': 'I',
+                'normal': 'II',
+                'hard': 'III',
+                'asian': 'IV'
+            };
+            
+            // Center the indicator
+            const indicatorSize = size * 0.4;
+            
+            // Draw difficulty text
+            this.mapCtx.fillStyle = '#ffd700';
+            this.mapCtx.font = `${indicatorSize}px "Metal Slug Latino"`;
+            this.mapCtx.textAlign = 'center';
+            this.mapCtx.textBaseline = 'middle';
+            this.mapCtx.fillText(difficultySymbols[difficulty], 0, 0);
+        }
+
+        this.mapCtx.restore();
+
+        // Draw location name with background
+        const fontSize = Math.round(12 / this.mapScale); // Reduced from 16 to 12
+        const text = location.title;
+        this.mapCtx.font = `${fontSize}px "Metal Slug Latino"`;
+        const textMetrics = this.mapCtx.measureText(text);
+        const textWidth = textMetrics.width;
+        const padding = 6; // Reduced from 10
+        const textY = y + size + fontSize + 3; // Reduced spacing
+
+        // Draw text background
+        this.mapCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.mapCtx.fillRect(
+            x - textWidth/2 - padding,
+            textY - fontSize,
+            textWidth + padding * 2,
+            fontSize + padding
+        );
+
+        // Draw text border glow
+        this.mapCtx.strokeStyle = location.type === 'mission' ? 'rgba(255, 215, 0, 0.3)' : 'rgba(255, 0, 85, 0.3)';
+        this.mapCtx.lineWidth = 1.5; // Thinner border
+
+        // Draw text
+        this.mapCtx.fillStyle = location.type === 'mission' ? '#ffd700' : '#ff0055';
+        this.mapCtx.textAlign = 'center';
+        this.mapCtx.fillText(text, x, textY);
+
+        // Update pulse phase
+        this.pulsePhase += 0.05;
+    }
+
+    drawConnectionGlow(from, to) {
+        const gradient = this.mapCtx.createLinearGradient(
+            from.position.x, from.position.y,
+            to.position.x, to.position.y
+        );
+        gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+        gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+
+        this.mapCtx.beginPath();
+        this.mapCtx.moveTo(from.position.x, from.position.y);
+        this.mapCtx.lineTo(to.position.x, to.position.y);
+        this.mapCtx.strokeStyle = gradient;
+        this.mapCtx.lineWidth = 4;
+        this.mapCtx.stroke();
     }
 
     onInteract() {
         if (this.modal) {
-            this.generateModalContent();
             this.modal.style.display = 'flex';
-            requestAnimationFrame(() => {
-                this.modal.classList.add('show');
-                this.setupMapCarousel();
-            });
-
-            let currentDifficulty = 'easy';
-            let selectedModeContent = 'mission';
-
-            const difficultyBtns = this.modal.querySelectorAll('.difficulty-btn');
-            const difficultyDescription = this.modal.querySelector('.difficulty-description');
-            
-            const updateDifficulty = (newDifficulty) => {
-                difficultyBtns.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.difficulty === newDifficulty);
-                });
-                const selectedDifficulty = this.missionData.difficulties.find(d => d.id === newDifficulty);
-                difficultyDescription.textContent = selectedDifficulty.description;
-                currentDifficulty = newDifficulty;
-            };
-
-            difficultyBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    updateDifficulty(btn.dataset.difficulty);
-                });
-            });
-
-            const mapSlides = this.modal.querySelectorAll('.map-slide');
-            const prevMapBtn = this.modal.querySelector('.map-nav.prev');
-            const nextMapBtn = this.modal.querySelector('.map-nav.next');
-
-            const updateMapSlide = () => {
-                const slides = this.modal.querySelectorAll('.map-slide');
-                const totalMaps = this.arcadeMaps.length;
-                
-                const prevIndex = (this.currentMapIndex - 1 + totalMaps) % totalMaps;
-                const nextIndex = (this.currentMapIndex + 1) % totalMaps;
-                
-                slides.forEach((slide, index) => {
-                    slide.style.transition = 'none';
-                    slide.style.opacity = '0';
-                    
-                    if (index === this.currentMapIndex) {
-                        slide.innerHTML = this.createMapSlideHTML(this.arcadeMaps[this.currentMapIndex]);
-                        slide.style.transform = 'translateX(0)';
-                        slide.style.opacity = '1';
-                    } else if (index === prevIndex) {
-                        slide.innerHTML = this.createMapSlideHTML(this.arcadeMaps[prevIndex]);
-                        slide.style.transform = 'translateX(-100%)';
-                    } else if (index === nextIndex) {
-                        slide.innerHTML = this.createMapSlideHTML(this.arcadeMaps[nextIndex]);
-                        slide.style.transform = 'translateX(100%)';
-                    }
-                    
-                    requestAnimationFrame(() => {
-                        slide.style.transition = 'all 0.5s ease';
-                    });
-                });
-
-                this.currentMap = this.arcadeMaps[this.currentMapIndex].id;
-            };
-
-            prevMapBtn.addEventListener('click', () => {
-                this.currentMapIndex = (this.currentMapIndex - 1 + this.arcadeMaps.length) % this.arcadeMaps.length;
-                this.updateMapSlide();
-            });
-
-            nextMapBtn.addEventListener('click', () => {
-                this.currentMapIndex = (this.currentMapIndex + 1) % this.arcadeMaps.length;
-                this.updateMapSlide();
-            });
-
-            const modeButtons = this.modal.querySelectorAll('.modal-button');
-            modeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const contentType = button.dataset.content;
-                    selectedModeContent = contentType;
-                    
-                    modeButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    
-                    document.querySelectorAll('.content-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    document.getElementById(`${contentType}-content`).classList.add('active');
-                });
-            });
-
-            const setupModeButtons = (mode) => {
-                const container = this.modal.querySelector(`#${mode}-content`);
-                const startBtn = container.querySelector('.start-button');
-                const params = mode === 'mission' ? 
-                    { difficulty: currentDifficulty } : 
-                    { map: this.currentMap };
-
-                startBtn.addEventListener('click', () => {
-                    window.location.href = `./game.html?mode=${mode}&${new URLSearchParams(params)}`;
-                });
-            };
-
-            setupModeButtons('mission');
-            setupModeButtons('arcade');
-
-            updateDifficulty('easy');
-
-            this.modal.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal-overlay')) {
-                    this.closeModal();
-                }
-            });
+            this.modal.querySelector('.modal-content-area').appendChild(this.mapCanvas);
+            this.drawMap();
+            this.setupMapInteractions();
+            requestAnimationFrame(() => this.modal.classList.add('show'));
         }
     }
 
-    createMapSlideHTML(mapData) {
-        return `
-            <div class="map-title">${mapData.name}</div>
-            <img src="${mapData.image}" alt="${mapData.name}">
-        `;
-    }
-
-    updateMapSlide() {
-        const slides = this.modal.querySelectorAll('.map-slide');
-        const dots = this.modal.querySelectorAll('.map-dot');
-        const infoContainer = this.modal.querySelector('.map-info-container');
-        
-        slides.forEach((slide, index) => {
-            slide.className = 'map-slide';
-            if (index === this.currentMapIndex) {
-                slide.classList.add('active');
-            }
-        });
-
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === this.currentMapIndex);
-        });
-
-        const currentMap = this.arcadeMaps[this.currentMapIndex];
-        infoContainer.innerHTML = `<p>${currentMap.description}</p>`;
-
-        this.currentMap = currentMap.id;
-    }
-
-    setupMapCarousel() {
-        const prevMapBtn = this.modal.querySelector('.map-nav.prev');
-        const nextMapBtn = this.modal.querySelector('.map-nav.next');
-        const dots = this.modal.querySelectorAll('.map-dot');
-        
-        let isAnimating = false;
-
-        const handleNavigation = (direction) => {
-            if (isAnimating) return;
-            
-            isAnimating = true;
-            
-            if (direction === 'prev') {
-                this.currentMapIndex = (this.currentMapIndex - 1 + this.arcadeMaps.length) % this.arcadeMaps.length;
-            } else {
-                this.currentMapIndex = (this.currentMapIndex + 1) % this.arcadeMaps.length;
-            }
-            
-            this.updateMapSlide();
-            
-            setTimeout(() => {
-                isAnimating = false;
-            }, 400);
-        };
-
-        prevMapBtn.addEventListener('click', () => handleNavigation('prev'));
-        nextMapBtn.addEventListener('click', () => handleNavigation('next'));
-
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                if (isAnimating || index === this.currentMapIndex) return;
-                isAnimating = true;
-                this.currentMapIndex = index;
-                this.updateMapSlide();
-                setTimeout(() => {
-                    isAnimating = false;
-                }, 400);
-            });
-        });
-
-        window.addEventListener('keydown', (e) => {
-            if (this.modal.style.display === 'flex' && 
-                this.modal.querySelector('#arcade-content').classList.contains('active')) {
-                if (e.key === 'ArrowLeft') {
-                    handleNavigation('prev');
-                } else if (e.key === 'ArrowRight') {
-                    handleNavigation('next');
-                }
-            }
-        });
-
-        this.updateMapSlide();
-    }
-
     closeModal() {
-        this.modal.classList.remove('show');
-        setTimeout(() => {
-            this.modal.style.display = 'none';
-        }, 500);
+        if (this.modal) {
+            this.modal.classList.remove('show');
+            setTimeout(() => {
+                this.modal.style.display = 'none';
+            }, 500);
+        }
     }
 
     draw() {

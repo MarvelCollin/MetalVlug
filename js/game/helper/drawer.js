@@ -99,6 +99,11 @@ class Drawer {
   }
 
   static drawImageFromBottom(img, x, y, flip = false, scale = 1, context = ctx) {
+    if (!context || typeof context.save !== 'function') {
+      console.error('Invalid canvas context');
+      return;
+    }
+    
     const scaledWidth = img.width * scale;
     const scaledHeight = img.height * scale;
     const realX = x;

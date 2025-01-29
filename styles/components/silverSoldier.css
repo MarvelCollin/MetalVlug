@@ -18,15 +18,15 @@
 }
 
 .modal-silver-soldier {
-  padding: 30px;
-  border-radius: 20px;
-  min-width: 800px;
-  max-width: 900px;
-  height: 550px;
-  transform: scale(0.9) translateY(20px);
-  opacity: 0;
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  background: rgba(30, 30, 30, 0.95);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  padding: 0;
+  border-radius: 0;
+  transform: scale(1);
+  background: rgba(20, 20, 20, 0.98);
   backdrop-filter: blur(10px);
 }
 
@@ -253,6 +253,17 @@
   overflow: visible;
   position: relative;
   height: 100%;
+  width: 100%;
+}
+
+.modal-content-area canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .content-section {
@@ -1007,3 +1018,351 @@
   font-size: 14px;
   line-height: 1.4;
 }
+
+.mission-map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+}
+
+.mission-map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/background/map/map.png');
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.3s ease;
+}
+
+.mission-node {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mission-node::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 215, 0, 0.2);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 50%;
+  animation: pulseNode 2s infinite;
+}
+
+.mission-node::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  background: #ffd700;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.mission-node.active::before {
+  background: rgba(255, 215, 0, 0.4);
+  border-color: rgba(255, 215, 0, 1);
+}
+
+.mission-node:hover::before {
+  transform: scale(1.2);
+}
+
+@keyframes pulseNode {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 0.3; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.mission-path {
+  position: absolute;
+  height: 2px;
+  background: rgba(255, 215, 0, 0.3);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.mission-path.active {
+  background: linear-gradient(90deg, #ffd700, rgba(255, 215, 0, 0.3));
+  animation: pathGlow 2s infinite linear;
+}
+
+@keyframes pathGlow {
+  0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+}
+
+.mission-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  width: 250px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.mission-node:hover .mission-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mission-tooltip h3 {
+  color: #ffd700;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.mission-tooltip p {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.difficulty-panel {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 250px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 12px;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.difficulty-panel.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.game-map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.game-map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/background/map/map.png');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.7) saturate(0.8);
+}
+
+.map-location {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.map-location::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 215, 0, 0.15);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 50%;
+  animation: locationPulse 2s infinite;
+}
+
+.map-location::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: #ffd700;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+.map-location.mission::before {
+  border-color: rgba(255, 215, 0, 0.6);
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.map-location.arcade::before {
+  border-color: rgba(255, 0, 85, 0.6);
+  background: rgba(255, 0, 85, 0.2);
+}
+
+.map-location.arcade::after {
+  background: #ff0055;
+}
+
+@keyframes locationPulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.5); opacity: 0.2; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.location-info {
+  position: fixed;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 300px;
+  width: 25vw;
+  min-width: 250px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 15px;
+  padding: 25px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.location-info.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.location-title {
+  color: #ffd700;
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.location-type {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+
+.location-type.mission {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.location-type.arcade {
+  background: rgba(255, 0, 85, 0.2);
+  color: #ff0055;
+  border: 1px solid rgba(255, 0, 85, 0.4);
+}
+
+/* ...existing styles... */
+
+.difficulty-selector-panel {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 400px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    z-index: 100;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.difficulty-selector-panel.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.difficulty-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.difficulty-option {
+    flex: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.difficulty-option:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 215, 0, 0.6);
+}
+
+.difficulty-option.active {
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.difficulty-preview {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
+}
+
+.difficulty-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.difficulty-option:hover img {
+    transform: scale(1.1);
+}
+
+.difficulty-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffd700;
+    font-family: "Metal Slug Latino", sans-serif;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.difficulty-description {
+    padding: 10px;
+    font-size: 12px;
+    color: #ccc;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* ...rest of existing styles... */

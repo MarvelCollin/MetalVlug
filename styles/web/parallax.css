@@ -26,19 +26,22 @@
 .night-bg {
     background: linear-gradient(to bottom, 
         #000000 0%,
-        #1a237e 40%,
+        #0a1128 20%,
+        #1a237e 60%,
         #283593 100%);
     z-index: 0;
+    transition: all 1s ease-in-out;
 }
 
 .day-bg {
     background: linear-gradient(to bottom, 
-        #4FC3F7 0%,
-        #87CEEB 40%,
+        #00B4DB 0%,
+        #4FC3F7 30%,
+        #87CEEB 60%,
         #B3E5FC 100%);
     z-index: 0;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: all 1s ease-in-out;
 }
 
 .ground {
@@ -67,14 +70,27 @@
     position: fixed;
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.8s ease;
+    filter: blur(1px);
     box-shadow: 0 0 3px #fff,
                 0 0 6px #fff;
 }
 
-.star.blue { background-color: #8ff7ff; }
-.star.gold { background-color: #ffd700; }
-.star.white { background-color: white; }
+.star.blue { 
+    background-color: #8ff7ff; 
+    box-shadow: 0 0 8px #8ff7ff,
+                0 0 16px #8ff7ff;
+}
+.star.gold { 
+    background-color: #ffd700; 
+    box-shadow: 0 0 8px #ffd700,
+                0 0 16px #ffd700;
+}
+.star.white { 
+    background-color: white; 
+    box-shadow: 0 0 8px white,
+                0 0 16px white;
+}
 
 
 @keyframes float {
@@ -118,42 +134,153 @@
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    font-family: 'Arial Black', sans-serif;
     font-size: 48px;
     font-weight: bold;
     text-align: center;
     color: #fff;
     text-shadow: 0 0 10px #000;
-    transition: all 0.8s ease;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 3;
+    letter-spacing: 4px;
+    opacity: 1;
 }
 
 .game-title.night {
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
     font-size: 72px;
     text-shadow: 
-        0 0 10px #00f,
-        0 0 20px #00f,
-        0 0 30px #00f;
+        0 0 10px #4FC3F7,
+        0 0 20px #4FC3F7,
+        0 0 30px #4FC3F7,
+        0 0 40px #0091EA;
+    letter-spacing: 8px;
 }
 
 .game-title.day {
     top: 5%;
+    transform: translate(-50%, 0) scale(0.8);
     font-size: 48px;
     text-shadow: 
-        0 0 10px #f00,
-        0 0 20px #f00,
-        0 0 30px #f00;
+        0 0 10px #FF5722,
+        0 0 20px #FF5722,
+        0 0 30px #FF5722;
+    color: #FFF8E1;
+    letter-spacing: 4px;
 }
 
 @keyframes titleGlow {
-    0% { text-shadow: 0 0 10px currentColor; }
-    50% { text-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
-    100% { text-shadow: 0 0 10px currentColor; }
+    0% { 
+        text-shadow: 0 0 10px currentColor,
+                     0 0 20px currentColor;
+        transform: translate(-50%, var(--y-pos)) scale(var(--scale));
+    }
+    50% { 
+        text-shadow: 0 0 20px currentColor,
+                     0 0 30px currentColor,
+                     0 0 40px currentColor;
+        transform: translate(-50%, calc(var(--y-pos) - 10px)) scale(var(--scale));
+    }
+    100% { 
+        text-shadow: 0 0 10px currentColor,
+                     0 0 20px currentColor;
+        transform: translate(-50%, var(--y-pos)) scale(var(--scale));
+    }
 }
 
-.game-title {
-    animation: titleGlow 2s infinite;
+.game-title.night {
+    --y-pos: -50%;
+    --scale: 1;
+    animation: titleGlow 3s ease-in-out infinite;
+}
+
+.game-title.day {
+    --y-pos: 0;
+    --scale: 0.8;
+    animation: titleGlow 3s ease-in-out infinite;
+}
+
+/* Add fade transition between states */
+.game-title.night-to-day {
+    animation: nightToDay 1.5s forwards;
+}
+
+.game-title.day-to-night {
+    animation: dayToNight 1.5s forwards;
+}
+
+@keyframes nightToDay {
+    0% {
+        top: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        font-size: 72px;
+        letter-spacing: 8px;
+    }
+    100% {
+        top: 5%;
+        transform: translate(-50%, 0) scale(0.8);
+        font-size: 48px;
+        letter-spacing: 4px;
+    }
+}
+
+@keyframes dayToNight {
+    0% {
+        top: 5%;
+        transform: translate(-50%, 0) scale(0.8);
+        font-size: 48px;
+        letter-spacing: 4px;
+    }
+    100% {
+        top: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        font-size: 72px;
+        letter-spacing: 8px;
+    }
+}
+
+.scroll-indicator {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.scroll-indicator.visible {
+    opacity: 1;
+}
+
+.scroll-arrow {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.scroll-arrow::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-right: 4px solid #fff;
+    border-bottom: 4px solid #fff;
+    transform: rotate(45deg);
+    animation: arrowBounce 2s infinite;
+    box-shadow: 
+        2px 2px 8px rgba(79, 195, 247, 0.6),
+        4px 4px 16px rgba(79, 195, 247, 0.4);
+}
+
+@keyframes arrowBounce {
+    0%, 100% {
+        transform: rotate(45deg) translate(-5px, -5px);
+    }
+    50% {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
 }
 

@@ -5,27 +5,46 @@ let ufoCanvas = null;
 
 async function initGame() {
     try {
+        // First ensure webCtx is initialized
         await webCtx.initialize();
+        
         if (!webCtx.getCanvas() || !webCtx.getContext()) {
             throw new Error('WebCtx initialization failed');
         }
+
+        // Create and initialize UfoCanvas
         ufoCanvas = new UfoCanvas();
         
-        // Wait for UFO initialization to complete
-        await new Promise(resolve => {
+        // Wait for assets to load and initialization to complete
+        await new Promise((resolve, reject) => {
             const checkInit = () => {
                 if (ufoCanvas.isReady) {
                     resolve();
+                } else if (ufoCanvas.initError) {
+                    reject(ufoCanvas.initError);
                 } else {
                     setTimeout(checkInit, 100);
                 }
             };
-            checkInit();
+            setTimeout(checkInit, 100);
         });
         
         return ufoCanvas;
     } catch (error) {
         console.error('Failed to initialize game:', error);
+        // Display error to user
+        const container = document.querySelector('.parallax-container');
+        if (container) {
+            const errorMsg = document.createElement('div');
+            errorMsg.style.color = 'red';
+            errorMsg.style.position = 'fixed';
+            errorMsg.style.top = '50%';
+            errorMsg.style.left = '50%';
+            errorMsg.style.transform = 'translate(-50%, -50%)';
+            errorMsg.textContent = 'Failed to load game resources';
+            container.appendChild(errorMsg);
+        }
+        throw error;
     }
 }
 
@@ -39,6 +58,21 @@ const init = async () => {
     const dayBg = document.querySelector(".day-bg");
     const container = document.querySelector(".parallax-container");
     const gameTitle = document.querySelector(".game-title");
+
+    // Add scroll indicator variables
+    const scrollIndicator = document.querySelector(".scroll-indicator");
+    let scrollTimeout;
+    let hasScrolled = false;
+
+    // Show scroll indicator after 3 seconds if user hasn't scrolled
+    const showScrollIndicator = () => {
+        if (!hasScrolled) {
+            scrollIndicator.classList.add('visible');
+        }
+    };
+
+    // Initial timer
+    scrollTimeout = setTimeout(showScrollIndicator, 3000);
 
     function createStars(count) {
         for (let i = 0; i < count; i++) {
@@ -72,33 +106,60 @@ const init = async () => {
         const scrolled = Math.min(window.scrollY, maxScroll);
         const scrollProgress = scrolled / maxScroll;
 
-        if (window.scrollY <= maxScroll) {
-            dayBg.style.opacity = scrollProgress;
-            darkGround.style.opacity = 1 - scrollProgress;
-            lightGround.style.opacity = scrollProgress;
+        // Clear timeout and mark as scrolled
+        clearTimeout(scrollTimeout);
+        hasScrolled = true;
 
-            // Update title class based on scroll position
-            if (scrollProgress >= 0.3) {
-                gameTitle.classList.remove('night');
-                gameTitle.classList.add('day');
-            } else {
-                gameTitle.classList.remove('day');
-                gameTitle.classList.add('night');
+        if (window.scrollY <= maxScroll) {
+            // Smooth transition for background
+            dayBg.style.opacity = Math.pow(scrollProgress, 2); // Use quadratic easing
+            darkGround.style.opacity = 1 - Math.pow(scrollProgress, 2);
+            lightGround.style.opacity = Math.pow(scrollProgress, 2);
+
+            // Update title class with smooth transition
+            if (scrollProgress >= 0.35) {
+                if (gameTitle.classList.contains('night')) {
+                    gameTitle.classList.remove('day-to-night');
+                    gameTitle.classList.add('night-to-day');
+                    setTimeout(() => {
+                        gameTitle.classList.remove('night');
+                        gameTitle.classList.add('day');
+                    }, 1500);
+                }
+            } else if (scrollProgress <= 0.25) {
+                if (gameTitle.classList.contains('day')) {
+                    gameTitle.classList.remove('night-to-day');
+                    gameTitle.classList.add('day-to-night');
+                    setTimeout(() => {
+                        gameTitle.classList.remove('day');
+                        gameTitle.classList.add('night');
+                    }, 1500);
+                }
             }
 
             if (ufoCanvas) {
-                ufoCanvas.setDayTime(scrollProgress >= 0.3);
+                // Add hysteresis to prevent flickering
+                if (scrollProgress >= 0.35) {
+                    ufoCanvas.setDayTime(true);
+                } else if (scrollProgress <= 0.25) {
+                    ufoCanvas.setDayTime(false);
+                }
             }
 
             if (scrollProgress >= 0.3) {
                 const stars = document.querySelectorAll(".star");
                 stars.forEach((star) => star.remove());
+                // Hide scroll indicator during day time
+                scrollIndicator.classList.remove('visible');
             } else if (
                 scrollProgress <= 0.1 &&
                 document.querySelectorAll(".star").length === 0
             ) {
                 createStars(80);
                 animateStars();
+                // Reset scroll indicator if back to night
+                hasScrolled = false;
+                scrollTimeout = setTimeout(showScrollIndicator, 3000);
             }
         }
     });
@@ -121,6 +182,10 @@ const init = async () => {
         setTimeout(() => {
             window.scrollTo(0, 0);
         }, 50);
+
+        // Reset scroll indicator when page is loaded
+        hasScrolled = false;
+        scrollTimeout = setTimeout(showScrollIndicator, 3000);
     });
 };
 

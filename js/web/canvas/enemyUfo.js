@@ -98,6 +98,8 @@ export class EnemyUfoCanvas {
       speedX: (Math.random() - 0.5) * 1.5, 
       speedY: spawnAtTop ? 0.3 + Math.random() : (Math.random() - 0.5) * 1, 
       scale: 1.5,
+      glowIntensity: 0.8 + Math.random() * 0.4,
+      glowColor: '#FF5722',
       facingLeft: false,
       state: "stop",
       stateTimer: Math.random() * 120,
@@ -107,6 +109,9 @@ export class EnemyUfoCanvas {
       patternTimer: 0,
       amplitude: 50 + Math.random() * 50,
       isEntering: spawnAtTop,
+      currentGlowIntensity: 0.8 + Math.random() * 0.4,
+      targetGlowIntensity: 0.8 + Math.random() * 0.4,
+      glowTransitionSpeed: 0.05,
     };
   }
 
@@ -162,37 +167,43 @@ export class EnemyUfoCanvas {
   setDayTime(isDay) {
     if (this.isDay !== isDay) {
       this.isDay = isDay;
+      const margin = 50;
+      
       if (isDay) {
-        
         this.enemyUfos.forEach((enemyUfo) => {
           enemyUfo.isExiting = true;
           enemyUfo.speedY = -8;
           enemyUfo.speedX = (Math.random() - 0.5) * 4;
+          enemyUfo.targetGlowIntensity = 0;
         });
       } else {
-        
         this.enemyUfos = [];
         for (let i = 0; i < this.ufoCount; i++) {
-          
           const x = margin + Math.random() * (window.innerWidth - 2 * margin);
-          this.enemyUfos.push({
+          const enemyUfo = {
             images: this.enemyData.images,
             delay: this.enemyData.delay,
             x: x,
-            y: -50, 
+            y: -50,
             speedX: (Math.random() - 0.5) * 4,
             speedY: 2 + Math.random() * 2,
             isEntering: true,
             scale: 1.5,
             facingLeft: false,
             state: "stop",
-            stateTimer: Math.random() * 120, 
+            stateTimer: Math.random() * 120,
             lastShotTime: 0,
-            baseSpeed: 2 + Math.random() * 2, 
-            movementPattern: Math.floor(Math.random() * 3), 
+            baseSpeed: 2 + Math.random() * 2,
+            movementPattern: Math.floor(Math.random() * 3),
             patternTimer: 0,
-            amplitude: 50 + Math.random() * 50, 
-          });
+            amplitude: 50 + Math.random() * 50,
+            glowIntensity: 0.8 + Math.random() * 0.4,
+            glowColor: '#FF5722',
+            currentGlowIntensity: 0,
+            targetGlowIntensity: 0.8 + Math.random() * 0.4,
+            glowTransitionSpeed: 0.05,
+          };
+          this.enemyUfos.push(enemyUfo);
         }
       }
     }
@@ -382,6 +393,22 @@ export class EnemyUfoCanvas {
           enemyUfo.y = maxY;
         }
       }
+
+      if (enemyUfo.currentGlowIntensity !== enemyUfo.targetGlowIntensity) {
+        if (enemyUfo.currentGlowIntensity < enemyUfo.targetGlowIntensity) {
+          enemyUfo.glowIntensity = Math.min(
+            enemyUfo.targetGlowIntensity,
+            enemyUfo.currentGlowIntensity + enemyUfo.glowTransitionSpeed
+          );
+        } else {
+          enemyUfo.glowIntensity = Math.max(
+            enemyUfo.targetGlowIntensity,
+            enemyUfo.currentGlowIntensity - enemyUfo.glowTransitionSpeed
+          );
+        }
+        enemyUfo.currentGlowIntensity = enemyUfo.glowIntensity;
+      }
+
       return true;
     });
 
@@ -422,6 +449,14 @@ export class EnemyUfoCanvas {
      
     
     this.enemyUfos.forEach((enemyUfo) => {
+      const ctx = webCtx.getContext();
+      ctx.save();
+
+      // Draw UFO with glow
+      ctx.globalAlpha = 0.8 * enemyUfo.glowIntensity;
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = enemyUfo.glowColor;
+      
       Drawer.drawToCanvas(
         enemyUfo.images,
         enemyUfo.x,
@@ -430,12 +465,20 @@ export class EnemyUfoCanvas {
         enemyUfo.facingLeft,
         enemyUfo.scale,
         "LOOP",
-        webCtx.getContext()
+        ctx
       );
+      
+      ctx.restore();
     });
 
     
     this.bullets.forEach((bullet) => {
+      const ctx = webCtx.getContext();
+      ctx.save();
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#FF5722';
+      ctx.globalAlpha = 0.8;
+      
       Drawer.drawToCanvas(
         this.bulletData.images,
         bullet.x,
@@ -444,8 +487,10 @@ export class EnemyUfoCanvas {
         bullet.facingLeft,
         bullet.scale,
         "LOOP",
-        webCtx.getContext()
+        ctx
       );
+      
+      ctx.restore();
     });
   }
 

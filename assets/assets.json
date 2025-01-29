@@ -10,6 +10,11 @@
             "FRAMES": 1,
             "TYPE": "SINGLE"
         },
+        "MAP": {
+            "PATH": "../assets/background/map/map",
+            "FRAMES": 1,
+            "TYPE": "SINGLE"
+        },
         "MISSION": {
             "PATH": "../assets/background/mission/mission",
             "FRAMES": 1,
@@ -539,9 +544,9 @@
             },
             "EXPLODE": {
                 "PATH": "../assets/web/ufo/explode/explode_",
-                "FRAMES": 10,
+                "FRAMES": 19,
                 "TYPE": "LOOP",
-                "DELAY": 100
+                "DELAY": 30
             },
             "LAUGH": {
                 "PATH": "../assets/web/ufo/laugh/laugh_",
