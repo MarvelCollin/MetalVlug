@@ -39,7 +39,6 @@ class Entity {
 
   resetVelocity() {
     this.velocityX = 0;
-    // this.velocityY = 0;
   }
 
   update() {

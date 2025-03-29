@@ -54,27 +54,8 @@ class EnemySpawner {
 
     return newEnemies
 
-    // const currentTime = Date.now();
-    // if (currentTime - this.lastSpawnTime > this.nextSpawnTime) {
-    //   const enemyCount = this.getRandomEnemyCount();
-    //   const newEnemies = [];
 
-    //   for (let i = 0; i < enemyCount; i++) {
-    //     const position = this.getRandomPosition();
-    //     const type = this.getRandomEnemyType();
-    //     const enemy = EnemyFactory.createEnemy(
-    //       type,
-    //       position.x,
-    //       position.y
-    //     );
-    //     newEnemies.push(enemy);
-    //   }
 
-    //   this.lastSpawnTime = currentTime;
-    //   this.nextSpawnTime = this.getRandomSpawnTime();
-    //   return newEnemies;
-    // }
-    // return [];
   }
 }
 

@@ -5,17 +5,14 @@ let ufoCanvas = null;
 
 async function initGame() {
     try {
-        // First ensure webCtx is initialized
         await webCtx.initialize();
         
         if (!webCtx.getCanvas() || !webCtx.getContext()) {
             throw new Error('WebCtx initialization failed');
         }
 
-        // Create and initialize UfoCanvas
         ufoCanvas = new UfoCanvas();
         
-        // Wait for assets to load and initialization to complete
         await new Promise((resolve, reject) => {
             const checkInit = () => {
                 if (ufoCanvas.isReady) {
@@ -32,7 +29,6 @@ async function initGame() {
         return ufoCanvas;
     } catch (error) {
         console.error('Failed to initialize game:', error);
-        // Display error to user
         const container = document.querySelector('.parallax-container');
         if (container) {
             const errorMsg = document.createElement('div');
@@ -48,10 +44,8 @@ async function initGame() {
     }
 }
 
-// Ensure initialization is complete before other operations
 const init = async () => {
     await initGame();
-    // Rest of your parallax code...
     const maxScroll = 500;
     const darkGround = document.querySelector(".dark-ground");
     const lightGround = document.querySelector(".light-ground");
@@ -59,19 +53,16 @@ const init = async () => {
     const container = document.querySelector(".parallax-container");
     const gameTitle = document.querySelector(".game-title");
 
-    // Add scroll indicator variables
     const scrollIndicator = document.querySelector(".scroll-indicator");
     let scrollTimeout;
     let hasScrolled = false;
 
-    // Show scroll indicator after 3 seconds if user hasn't scrolled
     const showScrollIndicator = () => {
         if (!hasScrolled) {
             scrollIndicator.classList.add('visible');
         }
     };
 
-    // Initial timer
     scrollTimeout = setTimeout(showScrollIndicator, 3000);
 
     function createStars(count) {
@@ -106,17 +97,14 @@ const init = async () => {
         const scrolled = Math.min(window.scrollY, maxScroll);
         const scrollProgress = scrolled / maxScroll;
 
-        // Clear timeout and mark as scrolled
         clearTimeout(scrollTimeout);
         hasScrolled = true;
 
         if (window.scrollY <= maxScroll) {
-            // Smooth transition for background
-            dayBg.style.opacity = Math.pow(scrollProgress, 2); // Use quadratic easing
+            dayBg.style.opacity = Math.pow(scrollProgress, 2);
             darkGround.style.opacity = 1 - Math.pow(scrollProgress, 2);
             lightGround.style.opacity = Math.pow(scrollProgress, 2);
 
-            // Update title class with smooth transition
             if (scrollProgress >= 0.35) {
                 if (gameTitle.classList.contains('night')) {
                     gameTitle.classList.remove('day-to-night');
@@ -138,7 +126,6 @@ const init = async () => {
             }
 
             if (ufoCanvas) {
-                // Add hysteresis to prevent flickering
                 if (scrollProgress >= 0.35) {
                     ufoCanvas.setDayTime(true);
                 } else if (scrollProgress <= 0.25) {
@@ -149,7 +136,6 @@ const init = async () => {
             if (scrollProgress >= 0.3) {
                 const stars = document.querySelectorAll(".star");
                 stars.forEach((star) => star.remove());
-                // Hide scroll indicator during day time
                 scrollIndicator.classList.remove('visible');
             } else if (
                 scrollProgress <= 0.1 &&
@@ -157,7 +143,6 @@ const init = async () => {
             ) {
                 createStars(80);
                 animateStars();
-                // Reset scroll indicator if back to night
                 hasScrolled = false;
                 scrollTimeout = setTimeout(showScrollIndicator, 3000);
             }
@@ -183,7 +168,6 @@ const init = async () => {
             window.scrollTo(0, 0);
         }, 50);
 
-        // Reset scroll indicator when page is loaded
         hasScrolled = false;
         scrollTimeout = setTimeout(showScrollIndicator, 3000);
     });

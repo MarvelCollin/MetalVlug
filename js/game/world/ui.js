@@ -3,7 +3,7 @@ import Assets from "../helper/assets.js";
 import Drawer from "../helper/drawer.js";
 import { Inventory } from '../ui/inventory.js';
 import { INVENTORY_ITEMS } from '../ui/items.js';
-import { AchievementSystem } from './achievement.js';  // Add this import
+import { AchievementSystem } from './achievement.js';
 import { AdminPanel } from './admin.js';
 import { CheatHandler } from './cheatcode.js';
 
@@ -56,7 +56,7 @@ export class UI {
             ammo: await Drawer.loadImage(() => Assets.getWorldItemsAmmo()),
             bomb: await Drawer.loadImage(() => Assets.getWorldItemsBomb()),
             coin: await Drawer.loadImage(() => Assets.getWorldItemsCoin()),
-            medal: await Drawer.loadImage(() => Assets.getWorldItemsMedal()) // Add medal
+            medal: await Drawer.loadImage(() => Assets.getWorldItemsMedal())
         };
     }
 
@@ -90,7 +90,7 @@ export class UI {
             this.ammoCount = document.querySelector('.ammo-count');
             this.bombCount = document.querySelector('.bomb-count');
             this.scoreCount = document.querySelector('.score-count');
-            this.medalCount = document.querySelector('.medal-count'); // Add this line
+            this.medalCount = document.querySelector('.medal-count');
             this.healthFill = document.querySelector('.health-fill');
 
             
@@ -197,9 +197,8 @@ export class UI {
     }
 
     updateBasicUI() {
-        if (!this.uiElement) return; // Add safety check
+        if (!this.uiElement) return;
         
-        // Add null checks for all UI elements
         if (this.ammoCount) this.ammoCount.textContent = this.player.ammo || 50;
         if (this.bombCount) this.bombCount.textContent = this.player.bombs || 10;
         if (this.scoreCount) this.scoreCount.textContent = this.player.coins || 1000;
@@ -223,17 +222,14 @@ export class UI {
 
         document.body.appendChild(notification);
         
-        // Trigger animation
         requestAnimationFrame(() => {
             notification.classList.add('show');
             
-            // Play achievement sound
             const achievementSound = new Audio('../assets/sounds/achievement.mp3');
             achievementSound.volume = 0.5;
-            achievementSound.play().catch(() => {}); // Ignore if sound fails to play
+            achievementSound.play().catch(() => {});
         });
 
-        // Remove notification after delay
         setTimeout(() => {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 600);

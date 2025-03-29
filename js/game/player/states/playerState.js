@@ -7,15 +7,12 @@ class PlayerState {
     }
 
     enter() {
-        // To be implemented by subclasses
     }
 
     handleInput() {
-        // To be implemented by subclasses
     }
 
     update() {
-        // To be implemented by subclasses
     }
 
     draw() {

@@ -64,32 +64,27 @@ class Player extends Entity {
     this.initialY = y;
     this.isDead = false;
 
-    // Add these properties for UI
     this.health = 100;
     this.ammo = 50;
     this.bombs = 10;
     this.coins = 1000;
 
-    this.medals = 0; // Initialize medals
+    this.medals = 0;
         
-    // Create custom event for medal updates
     this.medalUpdateEvent = new CustomEvent('medalUpdate', {
         detail: { medals: this.medals }
     });
   }
 
-  // Add getter/setter for medals
   get medals() {
     return this._medals || 0;
   }
 
   set medals(value) {
     this._medals = value;
-    // Update the event detail
     this.medalUpdateEvent = new CustomEvent('medalUpdate', {
         detail: { medals: value }
     });
-    // Dispatch the event
     document.dispatchEvent(this.medalUpdateEvent);
   }
 
@@ -134,7 +129,6 @@ class Player extends Entity {
 
 
     if(!this.actions.has(ACTION.JUMP) && this.actions.has(ACTION.FLOAT)){
-      // this.grounded = true;
     }
 
     if (

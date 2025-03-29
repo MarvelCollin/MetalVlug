@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const http = require('http');
-const port = 8080;  // Make sure this matches client port
+const port = 8080;
 
 const server = http.createServer((req, res) => {
     res.writeHead(200);

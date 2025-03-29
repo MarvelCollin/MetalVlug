@@ -40,11 +40,9 @@ function resizeCanvas() {
     }
 }
 
-// Initialize after DOM loads
 document.addEventListener('DOMContentLoaded', initializeCanvas);
 window.addEventListener('resize', resizeCanvas);
 
-// Prevent zooming
 window.addEventListener('keydown', function(event) {
     if (event.ctrlKey || event.metaKey) {
         if (['+', '-', '=', '_'].includes(event.key) || event.wheelDelta) {

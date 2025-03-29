@@ -37,7 +37,6 @@ class WebSocketClient {
             };
         } catch (error) {
             console.error('WebSocket connection failed:', error);
-            // Try to reconnect after a delay
             setTimeout(() => this.connect(), 3000);
         }
     }

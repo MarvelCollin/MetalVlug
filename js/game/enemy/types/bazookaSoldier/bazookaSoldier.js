@@ -38,15 +38,12 @@ export class BazookaSoldier {
                 enemy.velocityX = 0;
             } else if (distanceToPlayer <= enemy.detectionRange) {
                 enemy.setState(enemy.moveState);
-                // Maintain optimal distance for attack
                 if (distanceToPlayer < this.preferredDistance) {
-                    // Move away from player
                     const direction = enemy.target.x < enemy.x ? 1 : -1;
                     enemy.velocityX = enemy.speed * direction;
                     enemy.lastDirection = direction > 0 ? 'RIGHT' : 'LEFT';
                 } else {
                     enemy.moveTowardsPlayer(enemy.target);
-                    // Move towards player
                 }
             } else {
                 enemy.setState(enemy.idleState);

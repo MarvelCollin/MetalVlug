@@ -77,7 +77,7 @@ class Game {
     async startAnimation() {
         player = new Player(1000, 300);
         camera = new Camera(null);
-        camera.setTarget(player); // Changed from camera.target = player
+        camera.setTarget(player);
         enemySpawner = new EnemySpawner(); 
         this.initializeObstacles();
         const bgData = await this.loadBackground();
@@ -140,12 +140,11 @@ class Game {
 
         ctx.restore();
 
-        // Add debug logging
         if (this.camera.ui) {
-            console.log('Drawing UI...'); // Debug log
+            console.log('Drawing UI...');
             this.camera.ui.draw();
         } else {
-            console.log('No UI available'); // Debug log
+            console.log('No UI available');
         }
 
         requestAnimationFrame(this.gameLoop.bind(this));
@@ -163,11 +162,4 @@ const gameState = {
 const game = new Game();
 game.startAnimation();
 
-export {     game, 
-    gameState 
-game.startAnimation();
-};
-
-export {     game, 
-    gameState 
-};
+export { game, gameState };

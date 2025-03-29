@@ -6,9 +6,9 @@ class PlayerMoveHandler {
     this.velocityX = 0;
     this.velocityY = 0;
     this.isJumping = false;
-    this.dashSpeed = 20; // Add dash speed
+    this.dashSpeed = 20;
     this.isDashing = false;
-    this.dashDuration = 350; // milliseconds
+    this.dashDuration = 350;
     this.dashStartTime = 0;
   }
 

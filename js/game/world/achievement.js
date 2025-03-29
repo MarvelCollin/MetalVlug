@@ -252,7 +252,6 @@ export class AchievementSystem {
         achievement.progress = Math.min(progress, achievementData.target);
         achievement.completed = achievement.progress >= achievementData.target;
         
-        // Initialize rewardClaimed if it doesn't exist
         if (achievement.rewardClaimed === undefined) {
             achievement.rewardClaimed = false;
         }
@@ -264,10 +263,6 @@ export class AchievementSystem {
             if (this.onAchievementUnlocked) {
                 this.onAchievementUnlocked(achievementData);
             }
-            // Remove this line to prevent auto-claiming
-            // if (!achievement.rewardClaimed) {
-            //     this.claimReward(achievementId);
-            // }
         }
     }
 
@@ -309,7 +304,6 @@ export class AchievementSystem {
         const claimBtn = card.querySelector('.claim-reward-btn');
         claimBtn.onclick = () => this.claimReward(achievement.id);
 
-        // Initially hide the button - will be shown in updateUI if needed
         claimBtn.style.display = 'none';
 
         return card;
@@ -338,7 +332,6 @@ export class AchievementSystem {
             card.classList.toggle('completed', achievement.completed);
             card.classList.toggle('locked', !achievement.completed);
 
-            // Show claim button if achievement is completed and reward not claimed
             claimBtn.style.display = (achievement.completed && !achievement.rewardClaimed) ? 'block' : 'none';
         });
     }

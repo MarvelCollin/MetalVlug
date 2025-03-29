@@ -131,7 +131,6 @@ class Base {
 
     ctx.restore();
 
-    // Draw UI after restoring context so it stays fixed on screen
     if (this.camera.ui) {
       this.camera.ui.draw();
     }

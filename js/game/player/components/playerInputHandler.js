@@ -54,9 +54,6 @@ class PlayerInputHandler {
     if (activeKeys.has(" ") && !playerMoveHandler.isJumping && this.player.grounded) {
       playerMoveHandler.jump(); 
     } 
-    // else if (!activeKeys.has(" ")) {
-    //   this.player.actions.delete(ACTION.JUMP);
-    // }
   }
 
   handleShoot(activeKeys) {

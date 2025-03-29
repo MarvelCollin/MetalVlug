@@ -86,7 +86,6 @@ export class RumiAikawa extends BaseNPC {
     }
 
     setupShopInteractions() {
-        // Update to select from newly generated items
         const shopItems = this.shopContent.querySelectorAll('.shop-item');
         
         shopItems.forEach(item => {
@@ -220,7 +219,6 @@ export class RumiAikawa extends BaseNPC {
                 fill: 'forwards'
             });
             
-            // Remove after animation
             setTimeout(() => coin.remove(), 1000 + delay);
         }
     }
@@ -236,7 +234,6 @@ export class RumiAikawa extends BaseNPC {
             particle.className = 'success-particles';
             document.body.appendChild(particle);
 
-            // Random position around the center
             const angle = (Math.PI * 2 * i) / numParticles;
             const distance = 100 + Math.random() * 50;
             const x = Math.cos(angle) * distance;
@@ -304,7 +301,6 @@ export class RumiAikawa extends BaseNPC {
         this.modal.classList.add('closing');
         this.modal.classList.remove('show');
         
-        // Wait for animations to finish
         setTimeout(() => {
             this.modal.classList.remove('closing');
             this.modal.style.display = 'none';
@@ -418,7 +414,6 @@ export class RumiAikawa extends BaseNPC {
             this.updateCarousel();
         });
 
-        // Add keyboard navigation
         window.addEventListener('keydown', (e) => {
             if (this.modal.style.display === 'flex') {
                 if (e.key === 'ArrowLeft') {
@@ -431,10 +426,8 @@ export class RumiAikawa extends BaseNPC {
             }
         });
 
-        // Initial setup
         this.updateCarousel();
 
-        // Update on window resize
         window.addEventListener('resize', () => {
             this.updateCarousel();
         });

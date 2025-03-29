@@ -452,7 +452,6 @@ export class EnemyUfoCanvas {
       const ctx = webCtx.getContext();
       ctx.save();
 
-      // Draw UFO with glow
       ctx.globalAlpha = 0.8 * enemyUfo.glowIntensity;
       ctx.shadowBlur = 20;
       ctx.shadowColor = enemyUfo.glowColor;

@@ -39,23 +39,19 @@ class RocketGunner {
         const isHomingExpired = currentTime - this.creationTime > this.homingDuration;
 
         if (this.isHoming && this.target && !isHomingExpired) {
-            // kalkulasi ke player
             const dx = this.target.x - this.x;
             const dy = (this.target.y - this.target.height/2) - this.y;
             const angle = Math.atan2(dy, dx);
 
-            // peluru ke player
             this.velocityX += Math.cos(angle) * this.homingStrength;
             this.velocityY += Math.sin(angle) * this.homingStrength;
 
-            // atur kecepatan
             const currentSpeed = Math.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY);
             if (currentSpeed > this.maxSpeed) {
                 this.velocityX = (this.velocityX / currentSpeed) * this.maxSpeed;
                 this.velocityY = (this.velocityY / currentSpeed) * this.maxSpeed;
             }
 
-            // check stop kejar
             if (currentTime - this.creationTime >= this.homingDuration) {
                 this.fixedDirection = {
                     x: this.velocityX / currentSpeed,

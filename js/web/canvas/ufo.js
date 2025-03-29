@@ -20,7 +20,6 @@ export class UfoCanvas {
         this.explodeState = null;
         this.effectState = null;
         
-        // Remove canvas initialization from constructor
         this.initializeCanvas();
     }
 
@@ -37,7 +36,7 @@ export class UfoCanvas {
                 throw new Error('Canvas context not available');
             }
 
-            await this.init(); // Move init() call here
+            await this.init();
         } catch (error) {
             console.error('Failed to initialize UfoCanvas:', error);
         }
@@ -93,7 +92,6 @@ export class UfoCanvas {
                 throw new Error('Assets instance not initialized');
             }
 
-            // Verify that the required methods exist
             const requiredMethods = [
                 'getWebUfoAfraid',
                 'getWebUfoLaugh',
@@ -143,7 +141,7 @@ export class UfoCanvas {
             this.startAnimation();
         } catch (error) {
             console.error('Error in init:', error);
-            throw error; // Propagate the error up
+            throw error;
         }
 
         this.resizeCanvas();
@@ -154,10 +152,9 @@ export class UfoCanvas {
         this.isDay = isDay;
         this.ufos.forEach(ufo => {
             ufo.state = isDay ? ufo.dayState : 'afraid';
-            // Add smooth transition for glow
             ufo.targetGlowIntensity = isDay ? 0 : (0.6 + Math.random() * 0.4);
             ufo.currentGlowIntensity = ufo.glowIntensity || 0;
-            ufo.glowTransitionSpeed = 0.05; // Controls how fast the glow changes
+            ufo.glowTransitionSpeed = 0.05;
             ufo.glowColor = '#4FC3F7';
         });
         
@@ -229,7 +226,6 @@ export class UfoCanvas {
             }
         });
 
-        // Update glow transitions
         this.ufos.forEach(ufo => {
             if (ufo.currentGlowIntensity !== ufo.targetGlowIntensity) {
                 if (ufo.currentGlowIntensity < ufo.targetGlowIntensity) {
@@ -293,7 +289,6 @@ export class UfoCanvas {
     draw() {
         if (!this.isReady || !this.ctx) return;
         
-        // Clear canvas at the start of each frame
         webCtx.clearCanvas();
 
         if (this.ufoStates.afraid && this.ufos.length > 0) {
@@ -303,7 +298,6 @@ export class UfoCanvas {
                     const ctx = webCtx.getContext();
                     ctx.save();
                     
-                    // Only apply glow if it's night or if glowIntensity > 0
                     if (!this.isDay && ufo.glowIntensity > 0) {
                         ctx.shadowBlur = 20;
                         ctx.shadowColor = ufo.glowColor;
@@ -326,7 +320,6 @@ export class UfoCanvas {
             });
         }
 
-        // Draw explosions and effects
         this.explosions = this.explosions.filter(explosion => {
             if (explosion.isFinished) return false;
             
@@ -369,7 +362,6 @@ export class UfoCanvas {
             return !effect.isFinished;
         });
 
-        // Draw enemy UFOs last
         if (this.enemyUfo) {
             this.enemyUfo.draw();
         }

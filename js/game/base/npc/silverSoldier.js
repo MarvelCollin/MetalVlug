@@ -30,7 +30,6 @@ export class SilverSoldier extends BaseNPC {
             }
         ];
 
-        // Load difficulty images
         this.difficultyImages = {};
         this.difficulties.forEach(diff => {
             const img = new Image();
@@ -44,7 +43,7 @@ export class SilverSoldier extends BaseNPC {
                 type: 'mission',
                 title: 'Operation Desert Storm',
                 description: 'Infiltrate enemy territory and gather intel on their operations.',
-                position: { x: 200, y: 300 }, // Absolute positions instead of percentages
+                position: { x: 200, y: 300 },
                 image: '../assets/background/mission/mission.png',
                 connections: ['mission2', 'arcade1']
             },
@@ -92,8 +91,8 @@ export class SilverSoldier extends BaseNPC {
         this.mapImage.src = '../assets/background/map/map.png';
         this.mapScale = 1;
         this.mapOffset = { x: 0, y: 0 };
-        this.baseMapWidth = 1024; // Base width for calculations
-        this.baseMapHeight = 576; // Base height for calculations
+        this.baseMapWidth = 1024;
+        this.baseMapHeight = 576;
         this.isDragging = false;
         this.lastMousePos = { x: 0, y: 0 };
         this.selectedLocation = null;
@@ -175,7 +174,6 @@ export class SilverSoldier extends BaseNPC {
                 location.connections.forEach(targetId => {
                     const target = this.locations.find(l => l.id === targetId);
                     if (target) {
-                        // Replace createConnection call with direct connection creation
                         const angle = Math.atan2(
                             target.position.y - location.position.y,
                             target.position.x - location.position.x
@@ -232,7 +230,6 @@ export class SilverSoldier extends BaseNPC {
             const delta = -Math.sign(e.deltaY) * 0.1;
             const newScale = Math.max(0.5, Math.min(2, this.mapScale + delta));
             
-            // Scale around mouse position
             const rect = this.mapCanvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -244,7 +241,6 @@ export class SilverSoldier extends BaseNPC {
             this.drawMap();
         });
 
-        // Add hover detection
         this.mapCanvas.addEventListener('mousemove', (e) => {
             const rect = this.mapCanvas.getBoundingClientRect();
             const x = (e.clientX - rect.left - this.mapOffset.x) / this.mapScale;
@@ -262,13 +258,11 @@ export class SilverSoldier extends BaseNPC {
             this.drawMap();
         });
 
-        // Update click handler
         this.mapCanvas.addEventListener('click', (e) => {
             if (this.locationHovered) {
                 const prevSelected = this.selectedLocation;
                 this.selectedLocation = this.locationHovered;
                 
-                // If selecting a new location, set default difficulty
                 if (prevSelected !== this.selectedLocation) {
                     this.selectedDifficulty = 'easy';
                 }
@@ -277,7 +271,6 @@ export class SilverSoldier extends BaseNPC {
             }
         });
 
-        // Add difficulty cycling on right click
         this.mapCanvas.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             if (this.selectedLocation) {
@@ -288,7 +281,6 @@ export class SilverSoldier extends BaseNPC {
             }
         });
 
-        // Update difficulty selection
         const difficultyOptions = this.modal.querySelectorAll('.difficulty-option');
         difficultyOptions.forEach(option => {
             option.addEventListener('click', () => {
@@ -306,7 +298,6 @@ export class SilverSoldier extends BaseNPC {
     drawMap() {
         if (!this.mapCanvas || !this.mapCtx) return;
         
-        // Update canvas size while maintaining aspect ratio
         const containerWidth = window.innerWidth;
         const containerHeight = window.innerHeight;
         const aspectRatio = this.baseMapWidth / this.baseMapHeight;
@@ -322,21 +313,16 @@ export class SilverSoldier extends BaseNPC {
         this.mapCanvas.width = canvasWidth;
         this.mapCanvas.height = canvasHeight;
         
-        // Calculate scale factor
         const scaleFactor = canvasWidth / this.baseMapWidth;
         
-        // Clear canvas
         this.mapCtx.clearRect(0, 0, canvasWidth, canvasHeight);
         
-        // Draw map with proper scaling
         this.mapCtx.save();
         this.mapCtx.translate(this.mapOffset.x, this.mapOffset.y);
         this.mapCtx.scale(this.mapScale * scaleFactor, this.mapScale * scaleFactor);
         
-        // Draw background
         this.mapCtx.drawImage(this.mapImage, 0, 0, this.baseMapWidth, this.baseMapHeight);
         
-        // Draw connections with scaled coordinates
         this.locations.forEach(location => {
             if (location.connections) {
                 location.connections.forEach(targetId => {
@@ -348,7 +334,6 @@ export class SilverSoldier extends BaseNPC {
             }
         });
         
-        // Draw locations with scaled coordinates
         this.locations.forEach(location => {
             this.drawLocation(location);
         });
@@ -357,7 +342,6 @@ export class SilverSoldier extends BaseNPC {
     }
 
     drawConnection(from, to) {
-        // Only draw connections if 'from' is a mission type
         if (from.type !== 'mission') return;
         
         this.mapCtx.beginPath();
@@ -369,13 +353,12 @@ export class SilverSoldier extends BaseNPC {
     }
 
     drawLocation(location) {
-        const size = 20; // Reduced from 30 to 20
+        const size = 20;
         const x = location.position.x;
         const y = location.position.y;
         const isSelected = location.id === this.selectedLocation;
         const isHovered = location.id === this.locationHovered;
 
-        // Draw connection glow for selected missions only
         if (isSelected && location.type === 'mission') {
             this.locations.forEach(connectedLoc => {
                 if (location.connections.includes(connectedLoc.id)) {
@@ -387,20 +370,17 @@ export class SilverSoldier extends BaseNPC {
         this.mapCtx.save();
         this.mapCtx.translate(x, y);
 
-        // Draw outer glow
-        const glowSize = size + 8 + Math.sin(this.pulsePhase) * 3; // Reduced glow size and pulse amplitude
+        const glowSize = size + 8 + Math.sin(this.pulsePhase) * 3;
         const gradient = this.mapCtx.createRadialGradient(0, 0, 0, 0, 0, glowSize);
         
         if (location.type === 'mission') {
-            // Mission location (hexagon)
             gradient.addColorStop(0, 'rgba(255, 215, 0, 0.4)');
             gradient.addColorStop(1, 'transparent');
             
-            // Draw hexagon shapes
             const drawHexagon = (size) => {
                 this.mapCtx.beginPath();
                 for (let i = 0; i < 6; i++) {
-                    const angle = ((i * Math.PI) / 3) + (Math.PI / 6); // Add PI/6 (30 degrees) for flat top
+                    const angle = ((i * Math.PI) / 3) + (Math.PI / 6);
                     const xPos = size * Math.cos(angle);
                     const yPos = size * Math.sin(angle);
                     if (i === 0) {
@@ -412,12 +392,10 @@ export class SilverSoldier extends BaseNPC {
                 this.mapCtx.closePath();
             };
 
-            // Outer glow hexagon
             drawHexagon(glowSize);
             this.mapCtx.fillStyle = gradient;
             this.mapCtx.fill();
 
-            // Main hexagon
             drawHexagon(size);
             this.mapCtx.fillStyle = '#ffd700';
             this.mapCtx.strokeStyle = isSelected || isHovered 
@@ -427,17 +405,14 @@ export class SilverSoldier extends BaseNPC {
             this.mapCtx.fill();
             this.mapCtx.stroke();
 
-            // Inner hexagon
             drawHexagon(size * 0.6);
             this.mapCtx.strokeStyle = '#000';
             this.mapCtx.lineWidth = 1;
             this.mapCtx.stroke();
         } else {
-            // Arcade location (diamond)
             gradient.addColorStop(0, 'rgba(255, 0, 85, 0.4)');
             gradient.addColorStop(1, 'transparent');
 
-            // Draw diamond shape
             const drawDiamond = (size) => {
                 this.mapCtx.beginPath();
                 this.mapCtx.moveTo(0, -size);
@@ -447,12 +422,10 @@ export class SilverSoldier extends BaseNPC {
                 this.mapCtx.closePath();
             };
 
-            // Outer glow
             drawDiamond(glowSize);
             this.mapCtx.fillStyle = gradient;
             this.mapCtx.fill();
 
-            // Main diamond
             drawDiamond(size);
             this.mapCtx.fillStyle = '#ff0055';
             this.mapCtx.strokeStyle = isSelected || isHovered ? '#ffffff' : 'rgba(255, 0, 85, 0.6)';
@@ -460,16 +433,14 @@ export class SilverSoldier extends BaseNPC {
             this.mapCtx.fill();
             this.mapCtx.stroke();
 
-            // Inner diamond
             drawDiamond(size * 0.6);
             this.mapCtx.strokeStyle = '#000';
             this.mapCtx.lineWidth = 1;
             this.mapCtx.stroke();
         }
 
-        // Draw difficulty indicator (only for missions)
         if (location.type === 'mission') {
-            const difficulty = this.selectedDifficulty || 'easy'; // Default to 'easy'
+            const difficulty = this.selectedDifficulty || 'easy';
             const difficultySymbols = {
                 'easy': 'I',
                 'normal': 'II',
@@ -477,10 +448,8 @@ export class SilverSoldier extends BaseNPC {
                 'asian': 'IV'
             };
             
-            // Center the indicator
             const indicatorSize = size * 0.4;
             
-            // Draw difficulty text
             this.mapCtx.fillStyle = '#ffd700';
             this.mapCtx.font = `${indicatorSize}px "Metal Slug Latino"`;
             this.mapCtx.textAlign = 'center';
@@ -490,16 +459,14 @@ export class SilverSoldier extends BaseNPC {
 
         this.mapCtx.restore();
 
-        // Draw location name with background
-        const fontSize = Math.round(12 / this.mapScale); // Reduced from 16 to 12
+        const fontSize = Math.round(12 / this.mapScale);
         const text = location.title;
         this.mapCtx.font = `${fontSize}px "Metal Slug Latino"`;
         const textMetrics = this.mapCtx.measureText(text);
         const textWidth = textMetrics.width;
-        const padding = 6; // Reduced from 10
-        const textY = y + size + fontSize + 3; // Reduced spacing
+        const padding = 6;
+        const textY = y + size + fontSize + 3;
 
-        // Draw text background
         this.mapCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         this.mapCtx.fillRect(
             x - textWidth/2 - padding,
@@ -508,16 +475,13 @@ export class SilverSoldier extends BaseNPC {
             fontSize + padding
         );
 
-        // Draw text border glow
         this.mapCtx.strokeStyle = location.type === 'mission' ? 'rgba(255, 215, 0, 0.3)' : 'rgba(255, 0, 85, 0.3)';
-        this.mapCtx.lineWidth = 1.5; // Thinner border
+        this.mapCtx.lineWidth = 1.5;
 
-        // Draw text
         this.mapCtx.fillStyle = location.type === 'mission' ? '#ffd700' : '#ff0055';
         this.mapCtx.textAlign = 'center';
         this.mapCtx.fillText(text, x, textY);
 
-        // Update pulse phase
         this.pulsePhase += 0.05;
     }
 
