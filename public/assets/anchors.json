@@ -1,0 +1,286 @@
+{
+ "pip_legs_stand_0": {
+  "drop": 0
+ },
+ "pip_legs_run_0": {
+  "drop": 1
+ },
+ "pip_legs_run_1": {
+  "drop": 0
+ },
+ "pip_legs_run_2": {
+  "drop": 0
+ },
+ "pip_legs_run_3": {
+  "drop": 0
+ },
+ "pip_legs_run_4": {
+  "drop": 1
+ },
+ "pip_legs_run_5": {
+  "drop": 0
+ },
+ "pip_legs_run_6": {
+  "drop": 0
+ },
+ "pip_legs_run_7": {
+  "drop": 0
+ },
+ "pip_legs_jump_0": {
+  "drop": 0
+ },
+ "pip_legs_fall_0": {
+  "drop": 0
+ },
+ "pip_legs_crouch_0": {
+  "drop": 9
+ },
+ "pip_legs_crawl_0": {
+  "drop": 10
+ },
+ "pip_legs_crawl_1": {
+  "drop": 10
+ },
+ "pip_legs_crawl_2": {
+  "drop": 10
+ },
+ "pip_legs_crawl_3": {
+  "drop": 10
+ },
+ "pip_legs_crawl_4": {
+  "drop": 10
+ },
+ "pip_legs_crawl_5": {
+  "drop": 10
+ },
+ "pip_pistol_fwd_0": {
+  "muzzle": {
+   "x": 40,
+   "y": 23
+  }
+ },
+ "pip_pistol_fwd_1": {
+  "muzzle": {
+   "x": 38,
+   "y": 23
+  }
+ },
+ "pip_pistol_up_0": {
+  "muzzle": {
+   "x": 29,
+   "y": 5
+  }
+ },
+ "pip_pistol_up_1": {
+  "muzzle": {
+   "x": 29,
+   "y": 7
+  }
+ },
+ "pip_pistol_down_0": {
+  "muzzle": {
+   "x": 28,
+   "y": 40
+  }
+ },
+ "pip_pistol_down_1": {
+  "muzzle": {
+   "x": 28,
+   "y": 38
+  }
+ },
+ "pip_heavy_fwd_0": {
+  "muzzle": {
+   "x": 47,
+   "y": 24
+  }
+ },
+ "pip_heavy_fwd_1": {
+  "muzzle": {
+   "x": 45,
+   "y": 24
+  }
+ },
+ "pip_heavy_up_0": {
+  "muzzle": {
+   "x": 29,
+   "y": -4
+  }
+ },
+ "pip_heavy_up_1": {
+  "muzzle": {
+   "x": 29,
+   "y": -2
+  }
+ },
+ "pip_heavy_down_0": {
+  "muzzle": {
+   "x": 28,
+   "y": 49
+  }
+ },
+ "pip_heavy_down_1": {
+  "muzzle": {
+   "x": 28,
+   "y": 47
+  }
+ },
+ "grunt_aim_0": {
+  "muzzle": {
+   "x": 44,
+   "y": 30
+  }
+ },
+ "lobber_throw_1": {
+  "hand": {
+   "x": 31,
+   "y": 11
+  }
+ },
+ "mule_idle_0": {
+  "pivot": {
+   "x": 29,
+   "y": 11
+  },
+  "seat": {
+   "x": 38,
+   "y": 18
+  }
+ },
+ "mule_walk_0": {
+  "pivot": {
+   "x": 29,
+   "y": 12
+  },
+  "seat": {
+   "x": 38,
+   "y": 19
+  }
+ },
+ "mule_walk_1": {
+  "pivot": {
+   "x": 29,
+   "y": 12
+  },
+  "seat": {
+   "x": 38,
+   "y": 19
+  }
+ },
+ "mule_walk_2": {
+  "pivot": {
+   "x": 29,
+   "y": 11
+  },
+  "seat": {
+   "x": 38,
+   "y": 18
+  }
+ },
+ "mule_walk_3": {
+  "pivot": {
+   "x": 29,
+   "y": 12
+  },
+  "seat": {
+   "x": 38,
+   "y": 19
+  }
+ },
+ "mule_walk_4": {
+  "pivot": {
+   "x": 29,
+   "y": 12
+  },
+  "seat": {
+   "x": 38,
+   "y": 19
+  }
+ },
+ "mule_walk_5": {
+  "pivot": {
+   "x": 29,
+   "y": 12
+  },
+  "seat": {
+   "x": 38,
+   "y": 19
+  }
+ },
+ "mule_crouch_0": {
+  "pivot": {
+   "x": 29,
+   "y": 18
+  },
+  "seat": {
+   "x": 38,
+   "y": 25
+  }
+ },
+ "warden_hull_0": {
+  "turretA": {
+   "x": 56,
+   "y": 36
+  },
+  "turretB": {
+   "x": 104,
+   "y": 36
+  },
+  "core": {
+   "x": 92,
+   "y": 66
+  },
+  "stack": {
+   "x": 141,
+   "y": 2
+  }
+ },
+ "warden_hull_1": {
+  "turretA": {
+   "x": 56,
+   "y": 36
+  },
+  "turretB": {
+   "x": 104,
+   "y": 36
+  },
+  "core": {
+   "x": 92,
+   "y": 66
+  },
+  "stack": {
+   "x": 141,
+   "y": 2
+  }
+ },
+ "warden_hull_2": {
+  "turretA": {
+   "x": 56,
+   "y": 36
+  },
+  "turretB": {
+   "x": 104,
+   "y": 36
+  },
+  "core": {
+   "x": 92,
+   "y": 66
+  },
+  "stack": {
+   "x": 141,
+   "y": 2
+  }
+ },
+ "warden_turret_0": {
+  "muzzle": {
+   "x": 0,
+   "y": 11
+  }
+ },
+ "warden_turret_1": {
+  "muzzle": {
+   "x": 0,
+   "y": 11
+  }
+ }
+}
