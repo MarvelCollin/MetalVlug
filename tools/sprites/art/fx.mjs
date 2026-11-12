@@ -77,3 +77,13 @@ fx.blast = [0, 1, 2].map((f) =>
     }
   }, false),
 );
+
+fx.bar = [0, 1].map((f) => one(3, f ? 8 : 12, (p) => p.box(0, 0, 3, f ? 8 : 12, R.steel)));
+fx.dust = [0, 1, 2, 3].map((f) =>
+  one(20, 10, (p) => {
+    const ramp = ["#f2e6d0", "#d9c8ad", "#b8a487", "#8f7e68"];
+    const a = 240 - f * 50;
+    for (const dx of [-1, 1]) p.blob(10 + dx * (3 + f * 2), 7 - Math.floor(f / 2), 2 + f * 0.6, 1.6 + f * 0.4, ramp, 0.3);
+    for (let i = 0; i < p.data.length; i += 4) if (p.data[i + 3]) p.data[i + 3] = a;
+  }, false),
+);

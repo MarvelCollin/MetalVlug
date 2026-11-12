@@ -91,7 +91,7 @@ export function wardenHull(stage) {
     p.blob(168, 60, 7, 6, R.gunmetal, -0.6);
   }
   p.selout();
-  return { pix: p, anchor: { turretA: { x: 56, y: 36 }, turretB: { x: 104, y: 36 }, core: { x: 92, y: 66 }, stack: { x: 141, y: 2 } } };
+  return { pix: p, anchor: { turretA: { x: 34, y: 74 }, turretB: { x: 120, y: 74 }, core: { x: 77, y: 66 }, stack: { x: 141, y: 2 } } };
 }
 
 export function wardenWheel(frame) {

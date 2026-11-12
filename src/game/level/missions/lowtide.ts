@@ -1,0 +1,71 @@
+import { GROUND_Y } from "../../../config/display";
+import type { LevelData } from "../LevelData";
+
+const G = GROUND_Y;
+
+export const LOWTIDE: LevelData = {
+  name: "lowtide",
+  title: "LOWTIDE DOCKS",
+  length: 3840,
+  groundY: G,
+  playerStart: 60,
+  blocks: [
+    { x: 0, y: G, w: 3300, h: 32, kind: "solid", tile: "dock", fill: "fill" },
+    { x: 3300, y: G, w: 540, h: 32, kind: "solid", tile: "rail", fill: "fill" },
+    { x: 608, y: 141, w: 96, h: 43, kind: "decor", tile: "brick" },
+    { x: 600, y: 132, w: 112, h: 9, kind: "oneWay", tile: "roof" },
+    { x: 1100, y: 160, w: 48, h: 24, kind: "solid", tile: "crate" },
+    { x: 1124, y: 136, w: 24, h: 24, kind: "solid", tile: "crate" },
+    { x: 1220, y: 140, w: 64, h: 7, kind: "oneWay", tile: "plank" },
+    { x: 1320, y: 116, w: 80, h: 7, kind: "oneWay", tile: "plank" },
+    { x: 1712, y: 129, w: 112, h: 55, kind: "decor", tile: "brick" },
+    { x: 1700, y: 120, w: 136, h: 9, kind: "oneWay", tile: "roof" },
+    { x: 2240, y: 160, w: 72, h: 24, kind: "solid", tile: "crate" },
+    { x: 2264, y: 136, w: 24, h: 24, kind: "solid", tile: "crate" },
+    { x: 2560, y: 136, w: 96, h: 7, kind: "oneWay", tile: "plank" },
+    { x: 2968, y: 141, w: 96, h: 43, kind: "decor", tile: "brick" },
+    { x: 2960, y: 132, w: 112, h: 9, kind: "oneWay", tile: "roof" },
+  ],
+  props: [
+    { type: "crate", x: 420, drop: "ration" },
+    { type: "barrel", x: 560 },
+    { type: "crate", x: 1500, drop: "bombs" },
+    { type: "barrel", x: 1990 },
+    { type: "crate", x: 2470, drop: "ammo" },
+    { type: "barrel", x: 2720 },
+    { type: "crate", x: 3180, drop: "gem" },
+  ],
+  hostages: [
+    { x: 820, drop: "rivet" },
+    { x: 1360, y: 116, drop: "gem" },
+    { x: 2040, drop: "bombs" },
+    { x: 2860, drop: "thumper" },
+  ],
+  mule: { x: 1620 },
+  triggers: [
+    { at: 0, spawns: [{ type: "grunt", x: 300, idle: "idle" }, { type: "grunt", x: 350, idle: "read" }] },
+    { at: 250, lock: true, spawns: [
+      { type: "grunt", side: "right", delay: 0.2 },
+      { type: "lobber", x: 612, y: 120, idle: "none", hold: true, delay: 0.4 },
+      { type: "grunt", side: "right", delay: 1 },
+      { type: "grunt", side: "left", delay: 1.8 },
+      { type: "rusher", side: "right", delay: 2.8 },
+    ] },
+    { at: 700, spawns: [{ type: "grunt", x: 1010, idle: "idle" }, { type: "grunt", x: 1060, idle: "read" }, { type: "rusher", side: "right", delay: 1.5 }, { type: "rusher", side: "right", delay: 2.1 }] },
+    { at: 1000, spawns: [{ type: "grunt", x: 1250, y: 130, idle: "idle", hold: true }, { type: "lobber", side: "right", delay: 0.8 }] },
+    { at: 1350, spawns: [{ type: "grunt", side: "right", delay: 0 }, { type: "grunt", side: "right", delay: 0.7 }, { type: "rusher", side: "left", delay: 1.4 }, { type: "grunt", side: "right", delay: 2.2 }] },
+    { at: 1700, lock: true, spawns: [
+      { type: "grunt", side: "right", delay: 0 },
+      { type: "lobber", x: 1780, y: 110, idle: "none", hold: true, delay: 0.3 },
+      { type: "grunt", side: "right", delay: 0.8 },
+      { type: "rusher", side: "left", delay: 1.6 },
+      { type: "rusher", side: "right", delay: 2.4 },
+      { type: "grunt", side: "right", delay: 3.2 },
+      { type: "lobber", side: "right", delay: 4 },
+    ] },
+    { at: 2150, spawns: [{ type: "grunt", x: 2420, idle: "read" }, { type: "grunt", x: 2470 + 40, idle: "idle" }, { type: "lobber", x: 2600, y: 130, idle: "none", hold: true }] },
+    { at: 2500, spawns: [{ type: "rusher", side: "right", delay: 0 }, { type: "rusher", side: "right", delay: 0.5 }, { type: "grunt", side: "left", delay: 1.2 }, { type: "grunt", side: "right", delay: 1.8 }] },
+    { at: 2750, spawns: [{ type: "grunt", x: 3000, y: 125, idle: "idle", hold: true }, { type: "grunt", side: "right", delay: 1 }, { type: "lobber", side: "right", delay: 1.8 }] },
+  ],
+  boss: { lockAt: 3456, stopX: 3720 },
+};
