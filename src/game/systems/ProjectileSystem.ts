@@ -140,7 +140,7 @@ export class ProjectileSystem {
     } else if (this.terrain.solidAt(p.x, p.y)) {
       if (s.radius > 0) this.detonate(p);
       else {
-        this.fx.spark(p.x, p.y);
+        this.fx.wallHit(p.x, p.y);
         this.pool.release(p);
       }
       return;
@@ -152,7 +152,7 @@ export class ProjectileSystem {
     }
     const res = this.combat.strikeFirst(this.rect, { amount: p.damage, kind: s.kind, from: s.faction, x: p.x, y: p.y });
     if (res.absorbed) {
-      this.fx.spark(p.x, p.y);
+      this.fx.spark(p.x, p.y, -Math.sign(p.vx));
       this.pool.release(p);
     }
   }

@@ -17,6 +17,8 @@ export class BootScene extends Scene {
     this.load.setPath("assets/");
     this.load.atlas(TEX.atlas, "atlas.png", "atlas.json");
     this.load.json(DATA.anchors, "anchors.json");
+    this.load.atlas(TEX.fx, "fx.png", "fx.json");
+    this.load.json(DATA.fxMeta, "fx-meta.json");
     this.load.json(DATA.fontMeta, "font.json");
     this.load.image(TEX.font, "font.png");
     this.load.image(TEX.sky, "bg_sky.png");

@@ -10,13 +10,16 @@
     "sprites": "node tools/sprites/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "fx": "node tools/fx/bake.mjs",
+    "assets": "node tools/sprites/build.mjs && node tools/fx/bake.mjs"
   },
   "dependencies": {
     "phaser": "^4.2.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
+    "pixelfx": "github:patch-gg/pixelfx#5294518ce7c72e48b6100a744596e0acf57f2826",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"

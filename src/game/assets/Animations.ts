@@ -1,5 +1,5 @@
 import type { Scene } from "phaser";
-import { TEX } from "./keys";
+import { DATA, TEX, type FxMetaTable } from "./keys";
 
 interface AnimSpec {
   key: string;
@@ -50,6 +50,11 @@ const SPECS: AnimSpec[] = [
 ];
 
 export function registerAnimations(scene: Scene): void {
+  const fx = scene.cache.json.get(DATA.fxMeta) as FxMetaTable;
+  for (const [key, m] of Object.entries(fx)) {
+    if (scene.anims.exists(key)) continue;
+    scene.anims.create({ key, frames: scene.anims.generateFrameNames(TEX.fx, { prefix: `${key}_`, start: 0, end: m.frames - 1 }), frameRate: m.fps });
+  }
   for (const s of SPECS) {
     if (scene.anims.exists(s.key)) continue;
     scene.anims.create({

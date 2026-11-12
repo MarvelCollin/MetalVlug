@@ -2,7 +2,7 @@ import { Animations, GameObjects, TintModes, type Scene } from "phaser";
 import { ObjectPool } from "../../core/pool/ObjectPool";
 import type { Rng } from "../../core/random/Rng";
 import { DEPTH } from "../../config/display";
-import { TEX } from "../assets/keys";
+import { DATA, TEX, type FxMetaTable } from "../assets/keys";
 import type { Terrain } from "../level/Terrain";
 
 class Particle extends GameObjects.Sprite {
@@ -17,12 +17,14 @@ export class EffectsSystem {
   private readonly shots: ObjectPool<GameObjects.Sprite>;
   private readonly bits: ObjectPool<Particle>;
   private readonly flashing = new Map<GameObjects.Sprite, number>();
+  private readonly fxMeta: FxMetaTable;
 
   constructor(
     scene: Scene,
     private readonly terrain: Terrain,
     private readonly rng: Rng,
   ) {
+    this.fxMeta = scene.cache.json.get(DATA.fxMeta) as FxMetaTable;
     this.shots = new ObjectPool(
       () => {
         const s = scene.add.sprite(0, 0, TEX.atlas, "boom_0").setDepth(DEPTH.fx).setActive(false).setVisible(false);
@@ -51,17 +53,33 @@ export class EffectsSystem {
     s.play(anim);
   }
 
-  explosion(x: number, y: number, big: boolean): void {
-    this.play(big ? "boom" : "boom_s", x, y - (big ? 14 : 6));
-    if (big) {
-      this.play("boom_s", x + this.rng.range(-14, 14), y - this.rng.range(10, 26));
-      this.play("smoke", x + this.rng.range(-8, 8), y - 30);
-    }
-    this.debris(x, y - 4, big ? 8 : 4);
+  baked(key: string, x: number, y: number, flipX = false, depth: number = DEPTH.fx): void {
+    const m = this.fxMeta[key];
+    const s = this.shots.acquire();
+    if (!m || !s) return;
+    s.setActive(true).setVisible(true).setPosition(Math.round(x), Math.round(y)).setFlipX(flipX).setRotation(0).setScale(1)
+      .setDepth(depth).setAlpha(1);
+    s.play(key);
+    s.setOrigin(flipX ? 1 - m.originX : m.originX, m.originY);
   }
 
-  spark(x: number, y: number): void {
-    this.play("spark", x, y);
+  explosion(x: number, y: number, big: boolean): void {
+    const floor = this.terrain.groundBelow(x, y - 2);
+    const onGround = floor - y < 24;
+    this.baked(big ? "fx_blast" : "fx_blast_s", x, onGround ? floor : y + (big ? 30 : 18));
+    this.debris(x, y - 4, big ? 6 : 3);
+  }
+
+  spark(x: number, y: number, dir = 0): void {
+    this.baked("fx_spark", x, y, dir < 0);
+  }
+
+  wallHit(x: number, y: number): void {
+    this.baked("fx_wall", x, y);
+  }
+
+  thud(x: number, y: number): void {
+    this.baked("fx_thud", x, y);
   }
 
   debris(x: number, y: number, count: number, frames = ["debris_0", "debris_1", "debris_2"]): void {
