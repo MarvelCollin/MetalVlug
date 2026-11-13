@@ -5,6 +5,7 @@ import { CAMERA } from "../../config/tuning";
 export class CameraDirector {
   private lockAt: number | null = null;
   private scroll = 0;
+  private speed = 0;
 
   constructor(
     private readonly cam: Cameras.Scene2D.Camera,
@@ -30,7 +31,13 @@ export class CameraDirector {
     const limit = Math.min(this.lockAt ?? Infinity, this.levelEnd - VIEW_W);
     const target = Math.max(0, Math.min(Math.max(this.scroll, x - this.lead), limit));
     const gap = target - this.scroll;
-    if (gap > 0) this.scroll += Math.min(gap, Math.max(CAMERA.minSpeed, gap * CAMERA.ease) * dt);
+    if (gap <= 0) {
+      this.speed = 0;
+    } else {
+      const want = Math.min(CAMERA.maxSpeed, Math.max(CAMERA.minSpeed, gap * CAMERA.ease));
+      this.speed = Math.min(want, this.speed + CAMERA.accel * dt);
+      this.scroll += Math.min(gap, this.speed * dt);
+    }
     this.cam.scrollX = Math.round(this.scroll);
   }
 

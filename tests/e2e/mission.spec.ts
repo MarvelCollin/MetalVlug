@@ -1,0 +1,142 @@
+import { expect, test } from "@playwright/test";
+import { KILL_ALL, hold, run, snap, startMission, tap } from "./helpers";
+
+test("title screen starts the mission with Enter", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForTimeout(1200);
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("window.__mv !== undefined", null, { timeout: 15_000 });
+  await page.waitForFunction("window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
+});
+
+test("pistol shots kill a grunt for 100 points each", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(30);");
+  await hold(page, "ArrowRight", 700);
+  for (let i = 0; i < 10; i++) {
+    await tap(page, "KeyJ", 40);
+    await page.waitForTimeout(110);
+  }
+  await page.waitForTimeout(600);
+  const s = await snap(page);
+  expect(s.score).toBeGreaterThanOrEqual(100);
+  expect(s.score % 100).toBe(0);
+});
+
+test("knife kill next to an enemy scores 300", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60);");
+  await page.keyboard.down("ArrowRight");
+  await page.waitForFunction("window.__mv.scene.enemies.list.some((e) => e.alive && Math.abs(e.x - window.__mv.scene.player.x) < 16)", null, { timeout: 15_000, polling: 16 });
+  await page.keyboard.up("ArrowRight");
+  await tap(page, "KeyJ", 40);
+  await page.waitForTimeout(300);
+  const score = (await snap(page)).score;
+  expect(score).toBeGreaterThanOrEqual(300);
+  expect(score % 300).toBe(0);
+});
+
+test("bomb throw spends a bomb and explodes", async ({ page }) => {
+  await startMission(page);
+  await tap(page, "KeyL", 40);
+  await page.waitForTimeout(50);
+  expect((await snap(page)).bombs).toBe(9);
+  expect(await run<number>(page, "return sc.ctx.projectiles.count('bomb');")).toBe(1);
+  await page.waitForTimeout(1600);
+  expect(await run<number>(page, "return sc.ctx.projectiles.count('bomb');")).toBe(0);
+});
+
+test("camera glides after a wave lock releases", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(120);");
+  await page.keyboard.down("ArrowRight");
+  await page.waitForFunction("window.__mv.snapshot().locked", null, { timeout: 15_000 });
+  await page.waitForTimeout(1200);
+  await page.waitForFunction(`(() => { const sc = window.__mv.scene; ${KILL_ALL} return !window.__mv.snapshot().locked; })()`, null, { timeout: 20_000, polling: 100 });
+  const steps = await run<number[]>(page, `
+    const out = [];
+    let last = sc.ctx.camera.left;
+    const on = () => { out.push(sc.ctx.camera.left - last); last = sc.ctx.camera.left; };
+    sc.events.on("postupdate", on);
+    await new Promise((r) => setTimeout(r, 1500));
+    sc.events.off("postupdate", on);
+    return out;`);
+  await page.keyboard.up("ArrowRight");
+  const maxStep = Math.max(...steps);
+  expect(maxStep).toBeGreaterThan(0);
+  expect(maxStep).toBeLessThanOrEqual(4);
+});
+
+test("Mule vulcan hits a kneeling grunt", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(120); mv.warp(1560);");
+  await page.waitForTimeout(400);
+  await hold(page, "ArrowRight", 700);
+  expect((await snap(page)).piloting).toBe(true);
+  await run(page, "sc.enemies.list.forEach((e) => e.alive && e.fsm.change('gone')); const e = sc.enemies.spawn({ type: 'grunt', x: sc.mule.x + 110, y: 184, idle: 'none', hold: true, group: -5, facing: -1 }); e.cooldown.trigger(0);");
+  await page.waitForTimeout(700);
+  expect(await run<string>(page, "return sc.enemies.list.find((e) => e.group === -5).sprite.frame.name;")).toMatch(/grunt_(aim|fire)/);
+  const before = (await snap(page)).score;
+  await hold(page, "KeyJ", 900);
+  await page.waitForTimeout(300);
+  expect((await snap(page)).score).toBeGreaterThan(before);
+});
+
+test("freeing a caged Tinker counts a rescue and drops the Rivet gun", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(120); mv.warp(760); sc.enemies.list.forEach((e) => e.active && e.fsm.change('gone'));");
+  await page.waitForTimeout(300);
+  await hold(page, "ArrowRight", 1000);
+  await page.waitForTimeout(1800);
+  await hold(page, "ArrowRight", 600);
+  const s = await snap(page);
+  expect(s.tinkers).toBe(1);
+  expect(s.weapon).toBe("rivet");
+});
+
+test("dying costs a life, wipes rescues and respawns on the spot", async ({ page }) => {
+  await startMission(page);
+  await run(page, "sc.state.score.rescue(); sc.player.die();");
+  await page.waitForTimeout(2200);
+  const s = await snap(page);
+  expect(s.lives).toBe(2);
+  expect(s.tinkers).toBe(0);
+  expect(s.playerState).toBe("alive");
+});
+
+test("game over offers a continue that resets score", async ({ page }) => {
+  await startMission(page);
+  for (let i = 0; i < 4; i++) {
+    await run(page, "sc.state.score.add(500); sc.player.die();");
+    await page.waitForTimeout(2000);
+  }
+  expect((await snap(page)).phase).toBe("gameover");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(300);
+  const s = await snap(page);
+  expect(s.phase).toBe("play");
+  expect(s.lives).toBe(3);
+  expect(s.score).toBe(0);
+  expect(s.weapon).toBe("rivet");
+});
+
+test("the Iron Warden can be beaten with the pistol by jump shooting", async ({ page }) => {
+  test.setTimeout(180_000);
+  await startMission(page);
+  await run(page, "mv.shield(900); mv.warp(3600);");
+  await hold(page, "ArrowRight", 1500);
+  await page.waitForFunction("window.__mv.snapshot().boss === 'phase1'", null, { timeout: 20_000 });
+  for (let i = 0; i < 220; i++) {
+    await run(page, "mv.shield(900);");
+    await page.keyboard.down("ArrowRight");
+    await tap(page, "KeyK", 160);
+    await page.waitForTimeout(110);
+    await tap(page, "KeyJ", 30);
+    await page.waitForTimeout(60);
+    await tap(page, "KeyJ", 30);
+    await page.waitForTimeout(230);
+    if (["dying", "dead"].includes((await snap(page)).boss)) break;
+  }
+  await page.keyboard.up("ArrowRight");
+  await page.waitForFunction("window.__mv.snapshot().phase === 'complete'", null, { timeout: 20_000 });
+});

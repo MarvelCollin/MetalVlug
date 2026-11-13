@@ -3,8 +3,10 @@ export const PHYSICS = {
 } as const;
 
 export const CAMERA = {
-  ease: 6,
-  minSpeed: 40,
+  ease: 4,
+  minSpeed: 30,
+  maxSpeed: 150,
+  accel: 260,
 } as const;
 
 export const PLAYER = {
@@ -71,6 +73,7 @@ export const MULE = {
   vulcanGap: 0.07,
   vulcanSpeed: 380,
   aimTurnRate: 9,
+  forwardTilt: 0.16,
   shellSpeedX: 220,
   shellSpeedY: 140,
   shellRadius: 32,

@@ -19,10 +19,13 @@ export class InputSystem {
   readonly frame = new InputFrame();
   private readonly keys: Array<[Input.Keyboard.Key, number]>;
   private forced = 0;
+  private latched = 0;
 
   constructor(private readonly scene: Scene) {
     const kb = scene.input.keyboard;
     this.keys = kb ? KEYMAP.map(([code, bit]) => [kb.addKey(code, true, false), bit]) : [];
+    for (const [key, bit] of this.keys) key.on("down", () => { this.latched |= bit; });
+    scene.events.once("shutdown", () => { for (const [key] of this.keys) key.removeAllListeners("down"); });
   }
 
   inject(mask: number): void {
@@ -30,7 +33,8 @@ export class InputSystem {
   }
 
   poll(): InputFrame {
-    let mask = this.forced;
+    let mask = this.forced | this.latched;
+    this.latched = 0;
     for (const [key, bit] of this.keys) if (key.isDown) mask |= bit;
     const pad = this.scene.input.gamepad?.getPad(0);
     if (pad) {

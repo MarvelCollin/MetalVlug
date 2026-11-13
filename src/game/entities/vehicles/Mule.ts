@@ -165,7 +165,8 @@ export class Mule implements Target {
     }
     this.sprite.setFlipX(this.facing < 0);
     const up = inp.held(Action.Up);
-    let target = this.facing > 0 ? 0 : -Math.PI;
+    const tilt = crouch ? MULE.forwardTilt * 1.6 : MULE.forwardTilt;
+    let target = this.facing > 0 ? tilt : -Math.PI - tilt;
     if (up) target = axis === 0 ? -Math.PI / 2 : axis > 0 ? -Math.PI / 4 : (-3 * Math.PI) / 4;
     const step = MULE.aimTurnRate * dt;
     this.gunAngle += Math.max(-step, Math.min(step, target - this.gunAngle));

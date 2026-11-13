@@ -34,7 +34,9 @@ export class Hostage implements Target {
       give: {
         enter: (h) => {
           h.man.play("tinker_give");
-          h.ctx.pickups.spawn(h.drop, h.man.x + 14, h.man.y - 20);
+          const toward = Math.sign(h.ctx.player.x - h.man.x) || 1;
+          const reach = Math.min(Math.abs(h.ctx.player.x - h.man.x), 120);
+          h.ctx.pickups.spawn(h.drop, h.man.x + toward * 10, h.man.y - 20, toward * Math.max(40, reach * 1.6));
         },
         update: (_h, _dt, t) => (t > 0.5 ? "run" : undefined),
       },

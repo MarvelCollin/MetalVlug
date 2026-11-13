@@ -122,7 +122,9 @@ export class Enemy implements Target {
   }
 
   bounds(out: Geom.Rectangle): Geom.Rectangle {
-    return out.setTo(this.sprite.x - 8, this.sprite.y - 32, 16, 32);
+    const low = this.fsm.is("idle") || /_(aim|fire|idle|read)_/.test(this.sprite.frame.name);
+    const h = low ? 26 : 32;
+    return out.setTo(this.sprite.x - 8, this.sprite.y - h, 16, h);
   }
 
   hit(hit: Hit): HitResult {

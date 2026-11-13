@@ -43,7 +43,7 @@ export class PickupSystem {
     );
   }
 
-  spawn(kind: PickupType, x: number, y: number, pop = true): void {
+  spawn(kind: PickupType, x: number, y: number, tossX = 30): void {
     const s = this.pool.acquire();
     if (!s) return;
     const f = FRAME[kind];
@@ -54,7 +54,7 @@ export class PickupSystem {
     (s.body as Physics.Arcade.Body).setSize(12, 12).setOffset((s.width - 12) / 2, s.height - 12);
     if (f.anim) s.play(f.anim);
     else s.stop();
-    s.setVelocity(pop ? 30 : 0, pop ? -180 : 0);
+    s.setVelocity(tossX, -180).setDragX(tossX === 30 ? 200 : 60);
   }
 
   collect(player: Geom.Rectangle, onCollect: (kind: PickupType, x: number, y: number) => void): void {

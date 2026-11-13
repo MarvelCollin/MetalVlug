@@ -31,7 +31,7 @@ class BossPart implements Target {
   }
 
   isHittable(): boolean {
-    return !this.broken && this.view.visible;
+    return !this.broken && !this.armoured && this.view.visible;
   }
 
   bounds(out: Geom.Rectangle): Geom.Rectangle {
@@ -40,10 +40,6 @@ class BossPart implements Target {
 
   hit(hit: Hit): HitResult {
     if (this.broken) return MISS;
-    if (this.armoured) {
-      this.ctx.events.emit("sound", "clank");
-      return ABSORBED;
-    }
     this.hp -= hit.kind === "knife" ? hit.amount / 2 : hit.amount;
     this.ctx.fx.flash(this.view);
     this.ctx.events.emit("sound", "hit");
