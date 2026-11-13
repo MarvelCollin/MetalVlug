@@ -48,12 +48,19 @@ export function muleBody(frame, mode) {
   return { pix: p, anchor: { pivot: { x: 29, y: by - 3 }, seat: { x: 38, y: by + 4 } } };
 }
 
-export function muleGun() {
-  const p = new Pix(24, 10);
-  p.blob(4, 5, 4, 4, R.gunmetal);
-  p.box(7, 2, 15, 3, R.steel);
-  p.box(7, 5, 15, 3, R.steel, -0.2);
-  p.box(19, 1, 4, 8, R.gunmetal);
+export const GUN_ANGLES = 32;
+
+export function muleGun(i) {
+  const a = (i / GUN_ANGLES) * Math.PI * 2;
+  const p = new Pix(45, 45);
+  const c = 22;
+  const dx = Math.cos(a);
+  const dy = Math.sin(a);
+  const nx = -dy;
+  const ny = dx;
+  for (const s of [-1.5, 1.5]) p.limb(c + nx * s, c + ny * s, c + nx * s + dx * 17, c + ny * s + dy * 17, 2, R.steel, s > 0 ? -0.2 : 0);
+  p.limb(c + dx * 14, c + dy * 14, c + dx * 18, c + dy * 18, 6, R.gunmetal);
+  p.blob(c, c, 4.5, 4.5, R.gunmetal);
   p.selout();
   return { pix: p };
 }

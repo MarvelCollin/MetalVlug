@@ -6,7 +6,7 @@ import {
   PAL, POSE, cageFrames, crawlPose, deathFrames, gait, gruntFrames, lobberFrames,
   pipKnife, pipLegs, pipThrow, pipTorso, rusherFrames, tinkerFrames,
 } from "./art/humans.mjs";
-import { muleBody, muleGun, wardenCore, wardenHull, wardenTurret, wardenWheel } from "./art/machines.mjs";
+import { GUN_ANGLES, muleBody, muleGun, wardenCore, wardenHull, wardenTurret, wardenWheel } from "./art/machines.mjs";
 import { fx } from "./art/fx.mjs";
 import { background, hud, items, tiles } from "./art/world.mjs";
 import { buildFont } from "./art/font.mjs";
@@ -40,6 +40,7 @@ add("pip_die", deathFrames(PAL.pip));
 
 for (const [name, set] of [["grunt", gruntFrames()], ["lobber", lobberFrames()], ["rusher", rusherFrames()], ["tinker", tinkerFrames()]]) {
   for (const [anim, list] of Object.entries(set.frames)) add(`${name}_${anim}`, list);
+  if (set.frames.die) add(`${name}_tumble`, Array.from({ length: 8 }, (_, k) => ({ pix: set.frames.die[0].pix.rotated((k * Math.PI) / 4, 24, 30) })));
   for (const [key, anchor] of Object.entries(set.anchors)) anchors[`${name}_${key}`] = anchor;
 }
 add("cage", cageFrames());
@@ -47,7 +48,7 @@ add("cage", cageFrames());
 add("mule_idle", [muleBody(0, "idle")]);
 add("mule_walk", Array.from({ length: 6 }, (_, f) => muleBody(f, "walk")));
 add("mule_crouch", [muleBody(0, "crouch")]);
-add("mule_gun", [muleGun()]);
+add("mule_gun", Array.from({ length: GUN_ANGLES }, (_, i) => muleGun(i)));
 add("warden_hull", [0, 1, 2].map(wardenHull));
 add("warden_wheel", [0, 1, 2, 3].map(wardenWheel));
 add("warden_turret", [wardenTurret(false), wardenTurret(true)]);
@@ -106,6 +107,8 @@ for (const kind of ["sky", "far", "mid"]) {
 
 const font = buildFont();
 writeFileSync(join(out, "font.png"), encodePng(font.pix.w, font.pix.h, font.pix.data));
-writeFileSync(join(out, "font.json"), JSON.stringify({ cellW: font.cellW, cellH: font.cellH, chars: font.chars }));
+const big = buildFont(true);
+writeFileSync(join(out, "font_big.png"), encodePng(big.pix.w, big.pix.h, big.pix.data));
+writeFileSync(join(out, "font.json"), JSON.stringify({ cellW: font.cellW, cellH: font.cellH, chars: font.chars, bigW: big.cellW, bigH: big.cellH }));
 
 console.log(`atlas ${WIDTH}x${height}, ${frames.length} frames`);

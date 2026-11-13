@@ -2,6 +2,7 @@ export const TEX = {
   atlas: "atlas",
   fx: "fx",
   font: "font",
+  fontBig: "font_big",
   sky: "bg_sky",
   far: "bg_far",
   mid: "bg_mid",
@@ -14,6 +15,7 @@ export const DATA = {
 } as const;
 
 export const FONT = "retro";
+export const FONT_BIG = "retroBig";
 
 export interface Point {
   x: number;

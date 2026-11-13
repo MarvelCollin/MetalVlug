@@ -34,13 +34,11 @@ export class HudScene extends Scene {
     this.arms = new RetroText(this, 152, 3, "");
     this.add.image(124, 18, TEX.atlas, "bombicon_0").setScrollFactor(0);
     this.bombs = new RetroText(this, 132, 14, "10");
-    this.timer = new RetroText(this, VIEW_W / 2 + 30, 6, "60", [0.5, 0]);
-    this.timer.setScale(2);
+    this.timer = new RetroText(this, VIEW_W / 2 + 30, 4, "60", [0.5, 0], true);
     this.add.image(VIEW_W - 44, 9, TEX.atlas, "tinkericon_0").setScrollFactor(0);
     this.tinkers = new RetroText(this, VIEW_W - 36, 5, "X0");
     this.armour = [0, 1, 2].map((i) => this.add.image(VIEW_W - 44 + i * 10, 21, TEX.atlas, "armour_0").setScrollFactor(0).setVisible(false));
-    this.banner = new RetroText(this, VIEW_W / 2, 84, "", [0.5, 0.5]);
-    this.banner.setScale(2);
+    this.banner = new RetroText(this, VIEW_W / 2, 84, "", [0.5, 0.5], true);
     this.sub = new RetroText(this, VIEW_W / 2, 106, "", [0.5, 0.5]);
     this.center = new RetroText(this, VIEW_W / 2, VIEW_H / 2 + 34, "", [0.5, 0.5]);
     this.go = this.add.sprite(VIEW_W - 46, 70, TEX.atlas, "go_0").setScrollFactor(0).setVisible(false);

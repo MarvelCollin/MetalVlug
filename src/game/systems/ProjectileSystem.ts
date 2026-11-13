@@ -31,12 +31,12 @@ interface Spec {
 }
 
 const SPECS: Record<ProjectileKind, Spec> = {
-  bullet: { frame: "bullet_p_0", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 6, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
-  heavy: { frame: "bullet_r_0", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
-  vulcan: { frame: "bullet_v_0", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
-  rocket: { frame: "rocket_0", anim: "rocket", faction: "player", gravity: 0, radius: 26, bounces: 0, accel: 600, maxSpeed: 380, w: 10, h: 6, kind: "blast", big: false, orient: true, life: 2 },
+  bullet: { frame: "bullet_p", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 6, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
+  heavy: { frame: "bullet_r", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
+  vulcan: { frame: "bullet_v", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
+  rocket: { frame: "rocket", faction: "player", gravity: 0, radius: 26, bounces: 0, accel: 600, maxSpeed: 380, w: 10, h: 6, kind: "blast", big: false, orient: true, life: 2 },
   bomb: { frame: "bomb_0", anim: "bomb", faction: "player", gravity: PHYSICS.gravity, radius: BOMB.radius, bounces: 1, accel: 0, maxSpeed: 0, w: 7, h: 7, kind: "blast", big: true, orient: false, life: 4 },
-  shell: { frame: "shell_0", faction: "player", gravity: PHYSICS.gravity * 0.5, radius: 32, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 6, kind: "blast", big: true, orient: true, life: 3 },
+  shell: { frame: "shell_0", faction: "player", gravity: PHYSICS.gravity * 0.5, radius: 32, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 6, kind: "blast", big: true, orient: false, life: 3 },
   enemyBullet: { frame: "bullet_e_0", anim: "bullet_e", faction: "enemy", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 5, h: 5, kind: "bullet", big: false, orient: false, life: 5 },
   enemyBomb: { frame: "bomb_0", anim: "bomb", faction: "enemy", gravity: PHYSICS.gravity, radius: 22, bounces: 0, accel: 0, maxSpeed: 0, w: 7, h: 7, kind: "blast", big: false, orient: false, life: 5 },
   mortar: { frame: "mortar_0", faction: "enemy", gravity: PHYSICS.gravity * 0.6, radius: 24, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 8, kind: "blast", big: true, orient: false, life: 6 },
@@ -84,7 +84,9 @@ export class ProjectileSystem {
     p.damage = damage;
     p.life = s.life;
     p.bounces = s.bounces;
-    p.setActive(true).setVisible(true).setPosition(x, y).setFrame(s.frame).setRotation(s.orient ? Math.atan2(vy, vx) : 0).setFlipX(false);
+    p.setActive(true).setVisible(true).setPosition(x, y).setRotation(0).setFlipX(false);
+    if (s.orient) this.orient(p, s);
+    else p.setFrame(s.frame);
     if (s.anim) p.play(s.anim);
     return p;
   }
@@ -118,7 +120,7 @@ export class ProjectileSystem {
     p.x += p.vx * dt;
     p.y += p.vy * dt;
     p.life -= dt;
-    if (s.orient) p.setRotation(Math.atan2(p.vy, p.vx));
+    if (s.orient) this.orient(p, s);
     if (p.life <= 0 || p.y > VIEW_H + 24 || !this.camera.visible(p.x, 48)) {
       this.pool.release(p);
       return;
@@ -155,6 +157,14 @@ export class ProjectileSystem {
       this.fx.spark(p.x, p.y, -Math.sign(p.vx));
       this.pool.release(p);
     }
+  }
+
+  private orient(p: Projectile, s: Spec): void {
+    const steps = 16;
+    const a = Math.atan2(p.vy, p.vx);
+    const i = ((Math.round((a / (Math.PI * 2)) * steps) % steps) + steps) % steps;
+    const base = p.type2 === "rocket" ? (Math.floor(p.life * 20) % 2) * steps : 0;
+    p.setFrame(`${s.frame}_${base + i}`);
   }
 
   private detonate(p: Projectile): void {

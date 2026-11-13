@@ -38,6 +38,7 @@ export class Enemy implements Target {
   active = false;
   fired = false;
   private blastSpin = 0;
+  private spinAngle = 0;
 
   constructor(readonly ctx: GameContext, private readonly behaviours: Record<EnemyType, EnemyBehaviour>) {
     const scene = ctx.scene;
@@ -71,7 +72,11 @@ export class Enemy implements Target {
       },
       dying: {
         update: (e, dt, t) => {
-          if (e.blastSpin) e.sprite.rotation += e.blastSpin * dt;
+          if (e.blastSpin) {
+            e.spinAngle += e.blastSpin * dt;
+            const k = ((Math.round(e.spinAngle / (Math.PI / 4)) % 8) + 8) % 8;
+            e.sprite.setFrame(`${e.def.type}_tumble_${k}`);
+          }
           if (t > 1.2) e.sprite.setAlpha(Math.max(0, 1 - (t - 1.2) * 3));
           return t > 1.55 ? "gone" : undefined;
         },
@@ -147,7 +152,8 @@ export class Enemy implements Target {
     this.ctx.events.emit("sound", "enemyDie");
     if (hit.kind === "blast") {
       const away = Math.sign(this.x - hit.x) || 1;
-      this.sprite.setFrame(`${this.def.type}_die_0`);
+      this.spinAngle = 0;
+      this.sprite.setFrame(`${this.def.type}_tumble_0`);
       this.body.setVelocity(away * 90, -230);
       this.blastSpin = away * 9;
       this.body.checkCollision.none = true;

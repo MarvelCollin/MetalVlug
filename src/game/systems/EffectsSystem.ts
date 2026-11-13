@@ -45,11 +45,11 @@ export class EffectsSystem {
     );
   }
 
-  play(anim: string, x: number, y: number, opts: { depth?: number; flipX?: boolean; rotation?: number; scale?: number; originY?: number } = {}): void {
+  play(anim: string, x: number, y: number, opts: { depth?: number; flipX?: boolean; flipY?: boolean; originY?: number } = {}): void {
     const s = this.shots.acquire();
     if (!s) return;
-    s.setActive(true).setVisible(true).setPosition(x, y).setFlipX(!!opts.flipX).setRotation(opts.rotation ?? 0)
-      .setScale(opts.scale ?? 1).setDepth(opts.depth ?? DEPTH.fx).setOrigin(0.5, opts.originY ?? 0.5).setAlpha(1);
+    s.setActive(true).setVisible(true).setPosition(Math.round(x), Math.round(y)).setFlipX(!!opts.flipX).setFlipY(!!opts.flipY).setRotation(0)
+      .setScale(1).setDepth(opts.depth ?? DEPTH.fx).setOrigin(0.5, opts.originY ?? 0.5).setAlpha(1);
     s.play(anim);
   }
 
@@ -57,7 +57,7 @@ export class EffectsSystem {
     const m = this.fxMeta[key];
     const s = this.shots.acquire();
     if (!m || !s) return;
-    s.setActive(true).setVisible(true).setPosition(Math.round(x), Math.round(y)).setFlipX(flipX).setRotation(0).setScale(1)
+    s.setActive(true).setVisible(true).setPosition(Math.round(x), Math.round(y)).setFlipX(flipX).setFlipY(false).setRotation(0).setScale(1)
       .setDepth(depth).setAlpha(1);
     s.play(key);
     s.setOrigin(flipX ? 1 - m.originX : m.originX, m.originY);
@@ -86,7 +86,7 @@ export class EffectsSystem {
     for (let i = 0; i < count; i++) {
       const p = this.bits.acquire();
       if (!p) return;
-      p.setActive(true).setVisible(true).setPosition(x, y).setFrame(this.rng.pick(frames)).setAlpha(1).setRotation(0);
+      p.setActive(true).setVisible(true).setPosition(x, y).setFrame(this.rng.pick(frames)).setAlpha(1).setRotation(0).setFlipX(this.rng.chance(0.5));
       p.vx = this.rng.range(-110, 110);
       p.vy = this.rng.range(-260, -120);
       p.life = this.rng.range(0.8, 1.4);
@@ -124,7 +124,7 @@ export class EffectsSystem {
       p.vy += 700 * dt;
       p.x += p.vx * dt;
       p.y += p.vy * dt;
-      p.rotation += p.spin * dt;
+      if (p.spin && Math.floor(p.life * 12) !== Math.floor((p.life + dt) * 12)) p.flipX = !p.flipX;
       p.life -= dt;
       const floor = this.terrain.surfaceCrossed(p.x, prevY, p.y);
       if (floor !== null && p.vy > 0) {

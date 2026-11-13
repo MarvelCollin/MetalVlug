@@ -19,7 +19,7 @@ export class TitleScene extends Scene {
     this.add.tileSprite(0, 0, VIEW_W, VIEW_H, TEX.far).setOrigin(0);
     this.add.tileSprite(0, 0, VIEW_W, VIEW_H, TEX.mid).setOrigin(0).setTilePosition(120, 0);
     this.add.rectangle(0, 0, VIEW_W, VIEW_H, 0x1b1626, 0.35).setOrigin(0);
-    new RetroText(this, VIEW_W / 2, 52, "METALVLUG", [0.5, 0.5]).setScale(3);
+    new RetroText(this, VIEW_W / 2, 52, "METALVLUG", [0.5, 0.5], true);
     new RetroText(this, VIEW_W / 2, 82, "MISSION 1 LOWTIDE DOCKS", [0.5, 0.5]);
     this.add.sprite(VIEW_W / 2 - 60, 160, TEX.atlas, "pip_legs_stand_0").setOrigin(0.5, 1);
     this.add.sprite(VIEW_W / 2 - 60, 160, TEX.atlas, "pip_heavy_fwd_0").setOrigin(0.5, 1);

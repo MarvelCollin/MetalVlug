@@ -32,7 +32,7 @@ function decode(file) {
 }
 
 const BUDGET = [
-  [/^(pip|grunt|lobber|rusher|tinker)_/, 40],
+  [/^(pip|grunt|lobber|rusher|tinker)_/, 44],
   [/^(mule|warden)_/, 48],
   [/^(boom|boom_s|smoke|blast|flash|spark|dust)_/, 16],
   [/./, 24],

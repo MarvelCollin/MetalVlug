@@ -164,39 +164,39 @@ function pistol(p, x, y, dir) {
   if (dir === "fwd") {
     p.box(x, y - 1, 8, 3, R.gunmetal);
     p.rect(x, y - 1, 7, 1, R.gunmetal[0]);
-    p.box(x + 1, y + 2, 2, 3, R.wood);
+    p.box(x + 1, y + 2, 2, 3, R.leather);
     return { x: x + 8, y };
   }
   if (dir === "up") {
     p.box(x - 1, y - 8, 3, 8, R.gunmetal);
     p.rect(x - 1, y - 8, 1, 7, R.gunmetal[0]);
-    p.box(x + 2, y - 2, 3, 2, R.wood);
+    p.box(x + 2, y - 2, 3, 2, R.leather);
     return { x, y: y - 9 };
   }
   p.box(x - 1, y, 3, 8, R.gunmetal);
   p.rect(x + 1, y, 1, 7, R.gunmetal[0]);
-  p.box(x - 4, y + 1, 3, 2, R.wood);
+  p.box(x - 4, y + 1, 3, 2, R.leather);
   return { x, y: y + 9 };
 }
 
 function heavy(p, x, y, dir) {
   if (dir === "fwd") {
     p.box(x - 3, y - 2, 12, 5, R.gunmetal);
-    p.box(x + 9, y - 1, 6, 3, R.steel);
-    for (let i = 0; i < 3; i++) p.px(x + 10 + i * 2, y, R.steel[3]);
+    p.box(x + 9, y - 1, 6, 3, R.gunmetal);
+    for (let i = 0; i < 3; i++) p.px(x + 10 + i * 2, y, R.gunmetal[3]);
     p.blob(x + 1, y + 4, 3, 2.5, R.brass);
-    p.box(x - 6, y - 1, 4, 3, R.wood);
+    p.box(x - 6, y - 1, 4, 3, R.leather);
     return { x: x + 15, y };
   }
   if (dir === "up") {
     p.box(x - 2, y - 11, 5, 12, R.gunmetal);
-    p.box(x - 1, y - 17, 3, 6, R.steel);
-    for (let i = 0; i < 3; i++) p.px(x, y - 16 + i * 2, R.steel[3]);
+    p.box(x - 1, y - 17, 3, 6, R.gunmetal);
+    for (let i = 0; i < 3; i++) p.px(x, y - 16 + i * 2, R.gunmetal[3]);
     p.blob(x + 4, y - 4, 2.5, 3, R.brass);
     return { x, y: y - 18 };
   }
   p.box(x - 2, y, 5, 11, R.gunmetal);
-  p.box(x - 1, y + 11, 3, 6, R.steel);
+  p.box(x - 1, y + 11, 3, 6, R.gunmetal);
   p.blob(x - 4, y + 4, 2.5, 3, R.brass);
   return { x, y: y + 18 };
 }

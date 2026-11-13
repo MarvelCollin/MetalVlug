@@ -8,11 +8,7 @@ const one = (w, h, draw, outline = true) => {
 };
 
 export const fx = {
-  bullet_p: [one(7, 4, (p) => { p.rect(0, 1, 7, 2, C.fire2); p.rect(4, 1, 3, 2, C.fire1); }, false)],
-  bullet_r: [one(9, 4, (p) => { p.rect(0, 1, 9, 2, C.fire3); p.rect(5, 1, 4, 2, C.fire1); }, false)],
-  bullet_v: [one(8, 4, (p) => { p.rect(0, 1, 8, 2, C.tealL); p.rect(4, 1, 4, 2, C.white); }, false)],
   bullet_e: [0, 1].map((f) => one(8, 8, (p) => { p.disc(4, 4, 3, f ? C.red : C.fire3); p.disc(4, 4, 1, C.fire1); })),
-  rocket: [0, 1].map((f) => one(14, 7, (p) => { p.rect(3, 2, 9, 3, C.greyL); p.rect(11, 2, 2, 3, C.red); p.rect(3, 1, 2, 5, C.greyD); p.rect(0, 2 + f, 3, 2, C.fire2); }, true)),
   bomb: [0, 1, 2, 3].map((f) => one(9, 9, (p) => { const a = (f / 4) * Math.PI * 2; p.blob(4, 4, 3, 3, R.olive); p.px(4 + Math.round(Math.cos(a) * 3), 4 + Math.round(Math.sin(a) * 3), R.steel[0]); })),
   shell: [one(10, 8, (p) => { p.blob(5, 4, 4, 3, R.steel); p.rect(1, 3, 2, 2, R.brass[1]); })],
   mortar: [one(9, 9, (p) => { p.blob(4, 4, 3.5, 3.5, R.gunmetal); p.px(3, 2, R.steel[0]); })],
@@ -87,3 +83,39 @@ fx.dust = [0, 1, 2, 3].map((f) =>
     for (let i = 0; i < p.data.length; i += 4) if (p.data[i + 3]) p.data[i + 3] = a;
   }, false),
 );
+
+export const ANGLES = 16;
+
+function streak(size, len, thick, tail, head) {
+  return Array.from({ length: ANGLES }, (_, i) => {
+    const a = (i / ANGLES) * Math.PI * 2;
+    const p = new Pix(size, size);
+    const c = (size - 1) / 2;
+    const dx = Math.cos(a);
+    const dy = Math.sin(a);
+    p.line(Math.round(c - dx * len / 2), Math.round(c - dy * len / 2), Math.round(c + dx * len / 2), Math.round(c + dy * len / 2), tail, thick);
+    p.line(Math.round(c + dx * (len / 2 - 2)), Math.round(c + dy * (len / 2 - 2)), Math.round(c + dx * len / 2), Math.round(c + dy * len / 2), head, thick);
+    return { pix: p };
+  });
+}
+
+fx.bullet_p = streak(11, 6, 2, C.fire2, C.fire1);
+fx.bullet_r = streak(13, 8, 2, C.fire3, C.fire1);
+fx.bullet_v = streak(13, 7, 2, C.tealL, C.white);
+
+fx.rocket = [0, 1].flatMap((f) =>
+  Array.from({ length: ANGLES }, (_, i) => {
+    const a = (i / ANGLES) * Math.PI * 2;
+    const p = new Pix(17, 17);
+    const c = 8;
+    const dx = Math.cos(a);
+    const dy = Math.sin(a);
+    p.line(Math.round(c - dx * 4), Math.round(c - dy * 4), Math.round(c + dx * 3), Math.round(c + dy * 3), R.steel[1], 3);
+    p.line(Math.round(c + dx * 3), Math.round(c + dy * 3), Math.round(c + dx * 5), Math.round(c + dy * 5), R.red[1], 2);
+    p.line(Math.round(c - dx * 5), Math.round(c - dy * 5), Math.round(c - dx * (7 + f)), Math.round(c - dy * (7 + f)), C.fire2, 2);
+    p.selout();
+    return { pix: p };
+  }),
+);
+
+fx.blast_up = fx.blast.map((f) => ({ pix: f.pix.rotated(-Math.PI / 2, 27.5, 13.5) }));

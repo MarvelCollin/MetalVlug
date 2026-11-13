@@ -21,13 +21,14 @@ export class Mule implements Target {
   private facing: 1 | -1 = 1;
   private vulcanTimer = 0;
   private reenter = 0;
+  private boardArmed = true;
   private onGround = false;
 
   constructor(private readonly ctx: GameContext, private readonly player: Player, x: number, y: number) {
     const scene = ctx.scene;
     this.sprite = scene.physics.add.sprite(x, y, TEX.atlas, "mule_idle_0").setOrigin(0.5, 1).setDepth(DEPTH.vehicle);
     (this.sprite.body as Physics.Arcade.Body).setSize(30, 34).setOffset(17, 22);
-    this.gun = scene.add.image(x, y, TEX.atlas, "mule_gun_0").setOrigin(4 / 24, 0.5).setDepth(DEPTH.vehicle + 1);
+    this.gun = scene.add.image(x, y, TEX.atlas, "mule_gun_0").setOrigin(0.5, 0.5).setDepth(DEPTH.vehicle + 1);
     scene.physics.add.collider(this.sprite, ctx.terrain.solids);
     scene.physics.add.collider(this.sprite, ctx.terrain.platforms);
     ctx.combat.add(this);
@@ -128,7 +129,12 @@ export class Mule implements Target {
     if (!this.player.onFoot || this.reenter > 0 || this.ctx.state.piloting) return;
     this.box.setTo(this.sprite.x - 14, this.sprite.y - 44, 28, 44);
     const p = this.player.bounds(new Geom.Rectangle());
-    if (Geom.Intersects.RectangleToRectangle(p, this.box)) {
+    const touching = Geom.Intersects.RectangleToRectangle(p, this.box);
+    if (!this.boardArmed) {
+      if (!touching) this.boardArmed = true;
+      return;
+    }
+    if (touching) {
       this.ctx.state.muleArmour = Math.max(1, this.ctx.state.muleArmour || MULE.armour);
       this.fsm.change("piloted");
     }
@@ -178,7 +184,7 @@ export class Mule implements Target {
       const my = this.gun.y + Math.sin(this.gunAngle) * 18;
       const j = this.ctx.rng.range(-0.03, 0.03);
       this.ctx.projectiles.fire("vulcan", mx, my, Math.cos(this.gunAngle + j) * MULE.vulcanSpeed, Math.sin(this.gunAngle + j) * MULE.vulcanSpeed, 1);
-      this.ctx.fx.play("flash", mx, my, { scale: 0.8 });
+      this.ctx.fx.play("flash", mx, my);
       this.ctx.events.emit("sound", "vulcan");
     }
     if (inp.pressed(Action.Bomb) && this.ctx.state.muleShells > 0) {
@@ -196,7 +202,9 @@ export class Mule implements Target {
     const px = pivot.x || 29;
     const py = pivot.y || 11;
     const ox = (px - 32) * (this.sprite.flipX ? -1 : 1);
-    this.gun.setPosition(this.sprite.x + ox, this.sprite.y - 56 + py).setRotation(this.gunAngle).setVisible(this.sprite.visible);
+    const steps = 32;
+    const i = ((Math.round((this.gunAngle / (Math.PI * 2)) * steps) % steps) + steps) % steps;
+    this.gun.setFrame(`mule_gun_${i}`).setPosition(Math.round(this.sprite.x + ox), Math.round(this.sprite.y - 56 + py)).setVisible(this.sprite.visible);
   }
 
   forceEject(): void {
@@ -208,6 +216,7 @@ export class Mule implements Target {
   private ejectPilot(): void {
     this.ctx.state.piloting = false;
     this.reenter = MULE.reenterDelay;
+    this.boardArmed = false;
     this.player.exitVehicle(this.sprite.x, this.sprite.y - 40);
   }
 

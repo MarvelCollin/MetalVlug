@@ -252,6 +252,18 @@ Pix.prototype.colorAt = function (x, y) {
   return "#" + [0, 1, 2].map((k) => this.data[i + k].toString(16).padStart(2, "0")).join("");
 };
 
+let RAMP_OUTLINE = null;
+function outlineFor(c, ink, amount) {
+  if (!RAMP_OUTLINE) {
+    RAMP_OUTLINE = new Map();
+    for (const ramp of Object.values(R)) {
+      const o = mixHex(ramp[3], ink, 0.55);
+      for (const col of ramp) if (!RAMP_OUTLINE.has(col)) RAMP_OUTLINE.set(col, o);
+    }
+  }
+  return RAMP_OUTLINE.get(c) ?? mixHex(c, ink, amount);
+}
+
 Pix.prototype.selout = function (ink = "#1b1626", amount = 0.72) {
   const mark = [];
   for (let y = 0; y < this.h; y++)
@@ -261,7 +273,20 @@ Pix.prototype.selout = function (ink = "#1b1626", amount = 0.72) {
         if (this.get(x + dx, y + dy)) { mark.push([x, y, this.colorAt(x + dx, y + dy)]); break; }
       }
     }
-  for (const [x, y, c] of mark) this.px(x, y, mixHex(c, ink, amount));
+  for (const [x, y, c] of mark) this.px(x, y, outlineFor(c, ink, amount));
+  return this;
+};
+
+Pix.prototype.despeckle = function () {
+  const kill = [];
+  for (let y = 0; y < this.h; y++)
+    for (let x = 0; x < this.w; x++) {
+      if (!this.get(x, y)) continue;
+      let n = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && this.get(x + dx, y + dy)) n++;
+      if (n === 0) kill.push([x, y]);
+    }
+  for (const [x, y] of kill) this.data[(y * this.w + x) * 4 + 3] = 0;
   return this;
 };
 

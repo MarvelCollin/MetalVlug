@@ -27,7 +27,7 @@ export class GruntBehaviour implements EnemyBehaviour {
       let ang = Math.atan2(p.centerY - my, (p.x - mx) * e.facing);
       ang = Math.max(-G.maxAngle, Math.min(G.maxAngle, ang));
       e.ctx.projectiles.fire("enemyBullet", mx, my, Math.cos(ang) * e.facing * G.bulletSpeed, Math.sin(ang) * G.bulletSpeed, 1);
-      e.ctx.fx.play("flash", mx, my, { scale: 0.7 });
+      e.ctx.fx.play("flash", mx, my);
       e.ctx.events.emit("sound", "enemyShot");
     }
     if (t > G.aimTime + 0.35) {

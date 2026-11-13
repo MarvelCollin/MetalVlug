@@ -53,16 +53,50 @@ const G = {
   Z: ["#####", "    #", "   # ", "  #  ", " #   ", "#    ", "#####"],
 };
 
-export function buildFont() {
-  const cw = 7;
-  const ch = 9;
+function scale2x(rows) {
+  const h = rows.length;
+  const w = rows[0].length;
+  const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h ? false : rows[y][x] === "#");
+  const out = Array.from({ length: h * 2 }, () => Array(w * 2).fill(false));
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const P = at(x, y);
+      const A = at(x, y - 1);
+      const B = at(x + 1, y);
+      const Cc = at(x - 1, y);
+      const D = at(x, y + 1);
+      let e1 = P, e2 = P, e3 = P, e4 = P;
+      if (Cc === A && Cc !== D && A !== B) e1 = A;
+      if (A === B && A !== Cc && B !== D) e2 = B;
+      if (D === Cc && D !== B && Cc !== A) e3 = Cc;
+      if (B === D && B !== A && D !== Cc) e4 = D;
+      out[y * 2][x * 2] = e1;
+      out[y * 2][x * 2 + 1] = e2;
+      out[y * 2 + 1][x * 2] = e3;
+      out[y * 2 + 1][x * 2 + 1] = e4;
+    }
+  return out;
+}
+
+const BIG_RAMP = ["#fff8e4", "#ffe9a8", "#f8d25a", "#e39a3c"];
+
+export function buildFont(big = false) {
+  const cw = big ? 13 : 7;
+  const ch = big ? 17 : 9;
   const p = new Pix(cw * FONT_CHARS.length, ch);
   [...FONT_CHARS].forEach((c, i) => {
     const g = G[c];
     if (!g) return;
     const cell = new Pix(cw, ch);
-    g.forEach((row, y) => [...row].forEach((v, x) => v === "#" && cell.px(x + 1, y + 1, C.white)));
-    cell.outline(C.ink);
+    if (big) {
+      const s = scale2x(g);
+      s.forEach((row, y) => row.forEach((v, x) => v && cell.px(x + 1, y + 1, BIG_RAMP[Math.min(3, Math.floor((y / s.length) * 4))])));
+      cell.outline(C.ink);
+      for (let x = 0; x < cw; x++) for (let y = ch - 1; y > 0; y--) if (cell.get(x, y - 1) && !cell.get(x, y)) { cell.px(x, y, C.ink); break; }
+    } else {
+      g.forEach((row, y) => [...row].forEach((v, x) => v === "#" && cell.px(x + 1, y + 1, C.white)));
+      cell.outline(C.ink);
+    }
     p.blit(cell, i * cw, 0);
   });
   return { pix: p, cellW: cw, cellH: ch, chars: FONT_CHARS };

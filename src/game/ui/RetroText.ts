@@ -1,12 +1,12 @@
 import type { GameObjects, Scene } from "phaser";
-import { FONT } from "../assets/keys";
+import { FONT, FONT_BIG } from "../assets/keys";
 
 export class RetroText {
   readonly view: GameObjects.BitmapText;
   private last = "";
 
-  constructor(scene: Scene, private readonly x: number, private readonly y: number, text = "", private readonly origin: [number, number] = [0, 0]) {
-    this.view = scene.add.bitmapText(x, y, FONT, text).setOrigin(0, 0).setScrollFactor(0);
+  constructor(scene: Scene, private readonly x: number, private readonly y: number, text = "", private readonly origin: [number, number] = [0, 0], big = false) {
+    this.view = scene.add.bitmapText(x, y, big ? FONT_BIG : FONT, text).setOrigin(0, 0).setScrollFactor(0);
     this.last = text;
     this.place();
   }
@@ -17,12 +17,6 @@ export class RetroText {
       this.view.setText(text);
       this.place();
     }
-    return this;
-  }
-
-  setScale(s: number): this {
-    this.view.setScale(s);
-    this.place();
     return this;
   }
 

@@ -273,8 +273,8 @@ export class Player implements Target, PlayerLocator {
       this.ctx.events.emit("sound", "rivet");
     } else if (w.mode === "blast") {
       const aim = this.aimKey();
-      const rot = aim === "up" ? -Math.PI / 2 : aim === "down" ? Math.PI / 2 : 0;
-      fx.play("blast", m.x, m.y, { flipX: this.facing < 0 && aim === "fwd", rotation: this.facing < 0 && aim !== "fwd" ? -rot : rot, originY: 0.5 });
+      if (aim === "fwd") fx.play("blast", m.x, m.y, { flipX: this.facing < 0, originY: 0.5 });
+      else fx.play("blast_up", m.x, m.y, { originY: aim === "up" ? 1 : 0, flipY: aim === "down" });
       const r = this.knifeRect;
       if (aim === "fwd") r.setTo(this.facing > 0 ? m.x : m.x - w.range, m.y - 22, w.range, 44);
       else r.setTo(m.x - 22, aim === "up" ? m.y - w.range : m.y, 44, w.range);

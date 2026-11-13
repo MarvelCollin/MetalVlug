@@ -140,3 +140,19 @@ test("the Iron Warden can be beaten with the pistol by jump shooting", async ({ 
   await page.keyboard.up("ArrowRight");
   await page.waitForFunction("window.__mv.snapshot().phase === 'complete'", null, { timeout: 20_000 });
 });
+
+test("leaving the Mule does not instantly board it again", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(120); mv.warp(1560);");
+  await page.waitForTimeout(400);
+  await hold(page, "ArrowRight", 700);
+  expect((await snap(page)).piloting).toBe(true);
+  await page.keyboard.down("ArrowUp");
+  await tap(page, "KeyK", 60);
+  await page.keyboard.up("ArrowUp");
+  await page.waitForTimeout(1500);
+  expect((await snap(page)).piloting).toBe(false);
+  await hold(page, "ArrowLeft", 600);
+  await hold(page, "ArrowRight", 700);
+  expect((await snap(page)).piloting).toBe(true);
+});
