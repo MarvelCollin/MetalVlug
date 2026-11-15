@@ -1,6 +1,8 @@
 import { GameObjects, Scene } from "phaser";
 import { DATA, FONT, FONT_BIG, TEX } from "../assets/keys";
 import { registerAnimations } from "../assets/Animations";
+import { AudioService } from "../audio/AudioService";
+import { Settings } from "../settings/Settings";
 
 interface FontMeta {
   cellW: number;
@@ -41,6 +43,11 @@ export class BootScene extends Scene {
     this.cache.bitmapFont.add(FONT, parse(TEX.font, meta.cellW, meta.cellH));
     this.cache.bitmapFont.add(FONT_BIG, parse(TEX.fontBig, meta.bigW, meta.bigH));
     registerAnimations(this);
+    if (!this.game.registry.has("settings")) {
+      const settings = new Settings();
+      this.game.registry.set("settings", settings);
+      new AudioService(settings).register(this);
+    }
     this.scene.start(new URLSearchParams(location.search).has("skip") ? "mission" : "title");
   }
 }

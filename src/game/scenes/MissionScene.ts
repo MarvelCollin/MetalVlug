@@ -20,7 +20,7 @@ import { Hostage } from "../entities/props/Hostage";
 import { Prop } from "../entities/props/Prop";
 import { Mule } from "../entities/vehicles/Mule";
 import { Warden } from "../entities/bosses/Warden";
-import { AudioService } from "../systems/AudioService";
+import { audioOf, type AudioService } from "../audio/AudioService";
 import { CameraDirector } from "../systems/CameraDirector";
 import { CombatSystem } from "../systems/CombatSystem";
 import { EffectsSystem } from "../systems/EffectsSystem";
@@ -79,7 +79,7 @@ export class MissionScene extends Scene {
     this.ctx = ctx;
     this.events2 = events;
     this.state = state;
-    this.audio = new AudioService();
+    this.audio = audioOf(this);
     this.player = new Player(ctx, this.level.playerStart, this.level.groundY - 40);
     (ctx as { player: GameContext["player"] }).player = this.player;
     combat.add(this.player);
@@ -97,6 +97,7 @@ export class MissionScene extends Scene {
           if (t - dt <= 0.05 && t > 0.05) {
             s.events2.emit("banner", { text: "MISSION 1", sub: `${s.level.title}  START!`, seconds: 2.2 });
             s.events2.emit("sound", "mission");
+            s.audio.music("lowtide");
           }
           s.simulate(dt);
           return t > 1.2 ? "play" : undefined;
@@ -111,6 +112,7 @@ export class MissionScene extends Scene {
           s.state.phase = "gameover";
           s.continueTimer = 0;
           s.state.continueCount = MISSION.continueCount;
+          s.audio.music("gameover");
         },
         update: (s, dt) => s.tickContinue(dt),
       },
@@ -119,7 +121,7 @@ export class MissionScene extends Scene {
           s.state.phase = "complete";
           s.state.clock.pause();
           s.events2.emit("banner", { text: "MISSION COMPLETE!", seconds: 3 });
-          s.events2.emit("sound", "complete");
+          s.audio.music("complete");
         },
         update: (s, dt, t) => {
           s.simulate(dt);
@@ -192,6 +194,7 @@ export class MissionScene extends Scene {
     if (!this.warden.present && this.warden.state === "waiting" && cam.left >= this.level.boss.lockAt - 2) {
       cam.lock(this.level.boss.lockAt);
       this.warden.start();
+      this.audio.music("boss");
       this.events2.emit("banner", { text: "WARNING!", sub: "IRON WARDEN APPROACHING", seconds: 2 });
     }
     if (this.player.alive) {
@@ -236,6 +239,7 @@ export class MissionScene extends Scene {
       this.state.score.continueGame();
       this.state.continueCount = -1;
       this.respawn("rivet");
+      this.audio.music(this.warden.present ? "boss" : "lowtide");
       return "play";
     }
   }

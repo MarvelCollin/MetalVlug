@@ -4,6 +4,7 @@ import { TEX } from "../assets/keys";
 import { RetroText } from "../ui/RetroText";
 import { InputSystem } from "../input/InputSystem";
 import { Action } from "../../domain/input/Actions";
+import { audioOf } from "../audio/AudioService";
 
 export class TitleScene extends Scene {
   private input2!: InputSystem;
@@ -27,6 +28,7 @@ export class TitleScene extends Scene {
     this.prompt = new RetroText(this, VIEW_W / 2, 182, "PRESS ENTER", [0.5, 0.5]);
     new RetroText(this, VIEW_W / 2, 200, "ARROWS MOVE  J FIRE  K JUMP  L BOMB", [0.5, 0.5]).view.setAlpha(0.8);
     this.input2 = new InputSystem(this);
+    audioOf(this).music("title");
   }
 
   update(_t: number, dms: number): void {

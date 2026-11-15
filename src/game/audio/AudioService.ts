@@ -1,4 +1,8 @@
+import type { Scene } from "phaser";
 import type { SoundId } from "../context/GameEvents";
+import type { Settings } from "../settings/Settings";
+import { MusicPlayer } from "./MusicPlayer";
+import type { TrackId } from "./tracks";
 
 interface Voice {
   wave: OscillatorType | "noise";
@@ -37,14 +41,53 @@ const BANK: Record<SoundId, Voice[]> = {
   complete: [{ wave: "square", from: 523, to: 523, time: 0.15, gain: 0.1 }, { wave: "square", from: 659, to: 659, time: 0.15, gain: 0.1, delay: 0.16 }, { wave: "square", from: 784, to: 784, time: 0.15, gain: 0.1, delay: 0.32 }, { wave: "square", from: 1046, to: 1046, time: 0.4, gain: 0.1, delay: 0.48 }],
 };
 
+const REGISTRY_KEY = "audio";
+
+export function audioOf(scene: Scene): AudioService {
+  return scene.game.registry.get(REGISTRY_KEY) as AudioService;
+}
+
 export class AudioService {
   private ctx: AudioContext | null = null;
   private noise: AudioBuffer | null = null;
   private readonly queue = new Set<SoundId>();
   private master: GainNode | null = null;
+  private musicGain: GainNode | null = null;
+  private player: MusicPlayer | null = null;
+  private wanted: TrackId | null = null;
+
+  constructor(private readonly settings: Settings) {
+    settings.onChange(() => this.applyVolumes());
+    const unlock = () => this.ensure();
+    window.addEventListener("keydown", unlock);
+    window.addEventListener("pointerdown", unlock);
+  }
+
+  register(scene: Scene): this {
+    scene.game.registry.set(REGISTRY_KEY, this);
+    return this;
+  }
 
   request(id: SoundId): void {
     this.queue.add(id);
+  }
+
+  music(id: TrackId | null): void {
+    this.wanted = id;
+    this.ensure();
+    if (!this.player) return;
+    if (id === null) this.player.stop();
+    else this.player.play(id);
+  }
+
+  get track(): TrackId | null {
+    return this.player?.current ?? null;
+  }
+
+  private applyVolumes(): void {
+    if (!this.master || !this.musicGain) return;
+    this.master.gain.value = this.settings.values.sfx * 0.75;
+    this.musicGain.gain.value = this.settings.values.music * 0.8;
   }
 
   flush(): void {
@@ -59,12 +102,16 @@ export class AudioService {
       try {
         this.ctx = new AudioContext();
         this.master = this.ctx.createGain();
-        this.master.gain.value = 0.6;
         this.master.connect(this.ctx.destination);
+        this.musicGain = this.ctx.createGain();
+        this.musicGain.connect(this.ctx.destination);
         const len = this.ctx.sampleRate;
         this.noise = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
         const d = this.noise.getChannelData(0);
         for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        this.player = new MusicPlayer(this.ctx, this.musicGain, this.noise);
+        this.applyVolumes();
+        if (this.wanted) this.player.play(this.wanted);
       } catch {
         return null;
       }

@@ -156,3 +156,15 @@ test("leaving the Mule does not instantly board it again", async ({ page }) => {
   await hold(page, "ArrowRight", 700);
   expect((await snap(page)).piloting).toBe(true);
 });
+
+test("music follows the game: title, mission, boss", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForTimeout(800);
+  await page.keyboard.press("KeyZ");
+  await page.waitForFunction("window.__game.registry.get('audio').track === 'title'", null, { timeout: 5_000 }).catch(() => undefined);
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("window.__mv && window.__game.registry.get('audio').track === 'lowtide'", null, { timeout: 10_000 });
+  await run(page, "mv.shield(300); mv.warp(3600);");
+  await hold(page, "ArrowRight", 1500);
+  await page.waitForFunction("window.__game.registry.get('audio').track === 'boss'", null, { timeout: 10_000 });
+});
