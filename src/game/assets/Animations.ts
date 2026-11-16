@@ -11,11 +11,11 @@ interface AnimSpec {
 }
 
 const SPECS: AnimSpec[] = [
-  { key: "pip_legs_run", prefix: "pip_legs_run_", frames: 8, rate: 16, repeat: -1 },
-  { key: "pip_legs_crawl", prefix: "pip_legs_crawl_", frames: 6, rate: 10, repeat: -1 },
-  { key: "pip_die", prefix: "pip_die_", frames: 6, rate: 10 },
-  { key: "pip_knife", prefix: "pip_knife_", frames: 3, rate: 14 },
-  { key: "pip_throw", prefix: "pip_throw_", frames: 3, rate: 16 },
+  ...["pip", "juno"].flatMap((c) => [
+    { key: `${c}_legs_run`, prefix: `${c}_legs_run_`, frames: 8, rate: 16, repeat: -1 },
+    { key: `${c}_legs_crawl`, prefix: `${c}_legs_crawl_`, frames: 6, rate: 10, repeat: -1 },
+    { key: `${c}_die`, prefix: `${c}_die_`, frames: 6, rate: 10 },
+  ]),
   { key: "grunt_idle", prefix: "grunt_idle_", frames: 2, rate: 2, repeat: -1 },
   { key: "grunt_read", prefix: "grunt_read_", frames: 2, rate: 1.5, repeat: -1 },
   { key: "grunt_alert", prefix: "grunt_alert_", frames: 2, rate: 8, repeat: -1 },

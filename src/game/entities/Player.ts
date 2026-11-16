@@ -8,6 +8,7 @@ import { BOMB, PLAYER } from "../../config/tuning";
 import { TEX } from "../assets/keys";
 import type { GameContext, PlayerLocator } from "../context/GameContext";
 import type { Target } from "../systems/CombatSystem";
+import type { CharacterDef } from "../../domain/characters/Characters";
 
 type Life = "alive" | "dying" | "down" | "piloting";
 type Aim = "fwd" | "up" | "down";
@@ -32,10 +33,10 @@ export class Player implements Target, PlayerLocator {
   private onGround = false;
   private fallSpeed = 0;
 
-  constructor(private readonly ctx: GameContext, x: number, y: number) {
+  constructor(private readonly ctx: GameContext, x: number, y: number, readonly char: CharacterDef) {
     const scene = ctx.scene;
-    this.legs = scene.physics.add.sprite(x, y, TEX.atlas, "pip_legs_stand_0").setOrigin(0.5, 1).setDepth(DEPTH.player);
-    this.torso = scene.add.sprite(x, y, TEX.atlas, "pip_pistol_fwd_0").setOrigin(0.5, 1).setDepth(DEPTH.player + 1);
+    this.legs = scene.physics.add.sprite(x, y, TEX.atlas, `${char.id}_legs_stand_0`).setOrigin(0.5, 1).setDepth(DEPTH.player);
+    this.torso = scene.add.sprite(x, y, TEX.atlas, `${char.id}_pistol_fwd_0`).setOrigin(0.5, 1).setDepth(DEPTH.player + 1);
     this.setBody(false);
     scene.physics.add.collider(this.legs, ctx.terrain.solids);
     scene.physics.add.collider(this.legs, ctx.terrain.platforms);
@@ -45,7 +46,7 @@ export class Player implements Target, PlayerLocator {
         enter: (p) => {
           p.torso.setVisible(false);
           p.legs.setVelocityX(0);
-          p.legs.play("pip_die");
+          p.legs.play(`${p.char.id}_die`);
         },
         update: (_p, _dt, t) => (t > PLAYER.respawnDelay ? "down" : undefined),
       },
@@ -178,7 +179,7 @@ export class Player implements Target, PlayerLocator {
     }
     const axis = inp.axisX;
     if (axis !== 0 && this.action !== "knife") this.facing = axis;
-    const speed = this.crouching ? PLAYER.crawlSpeed : PLAYER.runSpeed;
+    const speed = this.crouching ? PLAYER.crawlSpeed : this.char.runSpeed;
     body.setVelocityX(this.action === "knife" ? 0 : axis * speed);
     const minX = this.ctx.camera.left + 8;
     const maxX = this.ctx.camera.right - 8;
@@ -225,8 +226,9 @@ export class Player implements Target, PlayerLocator {
 
   private tryKnife(): boolean {
     const r = this.knifeRect;
-    const x0 = this.facing > 0 ? this.legs.x - 4 : this.legs.x - PLAYER.knifeReach;
-    r.setTo(x0, this.legs.y - PLAYER.knifeHeight - 4, PLAYER.knifeReach + 4, PLAYER.knifeHeight + 4);
+    const reach = this.char.knifeReach;
+    const x0 = this.facing > 0 ? this.legs.x - 4 : this.legs.x - reach;
+    r.setTo(x0, this.legs.y - PLAYER.knifeHeight - 4, reach + 4, PLAYER.knifeHeight + 4);
     const melee = (t: Target) => (t as Target & { meleeable?: boolean }).meleeable === true;
     if (!this.ctx.combat.anyInRect("player", r, melee)) return false;
     this.action = "knife";
@@ -244,7 +246,7 @@ export class Player implements Target, PlayerLocator {
   }
 
   private torsoFrame(recoil: boolean): string {
-    return `pip_${this.ctx.state.loadout.weapon.torso}_${this.aimKey()}_${recoil ? 1 : 0}`;
+    return `${this.char.id}_${this.ctx.state.loadout.weapon.torso}_${this.aimKey()}_${recoil ? 1 : 0}`;
   }
 
   private muzzle(): { x: number; y: number } {
@@ -294,7 +296,8 @@ export class Player implements Target, PlayerLocator {
     this.action = "throw";
     this.actionTime = PLAYER.throwTime;
     const body = this.legs.body as Physics.Arcade.Body;
-    this.ctx.projectiles.fire("bomb", this.legs.x + this.facing * 4, this.legs.y - 34, this.facing * BOMB.throwX + body.velocity.x * 0.3, -BOMB.throwY, BOMB.damage);
+    const b = this.ctx.projectiles.fire("bomb", this.legs.x + this.facing * 4, this.legs.y - 34, this.facing * BOMB.throwX * this.char.throwBoost + body.velocity.x * 0.3, -BOMB.throwY * Math.sqrt(this.char.throwBoost), BOMB.damage);
+    if (b) b.bounces = this.char.bombBounces;
     this.ctx.events.emit("sound", "throw");
   }
 
@@ -307,11 +310,12 @@ export class Player implements Target, PlayerLocator {
     const body = this.legs.body as Physics.Arcade.Body;
     const moving = Math.abs(body.velocity.x) > 1;
     let legKey: string;
-    if (!this.onGround) legKey = body.velocity.y < 0 ? "pip_legs_jump_0" : "pip_legs_fall_0";
-    else if (this.crouching) legKey = moving ? "crawl" : "pip_legs_crouch_0";
-    else legKey = moving ? "run" : "pip_legs_stand_0";
+    const c = this.char.id;
+    if (!this.onGround) legKey = body.velocity.y < 0 ? `${c}_legs_jump_0` : `${c}_legs_fall_0`;
+    else if (this.crouching) legKey = moving ? "crawl" : `${c}_legs_crouch_0`;
+    else legKey = moving ? "run" : `${c}_legs_stand_0`;
     if (legKey === "run" || legKey === "crawl") {
-      const anim = `pip_legs_${legKey}`;
+      const anim = `${this.char.id}_legs_${legKey}`;
       if (this.legs.anims.currentAnim?.key !== anim || !this.legs.anims.isPlaying) this.legs.play(anim, true);
     } else {
       this.legs.stop();
@@ -319,8 +323,8 @@ export class Player implements Target, PlayerLocator {
     }
     const drop = Number(this.ctx.anchorValue(this.legs.frame.name, "drop")) || 0;
     let frame: string;
-    if (this.action === "knife") frame = `pip_knife_${Math.min(2, Math.floor((1 - this.actionTime / PLAYER.knifeTime) * 3))}`;
-    else if (this.action === "throw") frame = `pip_throw_${Math.min(2, Math.floor((1 - this.actionTime / PLAYER.throwTime) * 3))}`;
+    if (this.action === "knife") frame = `${this.char.id}_knife_${Math.min(2, Math.floor((1 - this.actionTime / PLAYER.knifeTime) * 3))}`;
+    else if (this.action === "throw") frame = `${this.char.id}_throw_${Math.min(2, Math.floor((1 - this.actionTime / PLAYER.throwTime) * 3))}`;
     else frame = this.torsoFrame(this.recoil > 0);
     const idleBob = !moving && this.onGround && !this.crouching ? Math.floor(this.ctx.scene.time.now / 500) % 2 : 0;
     this.torso.setFrame(frame).setFlipX(flip).setPosition(this.legs.x, this.legs.y + drop + idleBob).setVisible(true);

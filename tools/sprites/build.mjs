@@ -27,17 +27,20 @@ function add(name, list) {
   });
 }
 
-add("pip_legs_stand", [pipLegs(POSE.stand)]);
-add("pip_legs_run", Array.from({ length: 8 }, (_, f) => pipLegs(gait(f))));
-add("pip_legs_jump", [pipLegs(POSE.jump)]);
-add("pip_legs_fall", [pipLegs(POSE.fall)]);
-add("pip_legs_crouch", [pipLegs(POSE.crouch)]);
-add("pip_legs_crawl", Array.from({ length: 6 }, (_, f) => pipLegs(crawlPose(f))));
-for (const weapon of ["pistol", "heavy"])
-  for (const aim of ["fwd", "up", "down"]) add(`pip_${weapon}_${aim}`, [pipTorso(aim, weapon, false), pipTorso(aim, weapon, true)]);
-add("pip_knife", [0, 1, 2].map(pipKnife));
-add("pip_throw", [0, 1, 2].map(pipThrow));
-add("pip_die", deathFrames(PAL.pip));
+for (const who of ["pip", "juno"]) {
+  const pal = PAL[who];
+  add(`${who}_legs_stand`, [pipLegs(POSE.stand, pal)]);
+  add(`${who}_legs_run`, Array.from({ length: 8 }, (_, f) => pipLegs(gait(f), pal)));
+  add(`${who}_legs_jump`, [pipLegs(POSE.jump, pal)]);
+  add(`${who}_legs_fall`, [pipLegs(POSE.fall, pal)]);
+  add(`${who}_legs_crouch`, [pipLegs(POSE.crouch, pal)]);
+  add(`${who}_legs_crawl`, Array.from({ length: 6 }, (_, f) => pipLegs(crawlPose(f), pal)));
+  for (const weapon of ["pistol", "heavy"])
+    for (const aim of ["fwd", "up", "down"]) add(`${who}_${weapon}_${aim}`, [pipTorso(aim, weapon, false, pal), pipTorso(aim, weapon, true, pal)]);
+  add(`${who}_knife`, [0, 1, 2].map((f) => pipKnife(f, pal)));
+  add(`${who}_throw`, [0, 1, 2].map((f) => pipThrow(f, pal)));
+  add(`${who}_die`, deathFrames(pal));
+}
 
 for (const [name, set] of [["grunt", gruntFrames()], ["lobber", lobberFrames()], ["rusher", rusherFrames()], ["tinker", tinkerFrames()]]) {
   for (const [anim, list] of Object.entries(set.frames)) add(`${name}_${anim}`, list);

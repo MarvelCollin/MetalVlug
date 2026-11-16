@@ -37,7 +37,8 @@ export class HudScene extends Scene {
     this.mission = this.scene.get("mission") as MissionScene;
     new RetroText(this, 6, 3, "1UP");
     this.score = new RetroText(this, 104, 3, "0", [1, 0]);
-    this.lifeIcons = [0, 1, 2, 3, 4].map((i) => this.add.image(10 + i * 11, 20, TEX.atlas, "life_0").setScrollFactor(0));
+    const face = `life_${this.mission.character.id}_0`;
+    this.lifeIcons = [0, 1, 2, 3, 4].map((i) => this.add.image(10 + i * 11, 20, TEX.atlas, face).setScrollFactor(0));
     this.barBack = this.add.image(8, 14, TEX.atlas, "hud_bar_0").setOrigin(0).setScrollFactor(0).setVisible(false);
     this.barFill = this.add.image(8, 14, TEX.atlas, "hud_bar_1").setOrigin(0).setScrollFactor(0).setVisible(false);
     this.add.image(BOX_X, 2, TEX.atlas, "hud_box_0").setOrigin(0).setScrollFactor(0);

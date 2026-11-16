@@ -5,9 +5,11 @@ const HX = 24;
 const HY = 31;
 
 const HAIR = ["#7a5a46", "#553b30", "#3b2826", "#251a1e"];
+const AUBURN = ["#e08a5a", "#b65a3a", "#83392e", "#55242a"];
 
 export const PAL = {
   pip: { kind: "pip", skin: R.skin, coat: R.teal, pants: R.slate, boot: R.leather, glove: R.leather, belt: R.leather },
+  juno: { kind: "juno", skin: R.skin, coat: R.olive, pants: R.leather, boot: R.gunmetal, glove: R.leather, belt: R.leather },
   grunt: { kind: "grunt", skin: R.skin, coat: R.rust, pants: R.leather, boot: R.gunmetal, glove: R.gunmetal, belt: R.olive },
   lobber: { kind: "lobber", skin: R.skin, coat: R.rust, pants: R.olive, boot: R.gunmetal, glove: R.leather, belt: R.leather },
   rusher: { kind: "rusher", skin: R.skin, coat: R.rust, pants: R.slate, boot: R.gunmetal, glove: R.gunmetal, belt: R.leather },
@@ -85,6 +87,14 @@ function torso(p, pal, dy, flutter = 0) {
     p.box(HX - 2, y + 7, 4, 3, pal.coat, -0.2);
     return;
   }
+  if (k === "juno") {
+    p.box(HX - 6, y, 13, 13, pal.coat);
+    p.rect(HX + 2, y + 2, 1, 11, pal.coat[3]);
+    p.line(HX + 5, y + 1, HX - 5, y + 11, R.leather[1], 2);
+    for (let i = 0; i < 3; i++) p.blob(HX + 3 - i * 3, y + 3 + i * 3, 1.6, 1.6, R.red);
+    p.box(HX - 6, y - 1, 13, 2, pal.coat, 0.2);
+    return;
+  }
   p.box(HX - 6, y, 13, 13, pal.coat);
   p.rect(HX + 2, y + 2, 1, 11, pal.coat[3]);
   p.box(HX - 5, y + 7, 4, 3, pal.coat, -0.2);
@@ -111,6 +121,14 @@ function head(p, pal, dy, mood = "calm") {
     p.blob(cx + 2, cy - 4, 2, 1.6, R.glass);
     p.px(cx - 3, cy - 5, C.white).px(cx + 1, cy - 5, C.white);
     p.rect(cx - 6, cy - 3, 12, 1, R.brass[2]);
+  } else if (k === "juno") {
+    p.limb(cx - 4, cy - 3, cx - 10, cy + 6 + (mood === "shout" ? 1 : 0), 4, AUBURN, -0.1);
+    p.blob(cx - 2, cy - 1, 5, 5.5, AUBURN);
+    p.blob(cx, cy, 5.5, 5.5, pal.skin);
+    p.blob(cx - 1, cy - 4, 5.5, 3, AUBURN, 0.1);
+    p.rect(cx - 6, cy - 3, 12, 2, R.red[1]);
+    p.rect(cx - 6, cy - 3, 12, 1, R.red[0]);
+    p.rect(cx - 8, cy - 2, 2, 1, R.red[2]);
   } else if (k === "grunt") {
     p.blob(cx, cy + 1, 5.5, 5, pal.skin);
     p.blob(cx, cy - 1, 7, 5.5, R.helmet, 0.1);
@@ -143,11 +161,11 @@ function head(p, pal, dy, mood = "calm") {
     p.blob(cx + 2, cy + 5, 4, 2, R.beard);
     p.blob(cx - 2, cy + 5, 2.5, 2, R.beard, -0.2);
   }
-  if (k === "pip") {
+  if (k === "pip" || k === "juno") {
     const ey = cy;
     p.rect(cx + 2, ey, 2, 2, C.white);
     p.rect(cx + 3, ey, 1, 2, C.ink);
-    p.line(cx + 2, ey - 2, cx + 4, ey - 2, HAIR[3]);
+    p.line(cx + 2, ey - 2, cx + 4, ey - 2, k === "juno" ? AUBURN[3] : HAIR[3]);
     p.px(cx + 6, ey + 1, pal.skin[2]);
     p.rect(cx + 2, ey + 4, 3, 1, mood === "shout" ? C.ink : pal.skin[3]);
   }
@@ -201,9 +219,8 @@ function heavy(p, x, y, dir) {
   return { x, y: y + 18 };
 }
 
-export function pipTorso(aim, weapon, recoil) {
+export function pipTorso(aim, weapon, recoil, pal = PAL.pip) {
   const p = new Pix(S, S);
-  const pal = PAL.pip;
   const r = recoil ? -2 : 0;
   const heavyGun = weapon === "heavy";
   let muzzle;
@@ -228,9 +245,8 @@ export function pipTorso(aim, weapon, recoil) {
   return { pix: p, anchor: { muzzle } };
 }
 
-export function pipKnife(frame) {
+export function pipKnife(frame, pal = PAL.pip) {
   const p = new Pix(S, S);
-  const pal = PAL.pip;
   torso(p, pal, 0, frame);
   head(p, pal, 0, frame === 1 ? "shout" : "calm");
   if (frame === 0) {
@@ -249,9 +265,8 @@ export function pipKnife(frame) {
   return { pix: p };
 }
 
-export function pipThrow(frame) {
+export function pipThrow(frame, pal = PAL.pip) {
   const p = new Pix(S, S);
-  const pal = PAL.pip;
   torso(p, pal, 0);
   head(p, pal, 0);
   if (frame === 0) {
@@ -266,9 +281,9 @@ export function pipThrow(frame) {
   return { pix: p };
 }
 
-export function pipLegs(pose) {
+export function pipLegs(pose, pal = PAL.pip) {
   const p = new Pix(S, S);
-  drawLegs(p, PAL.pip, pose);
+  drawLegs(p, pal, pose);
   p.selout();
   return { pix: p, anchor: { drop: pose.drop } };
 }

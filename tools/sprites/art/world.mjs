@@ -155,7 +155,8 @@ tiles.rail = [(() => {
 })()];
 
 export const hud = {
-  life: [(() => { const p = new Pix(10, 10); p.blob(5, 6, 4, 4, R.skin); p.box(1, 1, 8, 3, R.leather); p.blob(4, 3, 1.2, 1, R.glass); p.blob(7, 3, 1.2, 1, R.glass); p.selout(); return { pix: p }; })()],
+  life_pip: [(() => { const p = new Pix(10, 10); p.blob(5, 6, 4, 4, R.skin); p.box(1, 1, 8, 3, R.leather); p.blob(4, 3, 1.2, 1, R.glass); p.blob(7, 3, 1.2, 1, R.glass); p.selout(); return { pix: p }; })()],
+  life_juno: [(() => { const p = new Pix(10, 10); p.blob(3, 6, 3, 4, ["#e08a5a", "#b65a3a", "#83392e", "#55242a"]); p.blob(5, 6, 4, 4, R.skin); p.box(1, 2, 8, 2, R.red); p.selout(); return { pix: p }; })()],
   bombicon: [(() => { const p = new Pix(9, 10); p.blob(4, 6, 3.5, 3.5, R.olive); p.rect(4, 1, 1, 2, R.steel[1]); p.px(5, 0, R.brass[0]); p.selout(); return { pix: p }; })()],
   tinkericon: [(() => { const p = new Pix(10, 10); p.blob(5, 6, 4, 3.5, R.skin); p.blob(5, 3, 4.5, 2.5, R.hardhat); p.blob(5, 8, 3, 1.5, R.beard); p.selout(); return { pix: p }; })()],
   go: [0, 1].map((f) => { const p = new Pix(34, 18); const ramp = f ? R.hardhat : R.red; p.box(0, 6, 20, 6, ramp); for (let i = 0; i < 9; i++) p.box(20 + i, i, 1, 18 - i * 2, ramp); p.selout(); return { pix: p }; }),

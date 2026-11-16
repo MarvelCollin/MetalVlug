@@ -47,6 +47,7 @@ export function installDebugBridge(scene: MissionScene): void {
         locked: scene.ctx.camera.locked,
         boss: scene.warden?.state ?? "none",
         level: scene.level.name,
+        character: scene.character.id,
       };
     },
   };

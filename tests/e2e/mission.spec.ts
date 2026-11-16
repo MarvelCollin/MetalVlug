@@ -7,6 +7,8 @@ test("title menu starts the mission", async ({ page }) => {
   await page.keyboard.press("Enter");
   await page.waitForTimeout(200);
   await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("Enter");
   await page.waitForFunction("window.__mv !== undefined", null, { timeout: 15_000 });
   await page.waitForFunction("window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
 });
@@ -166,6 +168,8 @@ test("music follows the game: title, mission, boss", async ({ page }) => {
   await page.waitForFunction("window.__game.registry.get('audio').track === 'title'", null, { timeout: 5_000 });
   await page.waitForTimeout(200);
   await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("Enter");
   await page.waitForFunction("window.__mv && window.__game.registry.get('audio').track === 'lowtide'", null, { timeout: 10_000 });
   await run(page, "mv.shield(300); mv.warp(3600);");
   await hold(page, "ArrowRight", 1500);
@@ -179,6 +183,8 @@ test("training camp from the menu teaches with tips and ends at the flag", async
   await page.waitForTimeout(150);
   await page.keyboard.press("ArrowDown");
   await page.waitForTimeout(150);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
   await page.keyboard.press("Enter");
   await page.waitForFunction("window.__mv && window.__mv.snapshot().level === 'camp' && window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
   await page.waitForFunction("window.__game.scene.getScene('hud').tip.view.text.includes('ARROWS')", null, { timeout: 5_000 });
@@ -234,4 +240,21 @@ test("pause menu resumes and quits to title", async ({ page }) => {
   await page.keyboard.press("Enter");
   await page.waitForTimeout(400);
   expect(await page.evaluate("window.__game.scene.isActive('title')")).toBe(true);
+});
+
+test("choosing Juno gives her 15 bombs and longer throws", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForTimeout(1000);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("ArrowRight");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
+  const s = await snap(page);
+  expect((s as unknown as { character: string }).character).toBe("juno");
+  expect(s.bombs).toBe(15);
+  expect(await page.evaluate("window.__mv.scene.player.legs.frame.name.startsWith('juno_')")).toBe(true);
 });

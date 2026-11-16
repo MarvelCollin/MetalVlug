@@ -27,6 +27,7 @@ import { EffectsSystem } from "../systems/EffectsSystem";
 import { PickupSystem, type PickupType } from "../systems/PickupSystem";
 import { ProjectileSystem } from "../systems/ProjectileSystem";
 import { installDebugBridge } from "../debug/DebugBridge";
+import { CHARACTERS, type CharacterDef, type CharacterId } from "../../domain/characters/Characters";
 import { TEX } from "../assets/keys";
 import { DEPTH } from "../../config/display";
 
@@ -34,6 +35,7 @@ type Flow = "intro" | "play" | "gameover" | "complete";
 
 export interface MissionData {
   level?: LevelId;
+  character?: CharacterId;
 }
 
 export class MissionScene extends Scene {
@@ -47,6 +49,7 @@ export class MissionScene extends Scene {
   spawner!: SpawnDirector;
   inputSys!: InputSystem;
   level: LevelData = LEVELS.lowtide;
+  character: CharacterDef = CHARACTERS.pip;
   private audio!: AudioService;
   private parallax!: Parallax;
   private hostages: Hostage[] = [];
@@ -62,6 +65,7 @@ export class MissionScene extends Scene {
 
   init(data: MissionData): void {
     this.level = LEVELS[data.level ?? "lowtide"];
+    this.character = CHARACTERS[data.character ?? ((this.game.registry.get("character") as CharacterId | undefined) ?? "pip")];
   }
 
   create(): void {
@@ -74,7 +78,7 @@ export class MissionScene extends Scene {
     const terrain = builder.terrain();
     const events = new EventBus<GameEvents>();
     const rng = new Rng(0x5eed);
-    const state = new MissionState({ lives: this.level.lives, clock: this.level.clock, easy: settings.values.easy });
+    const state = new MissionState({ character: this.character, lives: this.level.lives, clock: this.level.clock, easy: settings.values.easy });
     const camera = new CameraDirector(this.cameras.main, this.level.length, () => settings.values.shake);
     const combat = new CombatSystem();
     const fx = new EffectsSystem(this, terrain, rng, () => settings.values.flashes);
@@ -92,7 +96,7 @@ export class MissionScene extends Scene {
     this.events2 = events;
     this.state = state;
     this.audio = audioOf(this);
-    this.player = new Player(ctx, this.level.playerStart, this.level.groundY - 40);
+    this.player = new Player(ctx, this.level.playerStart, this.level.groundY - 40, this.character);
     (ctx as { player: GameContext["player"] }).player = this.player;
     combat.add(this.player);
     this.enemies = new EnemyFactory(ctx);

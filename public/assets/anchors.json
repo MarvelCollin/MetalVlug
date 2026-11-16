@@ -125,6 +125,132 @@
    "y": 47
   }
  },
+ "juno_legs_stand_0": {
+  "drop": 0
+ },
+ "juno_legs_run_0": {
+  "drop": 1
+ },
+ "juno_legs_run_1": {
+  "drop": 0
+ },
+ "juno_legs_run_2": {
+  "drop": 0
+ },
+ "juno_legs_run_3": {
+  "drop": 0
+ },
+ "juno_legs_run_4": {
+  "drop": 1
+ },
+ "juno_legs_run_5": {
+  "drop": 0
+ },
+ "juno_legs_run_6": {
+  "drop": 0
+ },
+ "juno_legs_run_7": {
+  "drop": 0
+ },
+ "juno_legs_jump_0": {
+  "drop": 0
+ },
+ "juno_legs_fall_0": {
+  "drop": 0
+ },
+ "juno_legs_crouch_0": {
+  "drop": 9
+ },
+ "juno_legs_crawl_0": {
+  "drop": 10
+ },
+ "juno_legs_crawl_1": {
+  "drop": 10
+ },
+ "juno_legs_crawl_2": {
+  "drop": 10
+ },
+ "juno_legs_crawl_3": {
+  "drop": 10
+ },
+ "juno_legs_crawl_4": {
+  "drop": 10
+ },
+ "juno_legs_crawl_5": {
+  "drop": 10
+ },
+ "juno_pistol_fwd_0": {
+  "muzzle": {
+   "x": 40,
+   "y": 23
+  }
+ },
+ "juno_pistol_fwd_1": {
+  "muzzle": {
+   "x": 38,
+   "y": 23
+  }
+ },
+ "juno_pistol_up_0": {
+  "muzzle": {
+   "x": 29,
+   "y": 5
+  }
+ },
+ "juno_pistol_up_1": {
+  "muzzle": {
+   "x": 29,
+   "y": 7
+  }
+ },
+ "juno_pistol_down_0": {
+  "muzzle": {
+   "x": 28,
+   "y": 40
+  }
+ },
+ "juno_pistol_down_1": {
+  "muzzle": {
+   "x": 28,
+   "y": 38
+  }
+ },
+ "juno_heavy_fwd_0": {
+  "muzzle": {
+   "x": 47,
+   "y": 24
+  }
+ },
+ "juno_heavy_fwd_1": {
+  "muzzle": {
+   "x": 45,
+   "y": 24
+  }
+ },
+ "juno_heavy_up_0": {
+  "muzzle": {
+   "x": 29,
+   "y": -4
+  }
+ },
+ "juno_heavy_up_1": {
+  "muzzle": {
+   "x": 29,
+   "y": -2
+  }
+ },
+ "juno_heavy_down_0": {
+  "muzzle": {
+   "x": 28,
+   "y": 49
+  }
+ },
+ "juno_heavy_down_1": {
+  "muzzle": {
+   "x": 28,
+   "y": 47
+  }
+ },
  "grunt_aim_0": {
   "muzzle": {
    "x": 44,
