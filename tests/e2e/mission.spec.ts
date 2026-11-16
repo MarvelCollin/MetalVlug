@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { KILL_ALL, hold, run, snap, startMission, tap } from "./helpers";
 
-test("title screen starts the mission with Enter", async ({ page }) => {
+test("title menu starts the mission", async ({ page }) => {
   await page.goto("/");
   await page.waitForTimeout(1200);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
   await page.keyboard.press("Enter");
   await page.waitForFunction("window.__mv !== undefined", null, { timeout: 15_000 });
   await page.waitForFunction("window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
@@ -160,11 +162,76 @@ test("leaving the Mule does not instantly board it again", async ({ page }) => {
 test("music follows the game: title, mission, boss", async ({ page }) => {
   await page.goto("/");
   await page.waitForTimeout(800);
-  await page.keyboard.press("KeyZ");
-  await page.waitForFunction("window.__game.registry.get('audio').track === 'title'", null, { timeout: 5_000 }).catch(() => undefined);
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("window.__game.registry.get('audio').track === 'title'", null, { timeout: 5_000 });
+  await page.waitForTimeout(200);
   await page.keyboard.press("Enter");
   await page.waitForFunction("window.__mv && window.__game.registry.get('audio').track === 'lowtide'", null, { timeout: 10_000 });
   await run(page, "mv.shield(300); mv.warp(3600);");
   await hold(page, "ArrowRight", 1500);
   await page.waitForFunction("window.__game.registry.get('audio').track === 'boss'", null, { timeout: 10_000 });
+});
+
+test("training camp from the menu teaches with tips and ends at the flag", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForTimeout(1000);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().level === 'camp' && window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
+  await page.waitForFunction("window.__game.scene.getScene('hud').tip.view.text.includes('ARROWS')", null, { timeout: 5_000 });
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(1200);
+  await page.keyboard.up("ArrowRight");
+  for (let i = 0; i < 8; i++) {
+    await tap(page, "KeyJ", 40);
+    await page.waitForTimeout(150);
+  }
+  expect((await snap(page)).score).toBeGreaterThanOrEqual(100);
+  expect(await page.evaluate("window.__game.scene.getScene('hud').timer.view.text")).toBe("--");
+  await run(page, "mv.shield(600); mv.warp(2540); sc.enemies.list.forEach((e) => e.active && e.fsm.change('gone'));");
+  await hold(page, "ArrowRight", 900);
+  await page.waitForFunction("window.__mv.snapshot().phase === 'complete'", null, { timeout: 10_000 });
+});
+
+test("options change and persist the music volume", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate("localStorage.clear()");
+  await page.reload();
+  await page.waitForTimeout(1000);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(80);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(80);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("ArrowLeft");
+  await page.waitForTimeout(100);
+  await page.keyboard.press("ArrowLeft");
+  await page.waitForTimeout(100);
+  const saved = await page.evaluate("JSON.parse(localStorage.getItem('metalvlug.settings.v1')).music");
+  expect(saved).toBeCloseTo(0.5, 5);
+});
+
+test("pause menu resumes and quits to title", async ({ page }) => {
+  await startMission(page);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(200);
+  expect(await page.evaluate("window.__game.scene.isPaused('mission')")).toBe(true);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  expect(await page.evaluate("window.__game.scene.isPaused('mission')")).toBe(false);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(80);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(80);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(400);
+  expect(await page.evaluate("window.__game.scene.isActive('title')")).toBe(true);
 });

@@ -23,6 +23,7 @@ export class EffectsSystem {
     scene: Scene,
     private readonly terrain: Terrain,
     private readonly rng: Rng,
+    private readonly flashesOn: () => boolean = () => true,
   ) {
     this.fxMeta = scene.cache.json.get(DATA.fxMeta) as FxMetaTable;
     this.shots = new ObjectPool(
@@ -107,6 +108,7 @@ export class EffectsSystem {
   }
 
   flash(target: GameObjects.Sprite, seconds = 0.06): void {
+    if (!this.flashesOn()) return;
     target.setTint(0xffffff).setTintMode(TintModes.FILL);
     this.flashing.set(target, seconds);
   }

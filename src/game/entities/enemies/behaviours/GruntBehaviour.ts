@@ -31,7 +31,7 @@ export class GruntBehaviour implements EnemyBehaviour {
       e.ctx.events.emit("sound", "enemyShot");
     }
     if (t > G.aimTime + 0.35) {
-      e.cooldown.trigger(e.ctx.rng.range(G.fireGap[0], G.fireGap[1]));
+      e.cooldown.trigger(e.ctx.rng.range(G.fireGap[0], G.fireGap[1]) * (e.ctx.state.easy ? 1.5 : 1));
       return "engage";
     }
   }

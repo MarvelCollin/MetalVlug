@@ -101,6 +101,10 @@ export class Enemy implements Target {
     return this.sprite.y;
   }
 
+  get isDummy(): boolean {
+    return this.def.type === "dummy";
+  }
+
   get alive(): boolean {
     return this.active && !this.fsm.is("dying", "gone");
   }
@@ -137,7 +141,8 @@ export class Enemy implements Target {
     this.hp -= hit.amount;
     this.ctx.fx.flash(this.sprite);
     if (this.hp > 0) {
-      this.ctx.events.emit("sound", "hit");
+      this.ctx.events.emit("sound", this.def.type === "dummy" ? "clank" : "hit");
+      if (this.def.type === "dummy") this.sprite.play("dummy_hit");
       if (this.fsm.is("idle", "alert")) this.fsm.change("engage");
       return ABSORBED;
     }
@@ -150,7 +155,10 @@ export class Enemy implements Target {
     this.fsm.change("dying");
     this.ctx.events.emit("enemyKilled", { x: this.x, y: this.y, knife: hit.kind === "knife" });
     this.ctx.events.emit("sound", "enemyDie");
-    if (hit.kind === "blast") {
+    if (this.def.type === "dummy") {
+      this.sprite.setFrame("dummy_broken_0");
+      this.ctx.fx.debris(this.x, this.y - 24, 6, ["debris_1"]);
+    } else if (hit.kind === "blast") {
       const away = Math.sign(this.x - hit.x) || 1;
       this.spinAngle = 0;
       this.sprite.setFrame(`${this.def.type}_tumble_0`);

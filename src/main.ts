@@ -5,6 +5,7 @@ import { BootScene } from "./game/scenes/BootScene";
 import { TitleScene } from "./game/scenes/TitleScene";
 import { MissionScene } from "./game/scenes/MissionScene";
 import { HudScene } from "./game/scenes/HudScene";
+import { PauseScene } from "./game/scenes/PauseScene";
 
 export const game = new Game({
   type: AUTO,
@@ -20,7 +21,7 @@ export const game = new Game({
     default: "arcade",
     arcade: { gravity: { x: 0, y: PHYSICS.gravity }, fixedStep: true, fps: FIXED_FPS, debug: new URLSearchParams(location.search).has("debug") },
   },
-  scene: [BootScene, TitleScene, MissionScene, HudScene],
+  scene: [BootScene, TitleScene, MissionScene, HudScene, PauseScene],
 });
 
 if (import.meta.env.DEV) (window as unknown as { __game: Game }).__game = game;

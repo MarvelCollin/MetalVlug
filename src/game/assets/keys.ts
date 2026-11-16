@@ -3,10 +3,11 @@ export const TEX = {
   fx: "fx",
   font: "font",
   fontBig: "font_big",
-  sky: "bg_sky",
-  far: "bg_far",
-  mid: "bg_mid",
 } as const;
+
+export type Theme = "harbour" | "camp";
+export const THEMES: readonly Theme[] = ["harbour", "camp"];
+export const bgKey = (kind: "sky" | "far" | "mid", theme: Theme): string => `bg_${kind}_${theme}`;
 
 export const DATA = {
   anchors: "anchors",

@@ -12,7 +12,7 @@ const KEYMAP: ReadonlyArray<[number, number]> = [
   [K.K, Action.Jump], [K.X, Action.Jump], [K.SPACE, Action.Jump],
   [K.L, Action.Bomb], [K.C, Action.Bomb],
   [K.E, Action.Exit], [K.V, Action.Exit],
-  [K.ENTER, Action.Start], [K.ESC, Action.Start],
+  [K.ENTER, Action.Start], [K.ESC, Action.Pause], [K.P, Action.Pause],
 ];
 
 export class InputSystem {
@@ -48,7 +48,7 @@ export class InputSystem {
       if (pad.A) mask |= Action.Jump;
       if (pad.B) mask |= Action.Bomb;
       if (pad.Y) mask |= Action.Exit;
-      if (pad.buttons[9]?.pressed) mask |= Action.Start;
+      if (pad.buttons[9]?.pressed) mask |= Action.Start | Action.Pause;
     }
     this.frame.push(mask);
     return this.frame;

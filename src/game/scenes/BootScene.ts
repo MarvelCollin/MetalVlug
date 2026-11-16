@@ -1,5 +1,5 @@
 import { GameObjects, Scene } from "phaser";
-import { DATA, FONT, FONT_BIG, TEX } from "../assets/keys";
+import { DATA, FONT, FONT_BIG, TEX, THEMES, bgKey } from "../assets/keys";
 import { registerAnimations } from "../assets/Animations";
 import { AudioService } from "../audio/AudioService";
 import { Settings } from "../settings/Settings";
@@ -26,9 +26,7 @@ export class BootScene extends Scene {
     this.load.json(DATA.fontMeta, "font.json");
     this.load.image(TEX.font, "font.png");
     this.load.image(TEX.fontBig, "font_big.png");
-    this.load.image(TEX.sky, "bg_sky.png");
-    this.load.image(TEX.far, "bg_far.png");
-    this.load.image(TEX.mid, "bg_mid.png");
+    for (const theme of THEMES) for (const kind of ["sky", "far", "mid"] as const) this.load.image(bgKey(kind, theme), `${bgKey(kind, theme)}.png`);
     const bar = this.add.rectangle(92, 106, 0, 4, 0xf8d25a).setOrigin(0, 0.5);
     this.load.on("progress", (v: number) => bar.setSize(200 * v, 4));
   }

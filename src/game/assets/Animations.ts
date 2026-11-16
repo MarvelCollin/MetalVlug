@@ -47,6 +47,8 @@ const SPECS: AnimSpec[] = [
   { key: "bomb", prefix: "bomb_", frames: 4, rate: 16, repeat: -1 },
   { key: "gem", prefix: "gem_", frames: 4, rate: 8, repeat: -1 },
   { key: "go", prefix: "go_", frames: 2, rate: 4, repeat: -1 },
+  { key: "dummy_hit", prefix: "dummy_hit_", frames: 2, rate: 14, repeat: 1 },
+  { key: "flag", prefix: "flag_", frames: 3, rate: 6, repeat: -1 },
 ];
 
 export function registerAnimations(scene: Scene): void {

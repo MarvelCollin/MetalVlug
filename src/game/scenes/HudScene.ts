@@ -14,6 +14,9 @@ export class HudScene extends Scene {
   private banner!: RetroText;
   private sub!: RetroText;
   private center!: RetroText;
+  private tip!: RetroText;
+  private tipBar!: GameObjects.Rectangle;
+  private tipTime = 0;
   private lifeIcons: GameObjects.Image[] = [];
   private armour: GameObjects.Image[] = [];
   private go!: GameObjects.Sprite;
@@ -41,12 +44,21 @@ export class HudScene extends Scene {
     this.banner = new RetroText(this, VIEW_W / 2, 84, "", [0.5, 0.5], true);
     this.sub = new RetroText(this, VIEW_W / 2, 106, "", [0.5, 0.5]);
     this.center = new RetroText(this, VIEW_W / 2, VIEW_H / 2 + 34, "", [0.5, 0.5]);
+    this.tipBar = this.add.rectangle(0, VIEW_H - 18, VIEW_W, 14, 0x1b1626, 0.65).setOrigin(0).setScrollFactor(0).setVisible(false);
+    this.tip = new RetroText(this, VIEW_W / 2, VIEW_H - 11, "", [0.5, 0.5]);
+    this.tip.view.setTint(0xffe08a);
     this.go = this.add.sprite(VIEW_W - 46, 70, TEX.atlas, "go_0").setScrollFactor(0).setVisible(false);
     const ev = this.mission.events2;
     ev.on("banner", (b) => {
       this.banner.set(b.text);
       this.sub.set(b.sub ?? "");
       this.bannerTime = b.seconds ?? 2;
+    });
+    ev.on("tip", (t) => {
+      this.tip.set(t.text);
+      this.tipTime = t.seconds;
+      this.tipBar.setVisible(true);
+      this.tip.view.setVisible(true);
     });
     ev.on("weapon", (w) => {
       this.sub.set(w.label);
@@ -69,7 +81,7 @@ export class HudScene extends Scene {
     this.arms.set(Number.isFinite(ammo) ? String(ammo) : "*");
     this.bombs.set(String(s.piloting ? s.muleShells : s.loadout.bombs));
     const units = s.clock.display;
-    this.timer.set(String(units));
+    this.timer.set(s.clockEnabled ? String(units) : "--");
     this.timer.view.setTint(units <= 10 ? 0xff6655 : 0xffffff);
     this.tinkers.set(`X${s.score.tinkers}`);
     this.armour.forEach((img, i) => {
@@ -81,6 +93,13 @@ export class HudScene extends Scene {
       if (this.bannerTime <= 0) {
         this.banner.set("");
         this.sub.set("");
+      }
+    }
+    if (this.tipTime > 0) {
+      this.tipTime -= dt;
+      if (this.tipTime <= 0) {
+        this.tipBar.setVisible(false);
+        this.tip.view.setVisible(false);
       }
     }
     if (this.goTime > 0) {

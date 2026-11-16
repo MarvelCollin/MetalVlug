@@ -5,7 +5,13 @@ const G = GROUND_Y;
 
 export const LOWTIDE: LevelData = {
   name: "lowtide",
+  label: "MISSION 1",
   title: "LOWTIDE DOCKS",
+  theme: "harbour",
+  music: "lowtide",
+  clock: true,
+  lives: 3,
+  tips: [],
   length: 3840,
   groundY: G,
   playerStart: 60,

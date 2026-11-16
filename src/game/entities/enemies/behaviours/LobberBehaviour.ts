@@ -31,7 +31,7 @@ export class LobberBehaviour implements EnemyBehaviour {
     }
     if (t > L.windup + 0.15) e.sprite.setFrame("lobber_throw_2");
     if (t > L.windup + 0.45) {
-      e.cooldown.trigger(e.ctx.rng.range(L.throwGap[0], L.throwGap[1]));
+      e.cooldown.trigger(e.ctx.rng.range(L.throwGap[0], L.throwGap[1]) * (e.ctx.state.easy ? 1.5 : 1));
       return "engage";
     }
   }

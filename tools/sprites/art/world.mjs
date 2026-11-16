@@ -159,6 +159,7 @@ export const hud = {
   bombicon: [(() => { const p = new Pix(9, 10); p.blob(4, 6, 3.5, 3.5, R.olive); p.rect(4, 1, 1, 2, R.steel[1]); p.px(5, 0, R.brass[0]); p.selout(); return { pix: p }; })()],
   tinkericon: [(() => { const p = new Pix(10, 10); p.blob(5, 6, 4, 3.5, R.skin); p.blob(5, 3, 4.5, 2.5, R.hardhat); p.blob(5, 8, 3, 1.5, R.beard); p.selout(); return { pix: p }; })()],
   go: [0, 1].map((f) => { const p = new Pix(34, 18); const ramp = f ? R.hardhat : R.red; p.box(0, 6, 20, 6, ramp); for (let i = 0; i < 9; i++) p.box(20 + i, i, 1, 18 - i * 2, ramp); p.selout(); return { pix: p }; }),
+  hud_cursor: [(() => { const p = new Pix(7, 9); for (let i = 0; i < 4; i++) p.box(i, i, 1, 9 - i * 2, R.hardhat); p.selout(); return { pix: p }; })()],
   armour: [0, 1].map((f) => { const p = new Pix(8, 6); p.box(0, 0, 8, 6, f ? R.olive : R.red); p.selout(); return { pix: p }; }),
 };
 

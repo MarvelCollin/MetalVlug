@@ -3,7 +3,6 @@ import { EventBus } from "../../core/events/EventBus";
 import { StateMachine } from "../../core/fsm/StateMachine";
 import { Rng } from "../../core/random/Rng";
 import { Action } from "../../domain/input/Actions";
-import { VIEW_W } from "../../config/display";
 import { MISSION, SCORE } from "../../config/tuning";
 import { DATA, type AnchorTable } from "../assets/keys";
 import { anchorLookup, type GameContext } from "../context/GameContext";
@@ -12,7 +11,7 @@ import { MissionState } from "../context/MissionState";
 import { InputSystem } from "../input/InputSystem";
 import { LevelBuilder, type Parallax } from "../level/LevelBuilder";
 import { SpawnDirector } from "../level/SpawnDirector";
-import { LOWTIDE } from "../level/missions/lowtide";
+import { LEVELS, type LevelId } from "../level/missions";
 import type { LevelData } from "../level/LevelData";
 import { Player } from "../entities/Player";
 import { EnemyFactory } from "../entities/enemies/EnemyFactory";
@@ -21,14 +20,21 @@ import { Prop } from "../entities/props/Prop";
 import { Mule } from "../entities/vehicles/Mule";
 import { Warden } from "../entities/bosses/Warden";
 import { audioOf, type AudioService } from "../audio/AudioService";
+import { settingsOf } from "../settings/Settings";
 import { CameraDirector } from "../systems/CameraDirector";
 import { CombatSystem } from "../systems/CombatSystem";
 import { EffectsSystem } from "../systems/EffectsSystem";
 import { PickupSystem, type PickupType } from "../systems/PickupSystem";
 import { ProjectileSystem } from "../systems/ProjectileSystem";
 import { installDebugBridge } from "../debug/DebugBridge";
+import { TEX } from "../assets/keys";
+import { DEPTH } from "../../config/display";
 
 type Flow = "intro" | "play" | "gameover" | "complete";
+
+export interface MissionData {
+  level?: LevelId;
+}
 
 export class MissionScene extends Scene {
   ctx!: GameContext;
@@ -36,44 +42,50 @@ export class MissionScene extends Scene {
   state!: MissionState;
   player!: Player;
   enemies!: EnemyFactory;
-  mule!: Mule;
-  warden!: Warden;
+  mule: Mule | null = null;
+  warden: Warden | null = null;
   spawner!: SpawnDirector;
   inputSys!: InputSystem;
+  level: LevelData = LEVELS.lowtide;
   private audio!: AudioService;
   private parallax!: Parallax;
   private hostages: Hostage[] = [];
   private flow!: StateMachine<MissionScene, Flow>;
-  private level: LevelData = LOWTIDE;
   private readonly box = new Geom.Rectangle();
   private respawnIn = -1;
   private continueTimer = 0;
+  private nextTip = 0;
 
   constructor() {
     super("mission");
   }
 
+  init(data: MissionData): void {
+    this.level = LEVELS[data.level ?? "lowtide"];
+  }
+
   create(): void {
     this.hostages = [];
     this.respawnIn = -1;
+    this.nextTip = 0;
+    const settings = settingsOf(this.game.registry);
     const builder = new LevelBuilder(this, this.level);
     this.parallax = builder.backdrop();
     const terrain = builder.terrain();
     const events = new EventBus<GameEvents>();
     const rng = new Rng(0x5eed);
-    const state = new MissionState();
-    const camera = new CameraDirector(this.cameras.main, this.level.length);
+    const state = new MissionState({ lives: this.level.lives, clock: this.level.clock, easy: settings.values.easy });
+    const camera = new CameraDirector(this.cameras.main, this.level.length, () => settings.values.shake);
     const combat = new CombatSystem();
-    const fx = new EffectsSystem(this, terrain, rng);
+    const fx = new EffectsSystem(this, terrain, rng, () => settings.values.flashes);
     const projectiles = new ProjectileSystem(this, terrain, combat, fx, camera, events);
     const pickups = new PickupSystem(this, terrain);
     this.inputSys = new InputSystem(this);
     const anchors = this.cache.json.get(DATA.anchors) as AnchorTable;
-    const lookup = anchorLookup(anchors);
     const ctx = {
       scene: this, events, input: this.inputSys.frame, rng, state, terrain, camera, combat, projectiles, fx, pickups,
       player: { x: 0, y: 0, alive: false, centerY: 0 },
-      anchor: lookup,
+      anchor: anchorLookup(anchors),
       anchorValue: (frame: string, name: string) => anchors[frame]?.[name],
     } as GameContext & { player: GameContext["player"] };
     this.ctx = ctx;
@@ -86,8 +98,9 @@ export class MissionScene extends Scene {
     this.enemies = new EnemyFactory(ctx);
     for (const p of this.level.props) new Prop(ctx, p.type, p.x, p.y ?? this.level.groundY, p.drop);
     for (const h of this.level.hostages) this.hostages.push(new Hostage(ctx, h.x, h.y ?? this.level.groundY, h.drop));
-    this.mule = new Mule(ctx, this.player, this.level.mule.x, this.level.groundY - 4);
-    this.warden = new Warden(ctx, this.enemies, this.level.boss.stopX, this.level.groundY);
+    this.mule = this.level.mule ? new Mule(ctx, this.player, this.level.mule.x, this.level.groundY - 4) : null;
+    this.warden = this.level.boss ? new Warden(ctx, this.enemies, this.level.boss.stopX, this.level.groundY) : null;
+    if (this.level.goalX) this.add.sprite(this.level.goalX, this.level.groundY, TEX.atlas, "flag_0").setOrigin(0.5, 1).setDepth(DEPTH.props).play("flag");
     this.spawner = new SpawnDirector(ctx, this.level, this.enemies);
     this.wireEvents();
     this.flow = new StateMachine<MissionScene, Flow>(this, {
@@ -95,9 +108,9 @@ export class MissionScene extends Scene {
         enter: (s) => { s.state.phase = "intro"; },
         update: (s, dt, t) => {
           if (t - dt <= 0.05 && t > 0.05) {
-            s.events2.emit("banner", { text: "MISSION 1", sub: `${s.level.title}  START!`, seconds: 2.2 });
+            s.events2.emit("banner", { text: s.level.label, sub: `${s.level.title}  START!`, seconds: 2.2 });
             s.events2.emit("sound", "mission");
-            s.audio.music("lowtide");
+            s.audio.music(s.level.music);
           }
           s.simulate(dt);
           return t > 1.2 ? "play" : undefined;
@@ -120,7 +133,7 @@ export class MissionScene extends Scene {
         enter: (s) => {
           s.state.phase = "complete";
           s.state.clock.pause();
-          s.events2.emit("banner", { text: "MISSION COMPLETE!", seconds: 3 });
+          s.events2.emit("banner", { text: s.level.goalX ? "TRAINING COMPLETE!" : "MISSION COMPLETE!", seconds: 3 });
           s.audio.music("complete");
         },
         update: (s, dt, t) => {
@@ -161,27 +174,38 @@ export class MissionScene extends Scene {
 
   update(_time: number, deltaMs: number): void {
     const dt = Math.min(deltaMs / 1000, 1 / 20);
-    this.inputSys.poll();
+    const input = this.inputSys.poll();
+    if (input.pressed(Action.Pause) && (this.state.phase === "play" || this.state.phase === "intro")) {
+      this.inputSys.frame.clear();
+      this.scene.pause();
+      this.scene.launch("pause");
+      return;
+    }
     this.flow.update(dt);
     this.audio.flush();
+  }
+
+  private get piloting(): boolean {
+    return this.state.piloting && this.mule !== null;
   }
 
   private simulate(dt: number): void {
     const ctx = this.ctx;
     this.player.tick(dt);
-    this.mule.tick(dt);
+    this.mule?.tick(dt);
     this.enemies.tick(dt);
-    const pbox = this.state.piloting ? this.mule.bounds(this.box) : this.player.bounds(this.box);
+    const pbox = this.piloting ? this.mule!.bounds(this.box) : this.player.bounds(this.box);
     if (this.player.alive) for (const h of this.hostages) h.tick(dt, pbox);
     else for (const h of this.hostages) h.tick(dt, this.box.setTo(-999, -999, 0, 0));
-    this.warden.tick(dt);
+    this.warden?.tick(dt);
     ctx.projectiles.update(dt);
     ctx.fx.update(dt);
-    if (this.player.alive) ctx.pickups.collect(this.state.piloting ? this.mule.bounds(this.box) : this.player.bounds(this.box), (k, x, y) => this.applyPickup(k, x, y));
+    if (this.player.alive) ctx.pickups.collect(this.piloting ? this.mule!.bounds(this.box) : this.player.bounds(this.box), (k, x, y) => this.applyPickup(k, x, y));
     ctx.pickups.cull(ctx.camera.left);
-    if (this.warden.present && this.player.onFoot && this.player.x > this.warden.left - 8) this.player.legs.x = this.warden.left - 8;
-    if (this.warden.present && this.state.piloting && this.mule.x > this.warden.left - 20) this.mule.sprite.x = this.warden.left - 20;
-    const followX = this.state.piloting ? this.mule.x : this.player.x;
+    const w = this.warden;
+    if (w?.present && this.player.onFoot && this.player.x > w.left - 8) this.player.legs.x = w.left - 8;
+    if (w?.present && this.piloting && this.mule!.x > w.left - 20) this.mule!.sprite.x = w.left - 20;
+    const followX = this.piloting ? this.mule!.x : this.player.x;
     if (this.player.alive) ctx.camera.follow(followX, dt);
     this.parallax.far.tilePositionX = ctx.camera.left * 0.2;
     this.parallax.mid.tilePositionX = ctx.camera.left * 0.5;
@@ -191,17 +215,24 @@ export class MissionScene extends Scene {
     this.simulate(dt);
     this.spawner.update(dt);
     const cam = this.ctx.camera;
-    if (!this.warden.present && this.warden.state === "waiting" && cam.left >= this.level.boss.lockAt - 2) {
-      cam.lock(this.level.boss.lockAt);
+    const boss = this.level.boss;
+    if (boss && this.warden && this.warden.state === "waiting" && cam.left >= boss.lockAt - 2) {
+      cam.lock(boss.lockAt);
       this.warden.start();
       this.audio.music("boss");
       this.events2.emit("banner", { text: "WARNING!", sub: "IRON WARDEN APPROACHING", seconds: 2 });
     }
-    if (this.player.alive) {
+    const tips = this.level.tips;
+    if (this.nextTip < tips.length && this.player.x >= tips[this.nextTip]!.x) {
+      this.events2.emit("tip", { text: tips[this.nextTip]!.text, seconds: 4 });
+      this.nextTip++;
+    }
+    if (this.level.goalX && this.player.alive && this.player.x >= this.level.goalX) return "complete";
+    if (this.player.alive && this.state.clockEnabled) {
       const ev = this.state.clock.tick(dt);
       if (ev === "alarm") this.audio.request("alarm");
       if (ev === "timeout") {
-        if (this.state.piloting) this.mule.forceEject();
+        if (this.state.piloting) this.mule?.forceEject();
         this.player.die();
       }
     }
@@ -218,7 +249,7 @@ export class MissionScene extends Scene {
   private respawn(weapon?: "rivet"): void {
     this.state.loadout.resetForLife();
     if (weapon) this.state.loadout.pickWeapon(weapon);
-    this.state.clock.reset();
+    if (this.state.clockEnabled) this.state.clock.reset();
     this.player.respawn(this.ctx.camera.left + 70);
   }
 
@@ -239,7 +270,7 @@ export class MissionScene extends Scene {
       this.state.score.continueGame();
       this.state.continueCount = -1;
       this.respawn("rivet");
-      this.audio.music(this.warden.present ? "boss" : "lowtide");
+      this.audio.music(this.warden?.present ? "boss" : this.level.music);
       return "play";
     }
   }
@@ -266,7 +297,7 @@ export class MissionScene extends Scene {
         break;
       }
       case "fuel": {
-        const pts = this.mule.refuel();
+        const pts = this.mule ? this.mule.refuel() : SCORE.spareItem;
         if (pts) ev.emit("score", { points: pts, x, y });
         break;
       }
@@ -278,9 +309,5 @@ export class MissionScene extends Scene {
         break;
     }
     ev.emit("sound", "pickup");
-  }
-
-  get viewWidth(): number {
-    return VIEW_W;
   }
 }

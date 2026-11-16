@@ -5,6 +5,7 @@ import type { EnemyBehaviour } from "./behaviours/EnemyBehaviour";
 import { GruntBehaviour } from "./behaviours/GruntBehaviour";
 import { LobberBehaviour } from "./behaviours/LobberBehaviour";
 import { RusherBehaviour } from "./behaviours/RusherBehaviour";
+import { DummyBehaviour } from "./behaviours/DummyBehaviour";
 
 export class EnemyFactory {
   private readonly all: Enemy[] = [];
@@ -12,6 +13,7 @@ export class EnemyFactory {
     grunt: new GruntBehaviour(),
     lobber: new LobberBehaviour(),
     rusher: new RusherBehaviour(),
+    dummy: new DummyBehaviour(),
   };
 
   constructor(private readonly ctx: GameContext) {}

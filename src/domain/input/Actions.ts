@@ -8,6 +8,7 @@ export const Action = {
   Bomb: 64,
   Exit: 128,
   Start: 256,
+  Pause: 512,
 } as const;
 
 export type ActionBit = (typeof Action)[keyof typeof Action];

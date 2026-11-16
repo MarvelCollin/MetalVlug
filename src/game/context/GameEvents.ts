@@ -11,6 +11,7 @@ export interface GameEvents {
   shake: { intensity: number; duration: number };
   explode: { x: number; y: number; radius: number; damage: number; from: Faction; big: boolean };
   banner: { text: string; sub?: string; seconds?: number };
+  tip: { text: string; seconds: number };
   weapon: { label: string };
   rescued: { x: number; y: number };
   enemyKilled: { x: number; y: number; knife: boolean };

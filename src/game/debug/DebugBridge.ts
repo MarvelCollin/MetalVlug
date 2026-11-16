@@ -45,7 +45,8 @@ export function installDebugBridge(scene: MissionScene): void {
         enemiesAlive: scene.enemies.aliveCount(),
         camLeft: Math.round(scene.ctx.camera.left),
         locked: scene.ctx.camera.locked,
-        boss: scene.warden.state,
+        boss: scene.warden?.state ?? "none",
+        level: scene.level.name,
       };
     },
   };

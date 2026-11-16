@@ -10,6 +10,7 @@ import { GUN_ANGLES, muleBody, muleGun, wardenCore, wardenHull, wardenTurret, wa
 import { fx } from "./art/fx.mjs";
 import { background, hud, items, tiles } from "./art/world.mjs";
 import { buildFont } from "./art/font.mjs";
+import { campBackground, campTiles, dummyFrames, flagFrames } from "./art/camp.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const out = join(root, "public", "assets");
@@ -60,6 +61,9 @@ for (const [name, list] of Object.entries(fx)) add(name, list);
 for (const [name, list] of Object.entries(items)) add(name, list);
 for (const [name, list] of Object.entries(tiles)) add(name, list);
 for (const [name, list] of Object.entries(hud)) add(name, list);
+for (const [name, list] of Object.entries(campTiles)) add(name, list);
+for (const [name, list] of Object.entries(dummyFrames)) add(name, list);
+add("flag", flagFrames);
 
 const PAD = 2;
 const WIDTH = 1024;
@@ -101,8 +105,10 @@ writeFileSync(join(out, "atlas.json"), JSON.stringify(json));
 writeFileSync(join(out, "anchors.json"), JSON.stringify(anchors, null, 1));
 
 for (const kind of ["sky", "far", "mid"]) {
-  const p = background(kind);
-  writeFileSync(join(out, `bg_${kind}.png`), encodePng(p.w, p.h, p.data));
+  for (const [theme, make] of [["harbour", background], ["camp", campBackground]]) {
+    const p = make(kind);
+    writeFileSync(join(out, `bg_${kind}_${theme}.png`), encodePng(p.w, p.h, p.data));
+  }
 }
 
 const font = buildFont();

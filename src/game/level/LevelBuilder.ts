@@ -1,10 +1,10 @@
 import type { GameObjects, Scene } from "phaser";
 import { DEPTH, VIEW_H, VIEW_W } from "../../config/display";
-import { TEX } from "../assets/keys";
+import { TEX, bgKey } from "../assets/keys";
 import type { BlockDef, LevelData, TileKey } from "./LevelData";
 import { Terrain } from "./Terrain";
 
-const TILE_H: Record<TileKey, number> = { dock: 16, fill: 16, brick: 16, plank: 7, roof: 9, rail: 16, crate: 24 };
+const TILE_H: Record<TileKey, number> = { dock: 16, fill: 16, brick: 16, plank: 7, roof: 9, rail: 16, crate: 24, grass: 16, dirt: 16, sandbag: 12 };
 
 export interface Parallax {
   far: GameObjects.TileSprite;
@@ -15,9 +15,10 @@ export class LevelBuilder {
   constructor(private readonly scene: Scene, private readonly data: LevelData) {}
 
   backdrop(): Parallax {
-    this.scene.add.image(0, 0, TEX.sky).setOrigin(0).setScrollFactor(0).setDepth(DEPTH.sky);
-    const far = this.scene.add.tileSprite(0, 0, VIEW_W, VIEW_H, TEX.far).setOrigin(0).setScrollFactor(0).setDepth(DEPTH.far);
-    const mid = this.scene.add.tileSprite(0, 0, VIEW_W, VIEW_H, TEX.mid).setOrigin(0).setScrollFactor(0).setDepth(DEPTH.mid);
+    const t = this.data.theme;
+    this.scene.add.image(0, 0, bgKey("sky", t)).setOrigin(0).setScrollFactor(0).setDepth(DEPTH.sky);
+    const far = this.scene.add.tileSprite(0, 0, VIEW_W, VIEW_H, bgKey("far", t)).setOrigin(0).setScrollFactor(0).setDepth(DEPTH.far);
+    const mid = this.scene.add.tileSprite(0, 0, VIEW_W, VIEW_H, bgKey("mid", t)).setOrigin(0).setScrollFactor(0).setDepth(DEPTH.mid);
     return { far, mid };
   }
 

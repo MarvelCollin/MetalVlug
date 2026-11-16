@@ -10,6 +10,7 @@ export class CameraDirector {
   constructor(
     private readonly cam: Cameras.Scene2D.Camera,
     private readonly levelEnd: number,
+    private readonly shakeOn: () => boolean = () => true,
     private readonly lead = VIEW_W * 0.42,
   ) {
     cam.setBounds(0, 0, levelEnd, cam.height);
@@ -63,6 +64,7 @@ export class CameraDirector {
   }
 
   shake(intensity: number, duration: number): void {
+    if (!this.shakeOn()) return;
     this.cam.shake(duration * 1000, intensity / 216, false);
   }
 }
