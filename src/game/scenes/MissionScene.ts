@@ -161,9 +161,15 @@ export class MissionScene extends Scene {
       ctx.camera.shake(e.big ? 4 : 2, e.big ? 0.25 : 0.12);
       this.audio.request(e.big ? "bigboom" : "boom");
     });
-    ev.on("score", (s) => this.state.score.add(s.points));
+    ev.on("score", (s) => {
+      this.state.score.add(s.points);
+      ctx.fx.popup(String(s.points), s.x, s.y);
+    });
     ev.on("enemyKilled", (k) => this.state.score.add(k.knife ? SCORE.knifeKill : SCORE.shotKill));
-    ev.on("rescued", () => this.state.score.rescue());
+    ev.on("rescued", (r) => {
+      this.state.score.rescue();
+      ctx.fx.popup("THANKS!", r.x, r.y - 30);
+    });
     ev.on("waveCleared", () => { this.state.clock.reset(); this.audio.request("go"); });
     ev.on("playerDied", () => {
       this.state.score.loseTinkers();

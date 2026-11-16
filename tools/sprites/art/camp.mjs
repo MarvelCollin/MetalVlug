@@ -1,4 +1,5 @@
 import { C, Pix, R, rng, tone } from "../pix.mjs";
+import { haze } from "./world.mjs";
 
 const GRASS = ["#b8e07a", "#7fb04f", "#567f3a", "#36552d"];
 const DIRT = ["#d9b583", "#a8805a", "#7a5840", "#4f3a2e"];
@@ -44,7 +45,7 @@ export function campBackground(kind) {
     }
     p.box(400, 98, 6, 78, ["#9fb6c4", "#8399a8", "#6a7e8d", "#526371"]);
     for (let k = 0; k < 4; k++) p.limb(403, 98, 403 + Math.cos(k * 1.57 + 0.4) * 22, 98 + Math.sin(k * 1.57 + 0.4) * 22, 2, ["#e6eef2", "#c6d3da", "#a3b4bd", "#7f929c"]);
-    return p;
+    return haze(p, "#e4f2f4", 0.3);
   }
   let x = 6;
   while (x < W) {

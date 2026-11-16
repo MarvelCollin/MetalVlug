@@ -2,7 +2,7 @@ import { Animations, GameObjects, TintModes, type Scene } from "phaser";
 import { ObjectPool } from "../../core/pool/ObjectPool";
 import type { Rng } from "../../core/random/Rng";
 import { DEPTH } from "../../config/display";
-import { DATA, TEX, type FxMetaTable } from "../assets/keys";
+import { DATA, FONT, TEX, type FxMetaTable } from "../assets/keys";
 import type { Terrain } from "../level/Terrain";
 
 class Particle extends GameObjects.Sprite {
@@ -18,9 +18,10 @@ export class EffectsSystem {
   private readonly bits: ObjectPool<Particle>;
   private readonly flashing = new Map<GameObjects.Sprite, number>();
   private readonly fxMeta: FxMetaTable;
+  private readonly popups: Array<{ text: GameObjects.BitmapText; life: number }> = [];
 
   constructor(
-    scene: Scene,
+    private readonly scene: Scene,
     private readonly terrain: Terrain,
     private readonly rng: Rng,
     private readonly flashesOn: () => boolean = () => true,
@@ -62,6 +63,18 @@ export class EffectsSystem {
       .setDepth(depth).setAlpha(1);
     s.play(key);
     s.setOrigin(flipX ? 1 - m.originX : m.originX, m.originY);
+  }
+
+  popup(text: string, x: number, y: number): void {
+    let slot = this.popups.find((p) => p.life <= 0);
+    if (!slot) {
+      if (this.popups.length >= 16) return;
+      slot = { text: this.scene.add.bitmapText(0, 0, FONT, "").setDepth(DEPTH.fx + 5).setTint(0xffe08a), life: 0 };
+      this.popups.push(slot);
+    }
+    slot.text.setText(text).setVisible(true).setAlpha(1);
+    slot.text.setPosition(Math.round(x - slot.text.width / 2), Math.round(y - 20));
+    slot.life = 0.9;
   }
 
   explosion(x: number, y: number, big: boolean): void {
@@ -114,6 +127,14 @@ export class EffectsSystem {
   }
 
   update(dt: number): void {
+    for (const p of this.popups) {
+      if (p.life <= 0) continue;
+      p.life -= dt;
+      if (p.life > 0.6) p.text.y -= 30 * dt;
+      p.text.y = Math.round(p.text.y * 2) / 2;
+      if (p.life < 0.25) p.text.setAlpha(Math.floor(p.life * 30) % 2 ? 1 : 0);
+      if (p.life <= 0) p.text.setVisible(false);
+    }
     for (const [s, t] of this.flashing) {
       const left = t - dt;
       if (left <= 0) {

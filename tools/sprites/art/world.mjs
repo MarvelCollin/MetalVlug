@@ -159,6 +159,21 @@ export const hud = {
   bombicon: [(() => { const p = new Pix(9, 10); p.blob(4, 6, 3.5, 3.5, R.olive); p.rect(4, 1, 1, 2, R.steel[1]); p.px(5, 0, R.brass[0]); p.selout(); return { pix: p }; })()],
   tinkericon: [(() => { const p = new Pix(10, 10); p.blob(5, 6, 4, 3.5, R.skin); p.blob(5, 3, 4.5, 2.5, R.hardhat); p.blob(5, 8, 3, 1.5, R.beard); p.selout(); return { pix: p }; })()],
   go: [0, 1].map((f) => { const p = new Pix(34, 18); const ramp = f ? R.hardhat : R.red; p.box(0, 6, 20, 6, ramp); for (let i = 0; i < 9; i++) p.box(20 + i, i, 1, 18 - i * 2, ramp); p.selout(); return { pix: p }; }),
+  hud_box: [(() => {
+    const p = new Pix(84, 24);
+    p.rect(0, 0, 84, 24, "#2a2236");
+    p.rect(1, 1, 82, 22, "#3a3048");
+    p.rect(2, 2, 80, 20, "#1f1a2b");
+    p.rect(2, 2, 80, 1, "#4c4060");
+    p.rect(41, 3, 1, 18, "#3a3048");
+    return { pix: p };
+  })()],
+  hud_bar: [0, 1].map((f) => {
+    const p = new Pix(46, 6);
+    p.rect(0, 0, 46, 6, "#1f1a2b");
+    if (f) { p.box(1, 1, 44, 4, R.teal); }
+    return { pix: p };
+  }),
   hud_cursor: [(() => { const p = new Pix(7, 9); for (let i = 0; i < 4; i++) p.box(i, i, 1, 9 - i * 2, R.hardhat); p.selout(); return { pix: p }; })()],
   armour: [0, 1].map((f) => { const p = new Pix(8, 6); p.box(0, 0, 8, 6, f ? R.olive : R.red); p.selout(); return { pix: p }; }),
 };
@@ -197,6 +212,28 @@ export function background(kind) {
     return p;
   }
   if (kind === "far") {
+    const out = farHarbour(p, W, r);
+    return haze(out, "#f2c4a0", 0.28);
+  }
+  return midHarbour(p, W, r);
+}
+
+function haze(p, color, amount) {
+  const n = parseInt(color.slice(1), 16);
+  const hr = (n >> 16) & 255, hg = (n >> 8) & 255, hb = n & 255;
+  for (let i = 0; i < p.data.length; i += 4) {
+    if (!p.data[i + 3]) continue;
+    p.data[i] = Math.round(p.data[i] * (1 - amount) + hr * amount);
+    p.data[i + 1] = Math.round(p.data[i + 1] * (1 - amount) + hg * amount);
+    p.data[i + 2] = Math.round(p.data[i + 2] * (1 - amount) + hb * amount);
+  }
+  return p;
+}
+
+export { haze };
+
+function farHarbour(p, W, r) {
+  {
     const hill = ["#b58fa0", "#a07d93", "#8c6c86", "#785c79"];
     for (let x = 0; x < W; x++) {
       const h = 22 + Math.round(Math.sin(x * 0.018) * 8 + Math.sin(x * 0.051 + 1) * 4);
@@ -221,6 +258,9 @@ export function background(kind) {
     p.box(340, 42, 12, 6, ["#fffbe0", "#ffeaa0", "#ffd166", "#f4a23b"]);
     return p;
   }
+}
+
+function midHarbour(p, W, r) {
   const wall = ["#a0707a", "#87606c", "#6e4f5e", "#563f4f"];
   const roof = ["#8fc0bf", "#6a9ea3", "#4f7c86", "#3a5b68"];
   let x = 0;
