@@ -289,5 +289,16 @@ function midHarbour(p, W, r) {
     for (let k = 3; k < 40; k += 5) p.rect(cx + k, 152, 1, 24, col[3]);
     if (r() > 0.5) { p.box(cx + 6, 126, 34, 24, colors[Math.floor(r() * colors.length)], -0.2); }
   }
+  const quay = ["#9a8c92", "#7c6e78", "#625662", "#4a404c"];
+  for (let y = 174; y < 216; y++) for (let x2 = 0; x2 < W; x2++) p.px(x2, y, tone(quay, y < 176 ? 0.95 : 0.6 - (y - 176) / 90, x2, y));
+  for (let y = 178; y < 216; y += 7) {
+    p.rect(0, y, W, 1, quay[3]);
+    for (let x2 = ((y / 7) % 2) * 9; x2 < W; x2 += 18) p.rect(x2, y, 1, 7, quay[3]);
+  }
+  for (let x2 = 12; x2 < W; x2 += 64) {
+    p.box(x2, 168, 5, 8, R.gunmetal);
+    p.rect(x2 - 1, 167, 7, 1, R.gunmetal[0]);
+  }
+  for (let x2 = 0; x2 < W; x2 += 3) p.px(x2, 174, quay[0]);
   return p;
 }

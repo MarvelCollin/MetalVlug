@@ -82,6 +82,19 @@ export function campBackground(kind) {
     p.box(fx + 2, 82, 22, 12, R.teal);
     p.box(fx + 8, 85, 8, 6, R.scarf);
   }
+  const field = ["#a9cf7c", "#86b05e", "#668f49", "#4a6e3a"];
+  for (let y = 174; y < 216; y++) for (let x2 = 0; x2 < W; x2++) p.px(x2, y, tone(field, y < 176 ? 0.9 : 0.62 - (y - 176) / 100, x2, y));
+  const r2 = rng(77);
+  for (let k = 0; k < 90; k++) {
+    const gx = Math.floor(r2() * W);
+    const gy = 175 + Math.floor(r2() * 30);
+    p.rect(gx, gy, 1, 2, field[0]);
+    p.px(gx + 1, gy + 1, field[3]);
+  }
+  for (let x2 = 0; x2 < W; x2 += 22) {
+    p.box(x2, 168, 2, 8, R.wood);
+    p.rect(x2, 170, 22, 1, R.wood[2]);
+  }
   return p;
 }
 
