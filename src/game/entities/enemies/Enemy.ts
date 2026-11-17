@@ -10,7 +10,7 @@ import type { Target } from "../../systems/CombatSystem";
 import { ENEMIES, type EnemyDef, type EnemyType, type IdlePose } from "./EnemyDefs";
 import type { EnemyBehaviour } from "./behaviours/EnemyBehaviour";
 
-export type EnemyState = "idle" | "alert" | "engage" | "attack" | "dying" | "gone";
+export type EnemyState = "para" | "idle" | "alert" | "engage" | "attack" | "dying" | "gone";
 
 export interface EnemySpawn {
   type: EnemyType;
@@ -20,6 +20,7 @@ export interface EnemySpawn {
   hold: boolean;
   group: number;
   facing: 1 | -1;
+  para?: boolean;
 }
 
 export class Enemy implements Target {
@@ -27,6 +28,7 @@ export class Enemy implements Target {
   readonly meleeable = true;
   readonly sprite: Physics.Arcade.Sprite;
   readonly mark: GameObjects.Image;
+  readonly chute: GameObjects.Image;
   readonly fsm: StateMachine<Enemy, EnemyState>;
   readonly cooldown = new Cooldown(1);
   def: EnemyDef = ENEMIES.grunt;
@@ -45,10 +47,32 @@ export class Enemy implements Target {
     this.sprite = scene.physics.add.sprite(0, 0, TEX.atlas, "grunt_run_0").setOrigin(0.5, 1).setDepth(DEPTH.enemies);
     (this.sprite.body as Physics.Arcade.Body).setSize(14, 30).setOffset(17, 18);
     this.mark = scene.add.image(0, 0, TEX.atlas, "excl_0").setDepth(DEPTH.fx).setVisible(false);
+    this.chute = scene.add.image(0, 0, TEX.atlas, "chute_1").setOrigin(0.5, 1).setDepth(DEPTH.enemies + 1).setVisible(false);
     scene.physics.add.collider(this.sprite, ctx.terrain.solids);
     scene.physics.add.collider(this.sprite, ctx.terrain.platforms);
     this.sprite.disableBody(true, true);
     this.fsm = new StateMachine<Enemy, EnemyState>(this, {
+      para: {
+        enter: (e) => {
+          e.body.setAllowGravity(false);
+          e.body.setVelocity(0, ENEMY.paraFall);
+          e.sprite.stop();
+          e.sprite.setFrame(e.def.type === "grunt" ? "grunt_alert_1" : `${e.def.type}_run_2`);
+          e.chute.setVisible(true);
+        },
+        update: (e, _dt, t) => {
+          const sway = Math.sin(t * 2.4);
+          e.body.setVelocityX(sway * 14);
+          e.chute.setFrame(`chute_${sway < -0.35 ? 0 : sway > 0.35 ? 2 : 1}`).setPosition(Math.round(e.x), Math.round(e.y - 30));
+          if (e.body.blocked.down || e.body.touching.down) return "engage";
+        },
+        exit: (e) => {
+          e.body.setAllowGravity(true);
+          e.body.setVelocityX(0);
+          e.chute.setVisible(false);
+          e.ctx.fx.play("chute_fold", e.chute.x, e.chute.y - 14, { originY: 0.5 });
+        },
+      },
       idle: {
         enter: (e) => { const a = e.def.idleAnims[e.idlePose]; if (a) e.sprite.play(a); },
         update: (e) => (Math.abs(e.ctx.player.x - e.sprite.x) < ENEMY.noticeRange && e.ctx.player.alive ? "alert" : undefined),
@@ -123,7 +147,7 @@ export class Enemy implements Target {
     this.body.checkCollision.none = false;
     this.body.setAllowGravity(true);
     this.sprite.setFrame(this.def.standFrame);
-    this.fsm.change(s.idle === "none" ? "engage" : "idle");
+    this.fsm.change(s.para ? "para" : s.idle === "none" ? "engage" : "idle");
   }
 
   isHittable(): boolean {
@@ -205,6 +229,7 @@ export class Enemy implements Target {
   private retire(): void {
     this.active = false;
     this.mark.setVisible(false);
+    this.chute.setVisible(false);
     this.sprite.stop();
     this.sprite.disableBody(true, true);
   }

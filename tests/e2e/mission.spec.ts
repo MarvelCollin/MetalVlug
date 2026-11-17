@@ -258,3 +258,37 @@ test("choosing Juno gives her 15 bombs and longer throws", async ({ page }) => {
   expect(s.bombs).toBe(15);
   expect(await page.evaluate("window.__mv.scene.player.legs.frame.name.startsWith('juno_')")).toBe(true);
 });
+
+test("placed enemies exist before they scroll into view", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60);");
+  const seen = await run<Array<{ x: number; right: number }>>(page, `
+    const out = [];
+    const known = new Set(sc.enemies.list.filter((e) => e.active));
+    const on = () => {
+      for (const e of sc.enemies.list) {
+        if (!e.active || known.has(e)) continue;
+        known.add(e);
+        out.push({ x: Math.round(e.x), right: Math.round(sc.ctx.camera.right) });
+      }
+    };
+    sc.events.on("postupdate", on);
+    window.__seen = () => { sc.events.off("postupdate", on); return out; };
+    return [];`);
+  void seen;
+  await hold(page, "ArrowRight", 6000);
+  const out = (await page.evaluate("window.__seen()")) as Array<{ x: number; right: number }>;
+  const placed = out.filter((o) => o.x < o.right);
+  expect(placed.filter((o) => o.x > o.right - 340 && o.x < o.right - 4)).toEqual([]);
+});
+
+test("paratroopers float down and land", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60); const e = sc.enemies.spawn({ type: 'grunt', x: sc.ctx.camera.left + 250, y: -8, idle: 'none', hold: false, group: -7, facing: -1, para: true }); window.__para = e;");
+  await page.waitForTimeout(500);
+  expect(await page.evaluate("window.__para.fsm.current")).toBe("para");
+  expect(await page.evaluate("window.__para.chute.visible")).toBe(true);
+  await page.waitForFunction("window.__para.fsm.current !== 'para'", null, { timeout: 8_000 });
+  expect(await page.evaluate("window.__para.chute.visible")).toBe(false);
+  expect(await page.evaluate("Math.round(window.__para.y)")).toBe(184);
+});

@@ -52,7 +52,7 @@ export const CAMP: LevelData = {
       { type: "grunt", side: "right", delay: 0.4 },
       { type: "grunt", side: "right", delay: 1.4 },
       { type: "rusher", side: "right", delay: 2.4 },
-      { type: "grunt", side: "left", delay: 3.2 },
+      { type: "grunt", entry: "para", delay: 3.2 },
     ] },
   ],
 };

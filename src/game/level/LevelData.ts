@@ -39,6 +39,7 @@ export interface SpawnDef {
   delay?: number;
   idle?: IdlePose;
   hold?: boolean;
+  entry?: "walk" | "para";
 }
 
 export interface TriggerDef {

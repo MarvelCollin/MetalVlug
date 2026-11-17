@@ -1,4 +1,4 @@
-import { C, Pix, R, rng } from "../pix.mjs";
+import { C, Pix, R, rng, tone } from "../pix.mjs";
 
 const one = (w, h, draw, outline = true) => {
   const p = new Pix(w, h);
@@ -119,3 +119,23 @@ fx.rocket = [0, 1].flatMap((f) =>
 );
 
 fx.blast_up = fx.blast.map((f) => ({ pix: f.pix.rotated(-Math.PI / 2, 27.5, 13.5) }));
+
+const CHUTE = ["#ffe6c4", "#e9b48a", "#c47a5a", "#8a4a3e"];
+function chute(sway, fold) {
+  const p = new Pix(32, 30);
+  const cx = 16 + sway;
+  const h = Math.max(2, 9 - fold * 3);
+  const w = 14 - fold * 2;
+  for (let y = 0; y < h; y++) {
+    const half = Math.round(w * Math.sqrt(1 - ((h - y) / h) ** 2) + 1);
+    for (let x = -half; x <= half; x++) {
+      const stripe = Math.floor((x + 16) / 5) % 2 ? R.rust : CHUTE;
+      p.px(cx + x, 2 + y + fold * 4, tone(stripe, 0.85 - y / (h * 1.6) - Math.abs(x) / 40, cx + x, y));
+    }
+  }
+  if (fold < 2) for (const sx of [-w + 1, -4, 4, w - 1]) p.line(cx + sx, 2 + h + fold * 4, 16, 28, "#3f3346");
+  p.selout();
+  return { pix: p };
+}
+fx.chute = [chute(-1, 0), chute(0, 0), chute(1, 0)];
+fx.chute_fold = [chute(0, 1), chute(0, 2), chute(0, 3)];

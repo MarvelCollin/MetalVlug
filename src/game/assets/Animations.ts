@@ -49,6 +49,7 @@ const SPECS: AnimSpec[] = [
   { key: "go", prefix: "go_", frames: 2, rate: 4, repeat: -1 },
   { key: "dummy_hit", prefix: "dummy_hit_", frames: 2, rate: 14, repeat: 1 },
   { key: "flag", prefix: "flag_", frames: 3, rate: 6, repeat: -1 },
+  { key: "chute_fold", prefix: "chute_fold_", frames: 3, rate: 10 },
 ];
 
 export function registerAnimations(scene: Scene): void {

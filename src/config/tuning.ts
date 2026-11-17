@@ -60,6 +60,7 @@ export const ENEMY = {
   alertTime: 0.45,
   despawnBehind: 96,
   hopSpeed: 290,
+  paraFall: 52,
   grunt: { hp: 1, speed: 60, keepMin: 80, keepMax: 150, aimTime: 0.5, fireGap: [1.6, 2.6], bulletSpeed: 110, maxAngle: 0.6 },
   lobber: { hp: 1, speed: 50, keepMin: 110, keepMax: 170, windup: 0.5, throwGap: [2.4, 3.2], flightTime: 0.9 },
   rusher: { hp: 2, speed: 110, reach: 20, windup: 0.45, active: 0.12, recover: 0.5 },

@@ -106,6 +106,7 @@ export class MissionScene extends Scene {
     this.warden = this.level.boss ? new Warden(ctx, this.enemies, this.level.boss.stopX, this.level.groundY) : null;
     if (this.level.goalX) this.add.sprite(this.level.goalX, this.level.groundY, TEX.atlas, "flag_0").setOrigin(0.5, 1).setDepth(DEPTH.props).play("flag");
     this.spawner = new SpawnDirector(ctx, this.level, this.enemies);
+    this.spawner.update(0);
     this.wireEvents();
     this.flow = new StateMachine<MissionScene, Flow>(this, {
       intro: {
