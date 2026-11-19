@@ -3,5 +3,14 @@ import { defineConfig } from "vite";
 export default defineConfig({
   base: "./",
   server: { port: 5173, strictPort: true },
-  build: { target: "es2022", assetsInlineLimit: 0, chunkSizeWarningLimit: 2000 },
+  build: {
+    target: "es2022",
+    assetsInlineLimit: 0,
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: (id: string) => (id.includes("node_modules/phaser") ? "phaser" : undefined),
+      },
+    },
+  },
 });
