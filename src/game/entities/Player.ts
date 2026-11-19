@@ -251,7 +251,7 @@ export class Player implements Target, PlayerLocator {
 
   private muzzle(): { x: number; y: number } {
     const a = this.ctx.anchor(this.torsoFrame(false), "muzzle");
-    const drop = this.crouching ? 9 : 0;
+    const drop = Number(this.ctx.anchorValue(this.legs.frame.name, "drop")) || 0;
     return { x: this.legs.x + (a.x - 24) * this.facing, y: this.legs.y - 48 + a.y + drop };
   }
 

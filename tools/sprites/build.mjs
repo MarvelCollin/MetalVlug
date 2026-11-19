@@ -2,13 +2,10 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { encodePng } from "./png.mjs";
-import {
-  PAL, POSE, cageFrames, crawlPose, deathFrames, gait, gruntFrames, lobberFrames,
-  pipKnife, pipLegs, pipThrow, pipTorso, rusherFrames, tinkerFrames,
-} from "./art/humans.mjs";
+import { gruntFrames, lobberFrames, playerFrames, rusherFrames, tinkerFrames } from "./art/characters.mjs";
 import { GUN_ANGLES, muleBody, muleGun, wardenCore, wardenHull, wardenTurret, wardenWheel } from "./art/machines.mjs";
 import { fx } from "./art/fx.mjs";
-import { background, hud, items, tiles } from "./art/world.mjs";
+import { background, cageFrames, hud, items, tiles } from "./art/world.mjs";
 import { buildFont } from "./art/font.mjs";
 import { campBackground, campTiles, dummyFrames, flagFrames } from "./art/camp.mjs";
 
@@ -27,25 +24,12 @@ function add(name, list) {
   });
 }
 
-for (const who of ["pip", "juno"]) {
-  const pal = PAL[who];
-  add(`${who}_legs_stand`, [pipLegs(POSE.stand, pal)]);
-  add(`${who}_legs_run`, Array.from({ length: 8 }, (_, f) => pipLegs(gait(f), pal)));
-  add(`${who}_legs_jump`, [pipLegs(POSE.jump, pal)]);
-  add(`${who}_legs_fall`, [pipLegs(POSE.fall, pal)]);
-  add(`${who}_legs_crouch`, [pipLegs(POSE.crouch, pal)]);
-  add(`${who}_legs_crawl`, Array.from({ length: 6 }, (_, f) => pipLegs(crawlPose(f), pal)));
-  for (const weapon of ["pistol", "heavy"])
-    for (const aim of ["fwd", "up", "down"]) add(`${who}_${weapon}_${aim}`, [pipTorso(aim, weapon, false, pal), pipTorso(aim, weapon, true, pal)]);
-  add(`${who}_knife`, [0, 1, 2].map((f) => pipKnife(f, pal)));
-  add(`${who}_throw`, [0, 1, 2].map((f) => pipThrow(f, pal)));
-  add(`${who}_die`, deathFrames(pal));
-}
+for (const who of ["pip", "juno"]) for (const [anim, list] of Object.entries(playerFrames(who))) add(`${who}_${anim}`, list);
 
 for (const [name, set] of [["grunt", gruntFrames()], ["lobber", lobberFrames()], ["rusher", rusherFrames()], ["tinker", tinkerFrames()]]) {
   for (const [anim, list] of Object.entries(set.frames)) add(`${name}_${anim}`, list);
-  if (set.frames.die) add(`${name}_tumble`, Array.from({ length: 8 }, (_, k) => ({ pix: set.frames.die[0].pix.rotated((k * Math.PI) / 4, 24, 30) })));
   for (const [key, anchor] of Object.entries(set.anchors)) anchors[`${name}_${key}`] = anchor;
+  if (set.frames.die) add(`${name}_tumble`, Array.from({ length: 8 }, (_, k) => ({ pix: set.frames.die[0].pix.rotated((k * Math.PI) / 4, 24, 30) })));
 }
 add("cage", cageFrames());
 

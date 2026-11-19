@@ -302,3 +302,24 @@ function midHarbour(p, W, r) {
   for (let x2 = 0; x2 < W; x2 += 3) p.px(x2, 174, quay[0]);
   return p;
 }
+
+export function cageFrames() {
+  return [false, true].map((broken) => {
+    const p = new Pix(40, 48);
+    if (!broken) {
+      p.box(0, 0, 40, 4, R.gunmetal);
+      p.box(0, 44, 40, 4, R.gunmetal);
+      for (let x = 2; x < 40; x += 6) p.box(x, 4, 3, 40, R.steel);
+      p.box(15, 20, 10, 8, R.brass);
+      p.rect(19, 23, 2, 3, R.brass[3]);
+    } else {
+      p.box(0, 44, 40, 4, R.gunmetal);
+      p.box(2, 32, 3, 12, R.steel);
+      p.box(35, 26, 3, 18, R.steel);
+      p.limb(10, 43, 16, 36, 3, R.steel);
+      p.limb(26, 43, 30, 39, 3, R.steel);
+    }
+    p.selout();
+    return { pix: p };
+  });
+}
