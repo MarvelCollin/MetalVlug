@@ -58,13 +58,18 @@ export function legs(look, pose, kind) {
   const back = new Part();
   back.limb(hip[0] - 2, hip[1], pose.bk[0], pose.bk[1], 7, 6, look.pants[1]);
   back.limb(pose.bk[0], pose.bk[1], pose.bf[0], pose.bf[1] - 3, 6, 5, look.pants[1]);
-  back.cel(look.pants, 0.45, -0.1, -0.25).ink();
+  back.cel(look.pants, 0.45, -0.1, -0.25);
+  back.dots([[pose.bk[0] - 1, pose.bk[1]], [pose.bk[0], pose.bk[1] + 1]], look.pants[3]);
+  back.ink();
   const backBoot = boot(look, pose.bf, true);
   const front = new Part();
   front.limb(hip[0] + 2, hip[1], pose.fk[0], pose.fk[1], 7, 6, look.pants[1]);
   front.limb(pose.fk[0], pose.fk[1], pose.ff[0], pose.ff[1] - 3, 6, 5, look.pants[1]);
-  front.cel(look.pants, 0.3, -0.25).ink();
-  front.dots([[pose.fk[0] - 1, pose.fk[1]], [pose.fk[0], pose.fk[1] + 1]], look.pants[3]);
+  front.cel(look.pants, 0.3, -0.25);
+  front.dots([[pose.fk[0] - 2, pose.fk[1] - 1], [pose.fk[0] - 1, pose.fk[1]], [pose.fk[0], pose.fk[1] + 1]], look.pants[3]);
+  front.dots([[pose.fk[0] + 1, pose.fk[1] - 3], [pose.fk[0] + 2, pose.fk[1] - 2]], look.pants[0]);
+  front.dots([[pose.ff[0] - 3, pose.ff[1] - 5], [pose.ff[0] - 2, pose.ff[1] - 5], [pose.ff[0] - 1, pose.ff[1] - 5], [pose.ff[0], pose.ff[1] - 5]], look.pants[2]);
+  front.ink();
   const frontBoot = boot(look, pose.ff, false);
   const hips = new Part();
   hips.poly([[hip[0] - 6, hip[1] - 3], [hip[0] + 6, hip[1] - 3], [hip[0] + 6, hip[1] + 2], [hip[0] - 6, hip[1] + 2]], look.pants[1]);
@@ -85,6 +90,8 @@ function boot(look, foot, back) {
   b.cel(look.boot, 0.3, -0.1, back ? -0.3 : 0);
   b.rect(x - 4, y - 1, 11, 1, look.boot[3]);
   b.dots([[x - 2, y - 4], [x - 1, y - 4]], look.boot[0]);
+  b.dots([[x, y - 4], [x + 1, y - 3]], look.boot[3]);
+  b.dots([[x + 4, y - 2]], look.boot[0]);
   return b.ink();
 }
 
@@ -113,6 +120,9 @@ function torsoPart(look, pose, kind) {
     t.rect(vx + 2, vy - 1, 3, 1, look.vest[3]);
     t.rect(vx - 5, vy - 6, 10, 1, look.vest[0]);
     t.rect(vx, vy - 6, 1, 11, look.vest[2]);
+    t.dots([[vx - 3, vy - 4], [vx + 3, vy - 4]], look.vest[0]);
+    t.dots([[vx - 3, vy + 3], [vx - 2, vy + 4], [vx + 3, vy + 3]], look.vest[2]);
+    t.dots([[vx - 4, vy], [vx + 2, vy]], BRASS[1]);
     if (coatLong) {
       t.rect(hx - 7, hy + 4, 15, 1, look.coat[3]);
       t.dots([[hx + 3, hy - 9], [hx + 3, hy - 6]], BRASS[1]);
@@ -147,6 +157,7 @@ function head(look, pose, kind, mood) {
     if (hair.mask.some((m) => m)) {
       hair.cel(look.hair, 0.25, -0.2);
       hair.dots([[x - 4, y - 4], [x - 5, y - 3], [x - 6, y - 1], [x - 7, y + 1]], look.hair[0]);
+      hair.dots([[x - 3, y - 2], [x - 4, y], [x - 5, y + 2], [x - 6, y + 4]], look.hair[2]);
       parts.push(hair.ink());
     }
   }
@@ -240,6 +251,7 @@ function gunPart(kind, aim, hand, recoil) {
     if (aim === "fwd") {
       g.rect(hx + r - 1, hy - 2, 9, 3, GUN[1]);
       g.rect(hx + r, hy + 1, 3, 3, WOOD[1]);
+      g.rect(hx + r + 3, hy + 1, 2, 1, GUN[2]);
       muzzle = { x: hx + r + 8, y: hy - 1 };
     } else if (aim === "up") {
       g.rect(hx - 1, hy - 10 - r, 3, 9, GUN[1]);
@@ -270,6 +282,7 @@ function gunPart(kind, aim, hand, recoil) {
     }
   }
   g.cel(GUN, 0.35, -0.1);
+  if (aim === "fwd") g.rect(hx + r - 1 + (kind === "pistol" ? 1 : -3), hy - 2, kind === "pistol" ? 6 : 12, 1, GUN[0]);
   return { part: g.ink(), muzzle };
 }
 
