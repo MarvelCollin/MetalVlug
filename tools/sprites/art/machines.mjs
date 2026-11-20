@@ -1,4 +1,5 @@
 import { C, Pix, R } from "../pix.mjs";
+import { Part, compose } from "./ink.mjs";
 
 function rivets(p, x0, x1, y, step, ramp) {
   for (let x = x0; x <= x1; x += step) {
@@ -18,8 +19,30 @@ function muleLeg(p, hx, hy, fx, fy, back) {
   p.box(fx - 5, fy - 3, 11, 3, R.gunmetal, bias);
 }
 
+const YEL = ["#fff2a8", "#f4c843", "#c48a2a", "#7f5424"];
+const GM = ["#9aa3b4", "#5f6779", "#3d4456", "#24283a"];
+const ST = ["#e6ebf2", "#b0b8c6", "#7a8394", "#4c5364"];
+const GL = ["#e8fbff", "#8fd8ea", "#4d9ab8", "#2e5c7c"];
+
+function inkLeg(hx, hy, fx, fy, back) {
+  const kx = (hx + fx) / 2 - 6;
+  const ky = (hy + fy) / 2 + 1;
+  const thigh = new Part(64, 56);
+  thigh.limb(hx, hy, kx, ky, 8, 6, GM[1]).cel(GM, 0.35, -0.15, back ? -0.35 : 0).ink();
+  const shin = new Part(64, 56);
+  shin.limb(kx, ky, fx, fy - 4, 6, 5, ST[1]).cel(ST, 0.35, -0.15, back ? -0.35 : 0);
+  shin.limb(hx + 2, hy + 2, fx + 2, fy - 7, 1, 1, YEL[2]);
+  shin.ink();
+  const knee = new Part(64, 56);
+  knee.ellipse(kx, ky, 3, 3, GM[1]).cel(GM, 0.2, -0.3).ink();
+  const foot = new Part(64, 56);
+  foot.poly([[fx - 6, fy - 4], [fx + 4, fy - 4], [fx + 7, fy - 2], [fx + 7, fy], [fx - 6, fy]], GM[1]).cel(GM, 0.3, -0.2, back ? -0.3 : 0);
+  foot.rect(fx - 6, fy - 1, 14, 1, GM[3]);
+  foot.ink();
+  return [thigh, shin, knee, foot];
+}
+
 export function muleBody(frame, mode) {
-  const p = new Pix(64, 56);
   const crouch = mode === "crouch" ? 7 : 0;
   const t = (frame / 6) * Math.PI * 2;
   const walk = mode === "walk";
@@ -27,25 +50,35 @@ export function muleBody(frame, mode) {
   const by = 14 + crouch + bob;
   const s = walk ? Math.sin(t) * 8 : 0;
   const lift = (v) => (walk ? Math.max(0, v) * 4 : 0);
-  muleLeg(p, 27, by + 15, 25 - s, 55 - lift(-Math.cos(t)), true);
-  p.blob(32, by + 9, 21, 11, R.mule);
-  p.box(12, by + 12, 40, 5, R.mule, -0.3);
-  p.rect(13, by + 17, 38, 1, R.mule[3]);
-  p.box(31, by + 1, 15, 8, R.glass);
-  p.rect(33, by + 2, 4, 2, C.white);
-  p.rect(31, by + 9, 15, 1, R.mule[3]);
-  p.box(14, by + 4, 10, 6, R.mule, -0.15);
-  p.rect(16, by + 6, 6, 1, R.mule[3]);
-  rivets(p, 14, 48, by + 14, 5, R.brass);
-  p.box(6, by + 7, 7, 8, R.gunmetal);
-  p.blob(5, by + 9, 2.5, 3, R.steel);
-  p.box(24, by - 5, 11, 5, R.gunmetal);
-  p.rect(25, by - 8, 2, 3, R.steel[2]);
-  p.px(25, by - 9, R.red[1]);
-  p.rect(48, by + 10, 4, 2, R.red[1]);
-  muleLeg(p, 37, by + 15, 39 + s, 55 - lift(Math.cos(t)), false);
-  p.selout();
-  return { pix: p, anchor: { pivot: { x: 29, y: by - 3 }, seat: { x: 38, y: by + 4 } } };
+  const parts = [...inkLeg(27, by + 15, 25 - s, 55 - lift(-Math.cos(t)), true)];
+  const hull = new Part(64, 56);
+  hull.poly([[12, by + 4], [18, by - 1], [44, by - 1], [52, by + 4], [54, by + 12], [50, by + 18], [14, by + 18], [10, by + 12]], YEL[1]);
+  hull.cel(YEL, 0.3, -0.2);
+  hull.rect(12, by + 13, 41, 1, YEL[3]);
+  hull.rect(14, by + 14, 37, 4, YEL[2]);
+  for (let x = 16; x <= 48; x += 6) hull.dots([[x, by + 15], [x + 1, by + 16]], YEL[0]);
+  hull.rect(22, by + 2, 1, 11, YEL[2]);
+  hull.dots([[15, by + 5], [16, by + 4], [17, by + 3]], YEL[0]);
+  hull.rect(47, by + 9, 4, 2, "#e24b3e");
+  hull.rect(14, by + 6, 6, 1, YEL[3]);
+  hull.rect(14, by + 8, 6, 1, YEL[3]);
+  parts.push(hull.ink());
+  const glass = new Part(64, 56);
+  glass.poly([[30, by + 1], [44, by + 1], [48, by + 6], [48, by + 9], [30, by + 9]], GL[1]).cel(GL, 0.25, -0.3);
+  glass.dots([[32, by + 2], [33, by + 2], [34, by + 2], [32, by + 3]], "#ffffff");
+  glass.rect(38, by + 2, 1, 7, GL[3]);
+  parts.push(glass.ink());
+  const exhaust = new Part(64, 56);
+  exhaust.rect(5, by + 6, 7, 8, GM[1]).cel(GM, 0.3, -0.2);
+  exhaust.ellipse(5, by + 9, 2, 3, ST[1]);
+  parts.push(exhaust.ink());
+  const turret = new Part(64, 56);
+  turret.poly([[23, by - 1], [25, by - 5], [34, by - 5], [36, by - 1]], GM[1]).cel(GM, 0.3, -0.2);
+  turret.rect(25, by - 8, 2, 3, ST[2]);
+  turret.set(25, by - 9, "#ff4a3a");
+  parts.push(turret.ink());
+  parts.push(...inkLeg(37, by + 15, 39 + s, 55 - lift(Math.cos(t)), false));
+  return { pix: compose(parts, 64, 56), anchor: { pivot: { x: 29, y: by - 3 }, seat: { x: 38, y: by + 4 } } };
 }
 
 export const GUN_ANGLES = 32;
