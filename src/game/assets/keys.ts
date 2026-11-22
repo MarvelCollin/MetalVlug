@@ -7,7 +7,17 @@ export const TEX = {
 
 export type Theme = "harbour" | "camp";
 export const THEMES: readonly Theme[] = ["harbour", "camp"];
-export const bgKey = (kind: "sky" | "far" | "mid", theme: Theme): string => `bg_${kind}_${theme}`;
+export const BG_VARIANTS = 3;
+
+function pickVariant(): number {
+  if (typeof location === "undefined") return 0;
+  const forced = Number(new URLSearchParams(location.search).get("bg") ?? NaN);
+  if (Number.isInteger(forced) && forced >= 0 && forced < BG_VARIANTS) return forced;
+  return Math.floor(Math.random() * BG_VARIANTS);
+}
+
+export const BG_VARIANT = pickVariant();
+export const bgKey = (kind: "sky" | "far" | "mid", theme: Theme): string => `bg_${kind}_${theme}_${BG_VARIANT}`;
 
 export const DATA = {
   anchors: "anchors",

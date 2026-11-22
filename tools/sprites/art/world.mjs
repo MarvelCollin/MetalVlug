@@ -66,10 +66,7 @@ tiles.rail = [(() => {
 })()];
 
 export const hud = {
-  life_pip: [(() => { const p = new Pix(10, 10); p.blob(5, 6, 4, 4, R.skin); p.box(1, 1, 8, 3, R.leather); p.blob(4, 3, 1.2, 1, R.glass); p.blob(7, 3, 1.2, 1, R.glass); p.selout(); return { pix: p }; })()],
-  life_juno: [(() => { const p = new Pix(10, 10); p.blob(3, 6, 3, 4, ["#e08a5a", "#b65a3a", "#83392e", "#55242a"]); p.blob(5, 6, 4, 4, R.skin); p.box(1, 2, 8, 2, R.red); p.selout(); return { pix: p }; })()],
   bombicon: [(() => { const p = new Pix(9, 10); p.blob(4, 6, 3.5, 3.5, R.olive); p.rect(4, 1, 1, 2, R.steel[1]); p.px(5, 0, R.brass[0]); p.selout(); return { pix: p }; })()],
-  tinkericon: [(() => { const p = new Pix(10, 10); p.blob(5, 6, 4, 3.5, R.skin); p.blob(5, 3, 4.5, 2.5, R.hardhat); p.blob(5, 8, 3, 1.5, R.beard); p.selout(); return { pix: p }; })()],
   go: [0, 1].map((f) => { const p = new Pix(34, 18); const ramp = f ? R.hardhat : R.red; p.box(0, 6, 20, 6, ramp); for (let i = 0; i < 9; i++) p.box(20 + i, i, 1, 18 - i * 2, ramp); p.selout(); return { pix: p }; }),
   hud_box: [(() => {
     const p = new Pix(84, 24);
@@ -97,8 +94,66 @@ function skyBand(p, y0, y1, colors, r) {
   }
 }
 
-function cloud(p, cx, cy, w, r) {
-  const hi = ["#fff6e6", "#fbe3c8", "#efc3a8", "#d99c94"];
+export const BG_VARIANTS = 3;
+
+const HARBOUR = [
+  {
+    sky: ["#fde2b4", "#f7c491", "#ea9f84", "#c97f8f"],
+    low: ["#fde9c4", "#fbd6a4", "#f2b78f", "#e39a86"],
+    sun: { x: 286, y: 132, r: 30, ramp: ["#fffbe9", "#fff0c4", "#ffe09c", "#ffd07a"] },
+    cloud: ["#fff6e6", "#fbe3c8", "#efc3a8", "#d99c94"],
+    sea: ["#6f8fae", "#56769a", "#435f84", "#33496c"],
+    glint: ["#ffe2b0", "#8fb0cc"],
+    hill: ["#b58fa0", "#a07d93", "#8c6c86", "#785c79"],
+    sil: ["#9a7a92", "#876a84", "#745b76", "#614c68"],
+    farWin: "#c79aa0",
+    haze: ["#f2c4a0", 0.28],
+    wall: ["#a0707a", "#87606c", "#6e4f5e", "#563f4f"],
+    roof: ["#8fc0bf", "#6a9ea3", "#4f7c86", "#3a5b68"],
+    lit: 0.72,
+    quay: ["#9a8c92", "#7c6e78", "#625662", "#4a404c"],
+    clouds: 7,
+    stars: 0,
+  },
+  {
+    sky: ["#141a36", "#1d2647", "#2a3459", "#3c4569"],
+    low: ["#3c4569", "#4a4f73", "#5b5a7a", "#6c6380"],
+    sun: { x: 92, y: 44, r: 11, ramp: ["#fffdf0", "#f3f0dc", "#d9d6c4", "#b9b6a8"] },
+    cloud: ["#5a6286", "#4a5276", "#3d4468", "#323858"],
+    sea: ["#2a3658", "#1f2a48", "#18223e", "#131b34"],
+    glint: ["#f7e2a8", "#4a5a84"],
+    hill: ["#2c3354", "#262c4a", "#202640", "#1a2036"],
+    sil: ["#363e62", "#2e3556", "#262c4a", "#1f243e"],
+    farWin: "#ffd98a",
+    haze: ["#1c2240", 0.18],
+    wall: ["#4f4a6c", "#423e5e", "#35324e", "#2a2740"],
+    roof: ["#4f6a80", "#3e566c", "#304558", "#233444"],
+    lit: 0.42,
+    quay: ["#5c5874", "#4a4762", "#3a3850", "#2c2a3e"],
+    clouds: 4,
+    stars: 140,
+  },
+  {
+    sky: ["#e9eef0", "#dbe5e8", "#cbd9de", "#b8cbd2"],
+    low: ["#dbe5e8", "#d0dde0", "#c4d4d8", "#b6c8cd"],
+    sun: { x: 128, y: 70, r: 16, ramp: ["#ffffff", "#fbf8ee", "#f1ecdc", "#e4ddc8"] },
+    cloud: ["#ffffff", "#f1f5f6", "#dde6e9", "#c8d5da"],
+    sea: ["#9ab4bc", "#86a3ad", "#72919c", "#5f7f8a"],
+    glint: ["#f4fbfc", "#7c9aa4"],
+    hill: ["#a6b8b6", "#97aaa9", "#889c9b", "#7a8e8e"],
+    sil: ["#94a6a8", "#85979a", "#76888c", "#687a7e"],
+    farWin: "#c9d6d6",
+    haze: ["#e2eaec", 0.42],
+    wall: ["#b49a84", "#977f6c", "#7b6656", "#614f44"],
+    roof: ["#c46a4f", "#a1523e", "#7f3f32", "#5f2f28"],
+    lit: 0.94,
+    quay: ["#a59a92", "#877c76", "#6c625e", "#534b48"],
+    clouds: 10,
+    stars: 0,
+  },
+];
+
+function cloud(p, cx, cy, w, r, hi) {
   for (let k = 0; k < Math.max(3, Math.floor(w / 9)); k++) {
     const x = cx + (k / Math.max(1, Math.floor(w / 9) - 1)) * w;
     const rr = 5 + r() * 6;
@@ -106,28 +161,36 @@ function cloud(p, cx, cy, w, r) {
   }
 }
 
-export function background(kind) {
+export function background(kind, variant = 0) {
+  const pal = HARBOUR[variant];
   const W = kind === "sky" ? 384 : 512;
   const H = 216;
   const p = new Pix(W, H);
-  const r = rng(kind.length * 131 + 7);
+  const r = rng(kind.length * 131 + 7 + variant * 977);
   if (kind === "sky") {
-    skyBand(p, 0, 120, ["#fde2b4", "#f7c491", "#ea9f84", "#c97f8f"], r);
-    skyBand(p, 120, 168, ["#fde9c4", "#fbd6a4", "#f2b78f", "#e39a86"], r);
-    p.blob(286, 132, 30, 30, ["#fffbe9", "#fff0c4", "#ffe09c", "#ffd07a"], 0.4);
-    for (let k = 0; k < 7; k++) cloud(p, Math.floor(r() * W), 24 + Math.floor(r() * 80), 30 + Math.floor(r() * 50), r);
-    skyBand(p, 168, 216, ["#6f8fae", "#56769a", "#435f84", "#33496c"], r);
+    skyBand(p, 0, 120, pal.sky, r);
+    skyBand(p, 120, 168, pal.low, r);
+    for (let k = 0; k < pal.stars; k++) {
+      const sy = Math.floor(r() * 130);
+      p.px(Math.floor(r() * W), sy, r() > 0.85 ? "#ffffff" : sy < 70 ? "#aab4dc" : "#8a90b8");
+    }
+    p.blob(pal.sun.x, pal.sun.y, pal.sun.r, pal.sun.r, pal.sun.ramp, 0.4);
+    if (variant === 1) p.blob(pal.sun.x + 4, pal.sun.y - 3, pal.sun.r * 0.75, pal.sun.r * 0.75, pal.sky, 0.6);
+    for (let k = 0; k < pal.clouds; k++) cloud(p, Math.floor(r() * W), 24 + Math.floor(r() * 80), 30 + Math.floor(r() * 50), r, pal.cloud);
+    skyBand(p, 168, 216, pal.sea, r);
     for (let k = 0; k < 90; k++) {
       const y = 168 + Math.floor(r() * 48);
-      p.rect(Math.floor(r() * W), y, 4 + Math.floor(r() * 18), 1, y < 180 ? "#ffe2b0" : "#8fb0cc");
+      p.rect(Math.floor(r() * W), y, 4 + Math.floor(r() * 18), 1, y < 180 ? pal.glint[0] : pal.glint[1]);
     }
+    if (variant === 1) for (let k = 0; k < 14; k++) p.rect(pal.sun.x - 6 + Math.floor(r() * 12), 170 + k * 3, 3 + Math.floor(r() * 8), 1, "#e8e4cc");
     return p;
   }
   if (kind === "far") {
-    const out = farHarbour(p, W, r);
-    return haze(out, "#f2c4a0", 0.28);
+    const out = farHarbour(p, W, r, pal, variant);
+    return haze(out, pal.haze[0], pal.haze[1]);
   }
-  return midHarbour(p, W, r);
+  const mid = midHarbour(p, W, r, pal);
+  return variant === 2 ? haze(mid, pal.haze[0], 0.18) : mid;
 }
 
 function haze(p, color, amount) {
@@ -144,15 +207,17 @@ function haze(p, color, amount) {
 
 export { haze };
 
-function farHarbour(p, W, r) {
+function farHarbour(p, W, r, pal, variant) {
   {
-    const hill = ["#b58fa0", "#a07d93", "#8c6c86", "#785c79"];
+    const hill = pal.hill;
     for (let x = 0; x < W; x++) {
       const h = 22 + Math.round(Math.sin(x * 0.018) * 8 + Math.sin(x * 0.051 + 1) * 4);
       for (let y = 172 - h; y < 172; y++) p.px(x, y, tone(hill, 0.75 - (y - (172 - h)) / 60, x, y));
     }
-    const sil = ["#9a7a92", "#876a84", "#745b76", "#614c68"];
-    for (const cx of [70, 270, 450]) {
+    const sil = pal.sil;
+    const shift = variant * 57;
+    for (const cx0 of [70, 270, 450]) {
+      const cx = (cx0 + shift) % W;
       p.box(cx, 64, 6, 108, sil);
       p.box(cx - 34, 62, 80, 5, sil);
       for (let i = 0; i < 9; i++) p.line(cx - 32 + i * 8, 67, cx - 28 + i * 8, 62, sil[2]);
@@ -164,7 +229,14 @@ function farHarbour(p, W, r) {
     p.box(150, 118, 84, 54, sil);
     p.box(162, 98, 14, 20, sil);
     p.box(190, 104, 12, 14, sil);
-    for (let x = 156; x < 230; x += 8) p.rect(x, 126, 4, 3, "#c79aa0");
+    for (let x = 156; x < 230; x += 8) p.rect(x, 126, 4, 3, pal.farWin);
+    if (variant === 1) for (let k = 0; k < 40; k++) p.rect(150 + Math.floor(r() * 80), 134 + Math.floor(r() * 30), 2, 2, r() > 0.5 ? pal.farWin : sil[3]);
+    if (variant === 2) {
+      p.box(380, 146, 110, 18, sil);
+      p.box(400, 128, 34, 18, sil);
+      p.box(446, 120, 8, 26, sil);
+      p.box(370, 160, 130, 6, sil, -0.3);
+    }
     p.box(340, 56, 12, 116, sil);
     p.box(336, 48, 20, 10, sil);
     p.box(340, 42, 12, 6, ["#fffbe0", "#ffeaa0", "#ffd166", "#f4a23b"]);
@@ -172,9 +244,9 @@ function farHarbour(p, W, r) {
   }
 }
 
-function midHarbour(p, W, r) {
-  const wall = ["#a0707a", "#87606c", "#6e4f5e", "#563f4f"];
-  const roof = ["#8fc0bf", "#6a9ea3", "#4f7c86", "#3a5b68"];
+function midHarbour(p, W, r, pal) {
+  const wall = pal.wall;
+  const roof = pal.roof;
   let x = 0;
   while (x < W) {
     const w = 64 + Math.floor(r() * 56);
@@ -185,7 +257,7 @@ function midHarbour(p, W, r) {
     p.box(x - 3, top - 6, w + 6, 7, roof);
     for (let wy = top + 10; wy < 162; wy += 16)
       for (let wx = x + 9; wx < x + w - 12; wx += 15) {
-        const lit = r() > 0.72;
+        const lit = r() > pal.lit;
         p.box(wx, wy, 8, 9, lit ? ["#fff4c4", "#ffe08a", "#f4b860", "#c98a4c"] : ["#5d4a5c", "#4a3b4c", "#3a2f3e", "#2a2230"]);
         p.rect(wx + 3, wy, 1, 9, wall[3]);
       }
@@ -200,7 +272,7 @@ function midHarbour(p, W, r) {
     for (let k = 3; k < 40; k += 5) p.rect(cx + k, 152, 1, 24, col[3]);
     if (r() > 0.5) { p.box(cx + 6, 126, 34, 24, colors[Math.floor(r() * colors.length)], -0.2); }
   }
-  const quay = ["#9a8c92", "#7c6e78", "#625662", "#4a404c"];
+  const quay = pal.quay;
   for (let y = 174; y < 216; y++) for (let x2 = 0; x2 < W; x2++) p.px(x2, y, tone(quay, y < 176 ? 0.95 : 0.6 - (y - 176) / 90, x2, y));
   for (let y = 178; y < 216; y += 7) {
     p.rect(0, y, W, 1, quay[3]);

@@ -1,4 +1,5 @@
 import { INK, Part, compose } from "./ink.mjs";
+import { Pix } from "../pix.mjs";
 
 export const SKIN = ["#ffdcb8", "#f2ac7c", "#c27358", "#8c4a40"];
 const WHITE = "#fff8ec";
@@ -142,6 +143,60 @@ function arm(look, from, elbow, hand, back) {
   return a.ink();
 }
 
+function faceParts(look, x, y, kind, mood) {
+  const soft = kind === "juno";
+  const face = new Part();
+  const nose = soft ? 6 : 7;
+  face.poly([
+    [x - 5, y - 5], [x + 4, y - 5], [x + 5, y - 3], [x + 5, y + 1],
+    [x + nose, y + 3], [x + nose, y + 4], [x + 5, y + 4], [x + 5, y + 5],
+    [x + (soft ? 5 : 6), y + 6], [x + (soft ? 4 : 6), y + 7], [x + (soft ? 3 : 5), y + 8],
+    [x + 1, y + 8], [x - 3, y + 6], [x - 5, y + 3],
+  ], SKIN[1]);
+  for (let yy = y + 4; yy <= y + 7; yy++) face.rect(x - 5, yy, 4 - (yy - y - 4), 1, SKIN[2]);
+  face.rect(x - 1, y + 7, 6, 2, SKIN[2]);
+  face.rect(x + 1, y + 8, 4, 1, SKIN[3]);
+  face.dots([[x + 5, y + 1], [x + 6, y + 2], [x + 3, y + 3], [x + 4, y + 3], [x + 1, y - 3], [x + 2, y - 3], [x + 3, y - 4]], SKIN[0]);
+  face.dots([[x + 5, y + 4], [x + nose - 2, y + 4]], SKIN[2]);
+  face.set(x + nose - 1, y + 4, SKIN[3]);
+  if (!soft && kind !== "lobber") {
+    face.dots([[x - 3, y], [x - 4, y + 1], [x - 4, y + 2], [x - 3, y + 3]], SKIN[2]);
+    face.dots([[x - 3, y + 1], [x - 3, y + 2]], SKIN[3]);
+  }
+  const eyes = kind !== "lobber" && kind !== "grunt";
+  if (eyes) {
+    face.rect(x + 2, y, 2, 3, WHITE);
+    face.rect(x + 4, y, 1, 3, EYE);
+    face.set(x + 3, y + 2, SKIN[2]);
+    const brow = kind === "tinker" ? look.hair[1] : look.hair[3];
+    if (mood === "angry") face.dots([[x + 1, y - 2], [x + 2, y - 2], [x + 3, y - 1], [x + 4, y - 1], [x + 5, y - 1], [x + 1, y - 1], [x + 2, y - 1]], brow);
+    else if (soft) face.dots([[x + 2, y - 1], [x + 3, y - 1], [x + 4, y - 1], [x + 5, y], [x + 5, y - 1]], brow);
+    else face.rect(x + 1, y - 2, 5, 2, brow);
+  }
+  if (kind !== "lobber" && kind !== "tinker") {
+    if (mood === "shout" || mood === "angry") {
+      face.rect(x + 3, y + 5, 3, 2, "#5a1e2a");
+      face.rect(x + 3, y + 5, 3, 1, WHITE);
+    } else if (soft) face.dots([[x + 4, y + 5], [x + 3, y + 5]], look.accent[2]);
+    else face.dots([[x + 3, y + 5], [x + 4, y + 5], [x + 5, y + 5]], SKIN[3]);
+  }
+  const out = [face.ink()];
+  if (soft) {
+    const bangs = new Part();
+    bangs.poly([[x - 6, y - 6], [x + 4, y - 6], [x + 5, y - 3], [x + 3, y - 2], [x + 2, y - 3], [x + 1, y - 2], [x, y - 1], [x - 1, y + 3], [x - 2, y + 6], [x - 4, y + 7], [x - 6, y + 5]], look.hair[1]);
+    bangs.cel(look.hair, 0.2, -0.3);
+    bangs.dots([[x - 3, y - 4], [x - 2, y - 4], [x + 1, y - 5], [x + 2, y - 5], [x - 3, y], [x - 3, y + 1], [x - 4, y + 3]], look.hair[0]);
+    out.push(bangs.ink());
+  }
+  if (kind === "pip" || kind === "rusher") {
+    const burn = new Part();
+    burn.poly([[x - 2, y - 2], [x, y - 2], [x, y], [x - 1, y + 1], [x - 2, y + 1]], look.hair[1]);
+    burn.cel(look.hair, 0.3, -0.3);
+    out.push(burn);
+  }
+  return out;
+}
+
 function head(look, pose, kind, mood) {
   const [x, y] = pose.head;
   const parts = [];
@@ -161,31 +216,7 @@ function head(look, pose, kind, mood) {
       parts.push(hair.ink());
     }
   }
-  const face = new Part();
-  face.ellipse(x, y + 1, 5.8, 6.2, SKIN[1]);
-  face.cel(SKIN, 0.15, -0.45);
-  face.dots([[x + 6, y + 2], [x + 7, y + 3], [x + 6, y + 3]], SKIN[1]);
-  face.dots([[x + 7, y + 4], [x + 6, y + 4]], SKIN[2]);
-  face.dots([[x - 3, y + 1], [x - 3, y + 2], [x - 4, y + 2], [x - 3, y + 3]], SKIN[2]);
-  face.dots([[x + 2, y + 3], [x + 1, y + 3]], SKIN[0]);
-  const ey = y;
-  const eyeX = x + 3;
-  if (kind !== "lobber" && kind !== "grunt") {
-    face.rect(eyeX - 1, ey, 3, 3, WHITE);
-    face.rect(eyeX, ey, 2, 3, EYE);
-    face.set(eyeX, ey, WHITE);
-    const brow = kind === "tinker" ? look.hair[2] : look.hair[3];
-    if (mood === "angry") face.dots([[eyeX - 2, ey - 2], [eyeX - 1, ey - 2], [eyeX, ey - 1], [eyeX + 1, ey - 1], [eyeX + 2, ey - 1]], brow);
-    else face.rect(eyeX - 2, ey - 2, 5, 1, brow);
-  }
-  const mouthOpen = mood === "shout" || mood === "angry";
-  if (kind !== "lobber" && kind !== "tinker") {
-    if (mouthOpen) {
-      face.rect(x + 3, y + 4, 3, 3, "#5a1e2a");
-      face.rect(x + 3, y + 4, 3, 1, WHITE);
-    } else face.dots([[x + 4, y + 5], [x + 5, y + 5], [x + 3, y + 4]], SKIN[3]);
-  }
-  parts.push(face.ink());
+  parts.push(...faceParts(look, x, y, kind, mood));
   const gear = new Part();
   if (kind === "pip") {
     gear.poly([[x - 6, y - 1], [x - 5, y - 5], [x - 1, y - 7], [x + 4, y - 6], [x + 6, y - 3], [x + 10, y - 2], [x + 10, y], [x - 6, y]], look.vest[1]);
@@ -318,7 +349,7 @@ export function crawlStance(frame, count = 6) {
 
 export const UPPER = {
   fwd: { chest: [28, 25], head: [30, 16], bs: [25, 27], be: [28, 32], bh: [35, 30], fs: [30, 27], fe: [32, 32], fh: [36, 29] },
-  up: { chest: [26, 24], head: [27, 15], bs: [24, 25], be: [27, 20], bh: [31, 14], fs: [29, 25], fe: [32, 20], fh: [32, 14] },
+  up: { chest: [26, 24], head: [25, 15], bs: [24, 25], be: [27, 20], bh: [31, 14], fs: [29, 25], fe: [32, 20], fh: [32, 14] },
   down: { chest: [26, 24], head: [28, 15], bs: [25, 26], be: [28, 31], bh: [30, 35], fs: [28, 26], fe: [31, 31], fh: [31, 35] },
 };
 
@@ -435,6 +466,18 @@ export function grenade(x, y) {
   g.ellipse(x, y, 2.5, 2.5, "#8f9457").cel(["#c9c98a", "#8f9457", "#5f673d", "#3c4430"], 0.3, -0.2);
   g.set(x, y - 3, STEEL[1]);
   return g.ink();
+}
+
+export function headIcon(kind) {
+  const full = compose(head(LOOKS[kind], { head: [24, 24], chest: [23, 34] }, kind, "idle"), 48, 48);
+  const p = new Pix(18, 18);
+  for (let y = 0; y < 18; y++)
+    for (let x = 0; x < 18; x++) {
+      const s = ((y + 16) * 48 + (x + 16)) * 4;
+      const d = (y * 18 + x) * 4;
+      for (let k = 0; k < 4; k++) p.data[d + k] = full.data[s + k];
+    }
+  return p;
 }
 
 export { INK, RUSTY, compose, Part };

@@ -2,10 +2,11 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { encodePng } from "./png.mjs";
+import { headIcon } from "./art/rig.mjs";
 import { gruntFrames, lobberFrames, playerFrames, rusherFrames, tinkerFrames } from "./art/characters.mjs";
 import { GUN_ANGLES, muleBody, muleGun, wardenCore, wardenHull, wardenTurret, wardenWheel } from "./art/machines.mjs";
 import { fx } from "./art/fx.mjs";
-import { background, hud, tiles } from "./art/world.mjs";
+import { BG_VARIANTS, background, hud, tiles } from "./art/world.mjs";
 import { cageFrames, dummyFrames, flagFrames, items, sandbag } from "./art/props.mjs";
 import { buildFont } from "./art/font.mjs";
 import { campBackground, campTiles } from "./art/camp.mjs";
@@ -51,6 +52,8 @@ for (const [name, list] of Object.entries(tiles)) add(name, list);
 for (const [name, list] of Object.entries(hud)) add(name, list);
 for (const [name, list] of Object.entries(campTiles)) add(name, list);
 add("sandbag", sandbag);
+for (const kind of ["pip", "juno"]) add(`life_${kind}`, [{ pix: headIcon(kind) }]);
+add("tinkericon", [{ pix: headIcon("tinker") }]);
 for (const [name, list] of Object.entries(dummyFrames)) add(name, list);
 add("flag", flagFrames);
 
@@ -95,8 +98,10 @@ writeFileSync(join(out, "anchors.json"), JSON.stringify(anchors, null, 1));
 
 for (const kind of ["sky", "far", "mid"]) {
   for (const [theme, make] of [["harbour", background], ["camp", campBackground]]) {
-    const p = make(kind);
-    writeFileSync(join(out, `bg_${kind}_${theme}.png`), encodePng(p.w, p.h, p.data));
+    for (let v = 0; v < BG_VARIANTS; v++) {
+      const p = make(kind, v);
+      writeFileSync(join(out, `bg_${kind}_${theme}_${v}.png`), encodePng(p.w, p.h, p.data));
+    }
   }
 }
 
