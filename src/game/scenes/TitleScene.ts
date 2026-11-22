@@ -21,17 +21,23 @@ interface Card {
 
 type Mode = "press" | "main" | "options" | "credits" | "select";
 
-const CREDITS = [
-  "DESIGN, CODE AND PIXELS BY MARVEL COLLIN",
-  "MARVELCOLLIN.COM",
-  "GITHUB.COM/MARVELCOLLIN/METALVLUG",
-  "",
-  "MADE WITH PHASER 4",
-  "EFFECTS BAKED FROM PIXELFX (MIT)",
-  "SPRITE FUSION VFX BY HUGO DUPREZ (MIT)",
-  "MUSIC AND SOUND SYNTHESIZED IN CODE",
-  "",
-  "PRESS FIRE TO GO BACK",
+const HEAD = 0xf8d25a;
+const LABEL = 0xc9b8e0;
+const LINK = 0x8fe0cc;
+const BODY = 0xffffff;
+
+const CREDITS: readonly [string, number, number][] = [
+  ["CREDITS", 72, HEAD],
+  ["DESIGN, CODE AND PIXELS", 86, LABEL],
+  ["MARVEL COLLIN", 97, BODY],
+  ["MARVELCOLLIN.COM", 109, LINK],
+  ["GITHUB.COM/MARVELCOLLIN/METALVLUG", 120, LINK],
+  ["BUILT WITH", 133, LABEL],
+  ["PHASER 4", 143, BODY],
+  ["EFFECTS FROM PIXELFX (MIT)", 153, BODY],
+  ["SPRITE FUSION VFX BY HUGO DUPREZ (MIT)", 163, BODY],
+  ["MUSIC AND SOUND SYNTHESIZED IN CODE", 173, BODY],
+  ["PRESS FIRE TO GO BACK", 186, LABEL],
 ];
 
 export class TitleScene extends Scene {
@@ -109,8 +115,12 @@ export class TitleScene extends Scene {
       { label: () => "BACK", select: () => this.setMode("main") },
     ];
     this.options = new Menu(this, items, VIEW_W / 2, 78, 13, tick);
-    this.creditPanel = this.add.rectangle(VIEW_W / 2, 128, 336, 132, 0x1b1626, 0.62);
-    this.credits = CREDITS.map((line, i) => new RetroText(this, VIEW_W / 2, 66 + i * 12, line, [0.5, 0.5]));
+    this.creditPanel = this.add.rectangle(VIEW_W / 2, 129, 300, 130, 0x1b1626, 0.78).setStrokeStyle(1, 0x5c4a7a);
+    this.credits = CREDITS.map(([line, y, tint]) => {
+      const t = new RetroText(this, VIEW_W / 2, y, line, [0.5, 0.5]);
+      t.view.setTint(tint);
+      return t;
+    });
     this.selectPanel = this.add.rectangle(VIEW_W / 2, 132, 300, 112, 0x1b1626, 0.55);
     this.selectTitle = new RetroText(this, VIEW_W / 2, 70, "CHOOSE YOUR SOLDIER", [0.5, 0.5]);
     this.selectCursor = this.add.image(0, 0, TEX.atlas, "hud_cursor_0").setAngle(0);
