@@ -62,6 +62,9 @@ export class Warden {
   private readonly spreadCd = new Cooldown(WARDEN.spreadGap);
   private readonly rusherCd = new Cooldown(WARDEN.rusherGap);
   private turn = 0;
+  private charge = 0;
+  private volley = 0;
+  private followUp = 0;
   private x: number;
 
   constructor(private readonly ctx: GameContext, private readonly enemies: EnemyFactory, private readonly stopX: number, private readonly groundY: number) {
@@ -92,12 +95,15 @@ export class Warden {
       phase1: { update: (w) => w.tickPhase1() },
       phase2: {
         enter: (w) => {
+          w.volley = 0;
+          w.followUp = 0;
+          w.charge = 0;
           w.core.armoured = false;
           w.core.view.play("warden_core_open");
           w.ctx.events.emit("sound", "alarm");
           w.ctx.camera.shake(3, 0.4);
         },
-        update: (w) => w.tickPhase2(),
+        update: (w, dt) => w.tickPhase2(dt),
       },
       dying: {
         enter: (w) => {
@@ -186,15 +192,18 @@ export class Warden {
     }
   }
 
-  private tickPhase2(): void {
-    if (this.spreadCd.ready && this.ctx.player.alive) {
-      this.spreadCd.trigger();
-      const { x, y } = this.core.view;
-      for (let i = -2; i <= 2; i++) {
-        const ang = Math.PI + i * 0.22 - 0.1;
-        this.ctx.projectiles.fire("enemyBullet", x - 12, y, Math.cos(ang) * WARDEN.shellSpeed, Math.sin(ang) * WARDEN.shellSpeed, 1);
-      }
-      this.ctx.events.emit("sound", "enemyShot");
+  private tickPhase2(dt: number): void {
+    if (this.followUp > 0) {
+      this.followUp -= dt;
+      if (this.followUp <= 0) this.skim();
+    }
+    if (this.charge > 0) {
+      this.charge -= dt;
+      if (Math.floor(this.charge * 12) % 2 === 0) this.ctx.fx.flash(this.core.view, 0.04);
+      if (this.charge <= 0) this.fireVolley();
+    } else if (this.spreadCd.ready && this.ctx.player.alive) {
+      this.charge = WARDEN.chargeTime;
+      this.ctx.events.emit("sound", "charge");
     }
     if (this.mortarCd.ready && this.ctx.player.alive) {
       this.mortarCd.trigger(WARDEN.mortarGap * 1.3);
@@ -205,6 +214,27 @@ export class Warden {
       const e = this.enemies.spawn({ type: "rusher", x: this.left - 4, y: this.hull.y - 60, idle: "none", hold: false, group: -2, facing: -1 });
       e.body.setVelocity(-60, -180);
     }
+  }
+
+  private fireVolley(): void {
+    this.spreadCd.trigger();
+    const skim = this.volley++ % 2 === 1;
+    if (skim) {
+      this.skim();
+      if (this.core.hp <= WARDEN.coreHp / 2) this.followUp = WARDEN.skimPair;
+    } else {
+      const { x, y } = this.core.view;
+      for (const off of [-0.04, 0.16, 0.38]) this.ctx.projectiles.fire("enemyBullet", x - 12, y, -Math.cos(off) * WARDEN.shellSpeed, -Math.sin(off) * WARDEN.shellSpeed, 1);
+      this.ctx.fx.play("flash", x - 12, y);
+      this.ctx.events.emit("sound", "enemyShot");
+    }
+  }
+
+  private skim(): void {
+    const y = this.groundY - WARDEN.skimHeight;
+    this.ctx.projectiles.fire("enemyBullet", this.left - 2, y, -WARDEN.skimSpeed, 0, 1);
+    this.ctx.fx.play("flash", this.left - 2, y);
+    this.ctx.events.emit("sound", "enemyShot");
   }
 
   private lobMortar(): void {

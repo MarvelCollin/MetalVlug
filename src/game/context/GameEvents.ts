@@ -3,7 +3,7 @@ import type { Faction } from "../../domain/combat/Damage";
 export type SoundId =
   | "shot" | "rivet" | "scatter" | "rocket" | "boom" | "bigboom" | "knife" | "hit" | "clank"
   | "jump" | "pickup" | "weapon" | "rescue" | "die" | "enemyDie" | "alarm" | "go" | "enemyShot"
-  | "throw" | "vulcan" | "cannon" | "mission" | "complete" | "scream";
+  | "throw" | "vulcan" | "cannon" | "mission" | "complete" | "scream" | "charge";
 
 export interface GameEvents {
   score: { points: number; x: number; y: number };

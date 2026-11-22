@@ -145,6 +145,35 @@ test("the Iron Warden can be beaten with the pistol by jump shooting", async ({ 
   await page.waitForFunction("window.__mv.snapshot().phase === 'complete'", null, { timeout: 20_000 });
 });
 
+test("the Warden core volleys can be dodged by standing still and jumping the skimmers", async ({ page }) => {
+  test.setTimeout(90_000);
+  await startMission(page);
+  await run(page, "mv.shield(900); mv.warp(3600);");
+  await hold(page, "ArrowRight", 1500);
+  await page.waitForFunction("window.__mv.snapshot().boss === 'phase1'", null, { timeout: 20_000 });
+  await run(page, "sc.warden.turrets.forEach((t) => t.hit({ amount: 999, kind: 'bullet', from: 'player', x: 0, y: 0 }));");
+  await page.waitForFunction("window.__mv.snapshot().boss === 'phase2'", null, { timeout: 5_000 });
+  const setup = "const w = sc.warden; w.mortarCd.trigger(999); w.rusherCd.trigger(999); w.core.hp = 30; " + KILL_ALL;
+  await run(page, setup);
+  await hold(page, "ArrowLeft", 500);
+  await run(page, "mv.shield(0);");
+  const livesBefore = (await snap(page)).lives;
+  let skims = 0;
+  let near = false;
+  const end = Date.now() + 14_000;
+  while (Date.now() < end) {
+    const d = await run<number>(page, "let best = 999; const px = sc.player.x; sc.ctx.projectiles.pool.forEachActive((p) => { if (p.type2 === 'enemyBullet' && Math.abs(p.vy) < 1 && p.y > sc.level.groundY - 12 && p.x > px) best = Math.min(best, p.x - px); }); return best;");
+    if (d < 26 && !near) {
+      skims++;
+      await tap(page, "KeyK", 320);
+    }
+    near = d < 26;
+    await page.waitForTimeout(20);
+  }
+  expect(skims).toBeGreaterThanOrEqual(3);
+  expect((await snap(page)).lives).toBe(livesBefore);
+});
+
 test("leaving the Mule does not instantly board it again", async ({ page }) => {
   await startMission(page);
   await run(page, "mv.shield(120); mv.warp(1560);");
