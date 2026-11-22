@@ -22,7 +22,10 @@ interface Card {
 type Mode = "press" | "main" | "options" | "credits" | "select";
 
 const CREDITS = [
-  "DESIGN, CODE AND PIXELS",
+  "DESIGN, CODE AND PIXELS BY MARVEL COLLIN",
+  "MARVELCOLLIN.COM",
+  "GITHUB.COM/MARVELCOLLIN/METALVLUG",
+  "",
   "MADE WITH PHASER 4",
   "EFFECTS BAKED FROM PIXELFX (MIT)",
   "SPRITE FUSION VFX BY HUGO DUPREZ (MIT)",
@@ -47,6 +50,7 @@ export class TitleScene extends Scene {
   private selectCursor!: GameObjects.Image;
   private attract: GameObjects.GameObject[] = [];
   private selectPanel!: GameObjects.Rectangle;
+  private creditPanel!: GameObjects.Rectangle;
   private t = 0;
   private far!: GameObjects.TileSprite;
   private mid!: GameObjects.TileSprite;
@@ -105,7 +109,8 @@ export class TitleScene extends Scene {
       { label: () => "BACK", select: () => this.setMode("main") },
     ];
     this.options = new Menu(this, items, VIEW_W / 2, 78, 13, tick);
-    this.credits = CREDITS.map((line, i) => new RetroText(this, VIEW_W / 2, 74 + i * 12, line, [0.5, 0.5]));
+    this.creditPanel = this.add.rectangle(VIEW_W / 2, 128, 336, 132, 0x1b1626, 0.62);
+    this.credits = CREDITS.map((line, i) => new RetroText(this, VIEW_W / 2, 66 + i * 12, line, [0.5, 0.5]));
     this.selectPanel = this.add.rectangle(VIEW_W / 2, 132, 300, 112, 0x1b1626, 0.55);
     this.selectTitle = new RetroText(this, VIEW_W / 2, 70, "CHOOSE YOUR SOLDIER", [0.5, 0.5]);
     this.selectCursor = this.add.image(0, 0, TEX.atlas, "hud_cursor_0").setAngle(0);
@@ -133,6 +138,7 @@ export class TitleScene extends Scene {
     this.prompt.view.setVisible(mode === "press");
     this.main.setVisible(mode === "main");
     this.options.setVisible(mode === "options");
+    this.creditPanel.setVisible(mode === "credits");
     for (const c of this.credits) c.view.setVisible(mode === "credits");
     const sel = mode === "select";
     this.selectTitle.view.setVisible(sel);
