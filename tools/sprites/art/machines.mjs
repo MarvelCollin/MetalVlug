@@ -98,94 +98,143 @@ export function muleGun(i) {
   return { pix: p };
 }
 
-export function wardenHull(stage) {
-  const p = new Pix(192, 120);
-  p.box(10, 40, 176, 56, R.rust);
-  for (let x = 22; x < 186; x += 16) {
-    p.rect(x, 44, 1, 48, R.rust[3]);
-    rivets(p, x + 3, x + 3, 46, 1, R.brass);
-    rivets(p, x + 3, x + 3, 88, 1, R.brass);
+const RU = ["#ffad78", "#de6a3a", "#a8452d", "#6b2a28"];
+const BR = ["#fff0a8", "#e6bc4f", "#b07f2c", "#6c4a24"];
+const HOT = ["#fff8d0", "#ffd166", "#f4873b", "#c8452e"];
+const DARK = "#1e1624";
+
+function hole(part, cx, cy, rx, ry, fire) {
+  part.ellipse(cx, cy, rx, ry, DARK);
+  for (let i = 0; i < 6; i++) part.set(cx + Math.round(Math.cos(i) * (rx + 1)), cy + Math.round(Math.sin(i * 1.3) * (ry + 1)), DARK);
+  if (fire) {
+    part.ellipse(cx, cy + 1, rx * 0.5, ry * 0.4, HOT[2]);
+    part.set(cx, cy, HOT[1]);
   }
-  p.box(10, 36, 176, 6, R.gunmetal);
-  p.box(4, 88, 188, 12, R.gunmetal);
-  p.rect(4, 99, 188, 2, R.gunmetal[3]);
-  for (let i = 0; i < 8; i++) p.limb(4 + i * 3, 100, 0 + i * 2, 112, 2, R.steel);
-  p.box(130, 8, 22, 30, R.gunmetal);
-  for (let y = 12; y < 36; y += 7) p.rect(130, y, 22, 2, R.steel[2]);
-  p.box(126, 2, 30, 8, R.steel);
-  p.box(150, 14, 36, 26, R.steel);
-  p.box(154, 18, 28, 10, R.gunmetal, -0.3);
-  for (let i = 0; i < 3; i++) p.box(157 + i * 9, 20, 6, 6, R.brass, 0.2);
-  p.box(14, 52, 22, 30, R.gunmetal);
-  for (let y = 56; y < 80; y += 4) p.rect(16, y, 18, 1, R.gunmetal[0]);
-  p.blob(10, 64, 6, 6, R.brass);
-  p.blob(10, 64, 3, 3, R.cream);
+}
+
+export function wardenHull(stage) {
+  const W = 192;
+  const H = 120;
+  const parts = [];
+  const skirt = new Part(W, H);
+  skirt.poly([[4, 88], [192, 88], [192, 100], [4, 100]], GM[1]).cel(GM, 0.3, -0.1);
+  for (let x = 10; x < 190; x += 12) skirt.rect(x, 92, 2, 6, GM[2]);
+  skirt.rect(4, 99, 188, 1, GM[3]);
+  parts.push(skirt.ink());
+  const catcher = new Part(W, H);
+  for (let i = 0; i < 6; i++) catcher.limb(6 + i * 3, 99, 1 + i * 2, 113, 2, 2, ST[2]);
+  catcher.rect(0, 112, 22, 2, GM[2]);
+  parts.push(catcher.cel(ST, 0.3, -0.2).ink());
+  const body = new Part(W, H);
+  body.poly([[10, 42], [186, 42], [188, 88], [8, 88]], RU[1]).cel(RU, 0.35, -0.25);
+  for (let x = 22; x < 184; x += 18) {
+    body.rect(x, 46, 1, 40, RU[3]);
+    body.dots([[x + 3, 47], [x + 3, 85], [x - 3, 47], [x - 3, 85]], BR[1]);
+  }
+  body.rect(10, 62, 176, 1, RU[3]);
+  body.rect(10, 63, 176, 1, RU[0]);
+  parts.push(body.ink());
+  const deck = new Part(W, H);
+  deck.poly([[8, 36], [188, 36], [188, 43], [8, 43]], GM[1]).cel(GM, 0.4, -0.2);
+  for (let x = 12; x < 186; x += 8) deck.set(x, 39, GM[0]);
+  parts.push(deck.ink());
+  const stack = new Part(W, H);
+  stack.poly([[131, 10], [151, 10], [149, 36], [133, 36]], GM[1]).cel(GM, 0.3, -0.2);
+  for (let y = 14; y < 34; y += 6) stack.rect(132, y, 18, 2, ST[2]);
+  stack.poly([[126, 3], [156, 3], [154, 10], [128, 10]], ST[1]).cel(ST, 0.3, -0.2);
+  stack.rect(129, 4, 24, 1, ST[0]);
+  if (stage > 1) stack.limb(130, 8, 150, 32, 3, 3, DARK);
+  parts.push(stack.ink());
+  const cab = new Part(W, H);
+  cab.poly([[152, 16], [184, 16], [186, 36], [150, 36]], ST[1]).cel(ST, 0.3, -0.2);
+  cab.rect(150, 14, 36, 3, GM[1]);
+  for (let i = 0; i < 3; i++) {
+    cab.rect(156 + i * 9, 20, 6, 7, HOT[1]);
+    cab.rect(156 + i * 9, 20, 6, 2, HOT[0]);
+    cab.rect(156 + i * 9, 26, 6, 1, HOT[2]);
+  }
+  parts.push(cab.ink());
+  const grill = new Part(W, H);
+  grill.poly([[14, 50], [38, 50], [38, 84], [14, 84]], GM[1]).cel(GM, 0.3, -0.2);
+  for (let y = 54; y < 82; y += 4) grill.rect(16, y, 20, 1, GM[3]);
+  parts.push(grill.ink());
+  const lamp = new Part(W, H);
+  lamp.ellipse(10, 66, 6, 6, BR[1]).cel(BR, 0.3, -0.2);
+  lamp.ellipse(10, 66, 3, 3, "#fff8ec");
+  parts.push(lamp.ink());
   if (stage > 0) {
-    p.blob(70, 52, 8, 6, R.gunmetal, -0.6);
-    p.line(64, 50, 76, 56, R.red[1], 2);
-    p.blob(120, 74, 6, 5, R.gunmetal, -0.6);
+    const d = new Part(W, H);
+    hole(d, 64, 52, 6, 4, true);
+    hole(d, 116, 76, 5, 3, false);
+    parts.push(d);
   }
   if (stage > 1) {
-    p.blob(40, 64, 10, 9, R.gunmetal, -0.7);
-    p.line(128, 6, 150, 34, R.gunmetal[3], 3);
-    p.blob(168, 60, 7, 6, R.gunmetal, -0.6);
+    const d = new Part(W, H);
+    hole(d, 46, 70, 8, 6, true);
+    hole(d, 166, 58, 6, 5, true);
+    parts.push(d);
   }
-  p.selout();
-  return { pix: p, anchor: { turretA: { x: 34, y: 80 }, turretB: { x: 120, y: 80 }, core: { x: 77, y: 72 }, stack: { x: 141, y: 2 } } };
+  return { pix: compose(parts, W, H), anchor: { turretA: { x: 34, y: 80 }, turretB: { x: 120, y: 80 }, core: { x: 77, y: 72 }, stack: { x: 141, y: 2 } } };
 }
 
 export function wardenWheel(frame) {
-  const p = new Pix(28, 28);
-  p.blob(14, 14, 13, 13, R.gunmetal);
-  p.blob(14, 14, 10, 10, R.steel, -0.2);
+  const w = new Part(28, 28);
+  w.ellipse(14, 14, 13, 13, GM[1]).cel(GM, 0.3, -0.25);
+  w.ellipse(14, 14, 9, 9, ST[2]);
   const a = (frame / 4) * (Math.PI / 2);
   for (let k = 0; k < 6; k++) {
     const ang = a + (k * Math.PI) / 3;
-    p.limb(14, 14, 14 + Math.cos(ang) * 9, 14 + Math.sin(ang) * 9, 2, R.gunmetal);
+    w.limb(14, 14, 14 + Math.cos(ang) * 9, 14 + Math.sin(ang) * 9, 2, 2, GM[2]);
   }
-  p.blob(14, 14, 3, 3, R.brass);
-  p.selout();
-  return { pix: p };
+  w.ellipse(14, 14, 3, 3, BR[1]);
+  w.set(13, 13, BR[0]);
+  return { pix: compose([w.ink()], 28, 28) };
 }
 
 export function wardenTurret(broken) {
-  const p = new Pix(36, 26);
+  const t = new Part(36, 26);
   if (!broken) {
-    p.box(6, 12, 26, 14, R.gunmetal);
-    p.blob(20, 11, 11, 8, R.steel);
-    p.box(0, 9, 14, 5, R.steel, 0.1);
-    p.box(0, 8, 3, 7, R.gunmetal);
-    p.blob(23, 8, 2, 2, R.red, 0.2);
-    p.rect(8, 16, 22, 1, R.gunmetal[3]);
-  } else {
-    p.box(6, 18, 26, 8, R.gunmetal, -0.4);
-    p.limb(10, 18, 16, 12, 3, R.steel, -0.3);
-    p.limb(22, 18, 28, 14, 3, R.steel, -0.3);
-    p.blob(18, 21, 4, 2, R.red, -0.5);
+    t.poly([[6, 12], [32, 12], [32, 26], [6, 26]], GM[1]).cel(GM, 0.3, -0.2);
+    t.rect(6, 17, 26, 1, GM[3]);
+    const dome = new Part(36, 26);
+    dome.ellipse(20, 11, 11, 7, ST[1]).cel(ST, 0.3, -0.25);
+    dome.ellipse(24, 8, 2, 2, "#ff4a3a");
+    dome.set(23, 7, "#ffc4b8");
+    const barrel = new Part(36, 26);
+    barrel.rect(1, 9, 14, 5, ST[1]).cel(ST, 0.3, -0.2);
+    barrel.rect(0, 8, 3, 7, GM[1]);
+    return { pix: compose([t.ink(), dome.ink(), barrel.ink()], 36, 26), anchor: { muzzle: { x: 0, y: 11 } } };
   }
-  p.selout();
-  return { pix: p, anchor: { muzzle: { x: 0, y: 11 } } };
+  t.poly([[6, 18], [32, 18], [32, 26], [6, 26]], GM[2]).cel(GM, 0.1, -0.1);
+  t.limb(10, 18, 15, 12, 3, 2, ST[2]);
+  t.limb(22, 18, 28, 14, 3, 2, ST[2]);
+  t.ellipse(18, 21, 4, 2, HOT[2]);
+  t.set(18, 21, HOT[1]);
+  return { pix: compose([t.ink()], 36, 26), anchor: { muzzle: { x: 0, y: 11 } } };
 }
 
 export function wardenCore(state, frame = 0) {
-  const p = new Pix(36, 36);
-  p.box(2, 2, 32, 32, R.gunmetal);
-  p.box(5, 5, 26, 26, R.steel, -0.2);
+  const frameP = new Part(36, 36);
+  frameP.rect(2, 2, 32, 32, GM[1]).cel(GM, 0.3, -0.2);
+  frameP.rect(5, 5, 26, 26, GM[3]);
+  const inner = new Part(36, 36);
   if (state === "closed") {
-    p.box(7, 7, 11, 22, R.steel);
-    p.box(18, 7, 11, 22, R.steel, -0.15);
-    for (let y = 10; y < 28; y += 4) { p.rect(8, y, 9, 1, R.steel[3]); p.rect(19, y, 9, 1, R.steel[3]); }
+    inner.rect(6, 6, 12, 24, ST[1]);
+    inner.rect(18, 6, 12, 24, ST[2]);
+    for (let y = 9; y < 28; y += 4) { inner.rect(7, y, 10, 1, ST[3]); inner.rect(19, y, 10, 1, GM[2]); }
+    inner.rect(17, 6, 1, 24, DARK);
   } else if (state === "open") {
-    p.box(7, 7, 22, 22, R.gunmetal, -0.6);
-    const hot = frame ? ["#fff8d0", "#ffd166", "#f4873b", "#c8452e"] : ["#ffe9a8", "#f4a23b", "#d8582e", "#8e2f2a"];
-    p.blob(18, 18, 9, 9, hot);
-    p.box(3, 7, 4, 22, R.steel);
-    p.box(29, 7, 4, 22, R.steel, -0.2);
+    inner.rect(6, 6, 24, 24, DARK);
+    const ring = frame ? HOT : ["#ffe9a8", "#f4a23b", "#d8582e", "#8e2f2a"];
+    inner.ellipse(18, 18, 9, 9, ring[2]);
+    inner.ellipse(18, 18, 6, 6, ring[1]);
+    inner.ellipse(17, 17, 3, 3, ring[0]);
+    inner.rect(3, 6, 3, 24, ST[2]);
+    inner.rect(30, 6, 3, 24, ST[3]);
   } else {
-    p.box(7, 7, 22, 22, R.gunmetal, -0.7);
-    p.limb(9, 10, 26, 26, 2, R.steel, -0.3);
-    p.blob(19, 20, 4, 4, ["#a597a3", "#6e6273", "#4c4352", "#2f2833"]);
+    inner.rect(6, 6, 24, 24, DARK);
+    inner.limb(8, 10, 27, 27, 2, 2, ST[3]);
+    inner.ellipse(19, 20, 4, 4, "#6e6273");
   }
-  p.selout();
-  return { pix: p };
+  return { pix: compose([frameP.ink(), inner], 36, 36) };
 }
