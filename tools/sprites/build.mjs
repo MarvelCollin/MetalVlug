@@ -5,9 +5,10 @@ import { encodePng } from "./png.mjs";
 import { gruntFrames, lobberFrames, playerFrames, rusherFrames, tinkerFrames } from "./art/characters.mjs";
 import { GUN_ANGLES, muleBody, muleGun, wardenCore, wardenHull, wardenTurret, wardenWheel } from "./art/machines.mjs";
 import { fx } from "./art/fx.mjs";
-import { background, cageFrames, hud, items, tiles } from "./art/world.mjs";
+import { background, hud, tiles } from "./art/world.mjs";
+import { cageFrames, dummyFrames, flagFrames, items, sandbag } from "./art/props.mjs";
 import { buildFont } from "./art/font.mjs";
-import { campBackground, campTiles, dummyFrames, flagFrames } from "./art/camp.mjs";
+import { campBackground, campTiles } from "./art/camp.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const out = join(root, "public", "assets");
@@ -49,6 +50,7 @@ for (const [name, list] of Object.entries(items)) add(name, list);
 for (const [name, list] of Object.entries(tiles)) add(name, list);
 for (const [name, list] of Object.entries(hud)) add(name, list);
 for (const [name, list] of Object.entries(campTiles)) add(name, list);
+add("sandbag", sandbag);
 for (const [name, list] of Object.entries(dummyFrames)) add(name, list);
 add("flag", flagFrames);
 
