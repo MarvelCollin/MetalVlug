@@ -86,6 +86,45 @@ test("Mule vulcan hits a kneeling grunt", async ({ page }) => {
   expect((await snap(page)).score).toBeGreaterThan(before);
 });
 
+test("Mule vulcan hits an enemy pressed against the hull", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(120); mv.warp(1560);");
+  await page.waitForTimeout(400);
+  await hold(page, "ArrowRight", 700);
+  expect((await snap(page)).piloting).toBe(true);
+  await run(page, "sc.enemies.list.forEach((e) => e.alive && e.fsm.change('gone')); sc.enemies.spawn({ type: 'grunt', x: sc.mule.x + 14, y: 184, idle: 'none', hold: true, group: -6, facing: -1 });");
+  await page.waitForTimeout(150);
+  await hold(page, "KeyJ", 700);
+  await page.waitForTimeout(200);
+  expect(await run<boolean>(page, "return sc.enemies.list.filter((e) => e.group === -6).every((e) => !e.alive);")).toBe(true);
+});
+
+test("Mule point blank fire covers facing left and crouching but not behind or straight up", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(120); mv.warp(1560);");
+  await page.waitForTimeout(400);
+  await hold(page, "ArrowRight", 700);
+  expect((await snap(page)).piloting).toBe(true);
+  const spawn = (dx: number, group: number) => run(page, `sc.enemies.list.forEach((e) => e.alive && e.group > -7 && e.fsm.change('gone')); sc.enemies.spawn({ type: 'grunt', x: sc.mule.x + ${dx}, y: 184, idle: 'none', hold: true, group: ${group}, facing: 1 });`);
+  const alive = (group: number) => run<boolean>(page, `return sc.enemies.list.some((e) => e.group === ${group} && e.alive);`);
+  await spawn(-14, -7);
+  await page.keyboard.down("ArrowUp");
+  await page.waitForTimeout(500);
+  await hold(page, "KeyJ", 500);
+  await page.keyboard.up("ArrowUp");
+  expect(await alive(-7)).toBe(true);
+  await hold(page, "KeyJ", 500);
+  expect(await alive(-7)).toBe(true);
+  await tap(page, "ArrowLeft", 60);
+  await page.waitForTimeout(400);
+  await page.keyboard.down("ArrowDown");
+  await page.waitForTimeout(300);
+  await hold(page, "KeyJ", 700);
+  await page.keyboard.up("ArrowDown");
+  await page.waitForTimeout(200);
+  expect(await alive(-7)).toBe(false);
+});
+
 test("freeing a caged Tinker counts a rescue and drops the Rivet gun", async ({ page }) => {
   await startMission(page);
   await run(page, "mv.shield(120); mv.warp(760); sc.enemies.list.forEach((e) => e.active && e.fsm.change('gone'));");

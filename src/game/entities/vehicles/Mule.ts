@@ -17,6 +17,8 @@ export class Mule implements Target {
   private readonly gun: GameObjects.Image;
   private readonly fsm: StateMachine<Mule, MuleState>;
   private readonly box = new Geom.Rectangle();
+  private readonly blank = new Geom.Rectangle();
+  private readonly blankBox = new Geom.Rectangle();
   private gunAngle = 0;
   private facing: 1 | -1 = 1;
   private vulcanTimer = 0;
@@ -183,7 +185,7 @@ export class Mule implements Target {
       const mx = this.gun.x + Math.cos(this.gunAngle) * 18;
       const my = this.gun.y + Math.sin(this.gunAngle) * 18;
       const j = this.ctx.rng.range(-0.03, 0.03);
-      this.ctx.projectiles.fire("vulcan", mx, my, Math.cos(this.gunAngle + j) * MULE.vulcanSpeed, Math.sin(this.gunAngle + j) * MULE.vulcanSpeed, 1);
+      if (!this.pointBlank(mx, my)) this.ctx.projectiles.fire("vulcan", mx, my, Math.cos(this.gunAngle + j) * MULE.vulcanSpeed, Math.sin(this.gunAngle + j) * MULE.vulcanSpeed, 1);
       this.ctx.fx.play("flash", mx, my);
       this.ctx.events.emit("sound", "vulcan");
     }
@@ -194,6 +196,19 @@ export class Mule implements Target {
       this.ctx.events.emit("sound", "cannon");
     }
     this.player.legs.setPosition(this.sprite.x, this.sprite.y);
+  }
+
+  private pointBlank(mx: number, my: number): boolean {
+    if (Math.cos(this.gunAngle) * this.facing < 0.5) return false;
+    const near = this.sprite.x + this.facing * 6;
+    const far = mx + this.facing * 8;
+    this.blank.setTo(Math.min(near, far), my - 6, Math.abs(far - near), this.sprite.y - (my - 6));
+    const t = this.ctx.combat.firstOverlap("player", this.blank);
+    if (!t) return false;
+    t.hit({ amount: 1, kind: "bullet", from: "player", x: mx, y: my });
+    const b = t.bounds(this.blankBox);
+    this.ctx.fx.spark(b.centerX - this.facing * b.width * 0.3, Math.max(b.y + 4, Math.min(b.bottom - 4, my + 6)), -this.facing);
+    return true;
   }
 
   private syncGun(): void {
