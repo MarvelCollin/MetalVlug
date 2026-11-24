@@ -155,13 +155,18 @@ export class Enemy implements Target {
   }
 
   bounds(out: Geom.Rectangle): Geom.Rectangle {
-    const low = this.fsm.is("idle") || /_(aim|fire|idle|read)_/.test(this.sprite.frame.name);
+    const low = this.fsm.is("idle") || /^grunt_(aim|fire)_|_(idle|read)_/.test(this.sprite.frame.name);
     const h = low ? 26 : 32;
     return out.setTo(this.sprite.x - 8, this.sprite.y - h, 16, h);
   }
 
   hit(hit: Hit): HitResult {
     if (!this.alive) return MISS;
+    if (this.behaviour.blocks?.(this, hit)) {
+      this.ctx.fx.spark(this.x + this.facing * 10, Math.max(this.y - 30, Math.min(this.y - 6, hit.y)), -this.facing);
+      this.ctx.events.emit("sound", "clank");
+      return ABSORBED;
+    }
     this.hp -= hit.amount;
     this.ctx.fx.flash(this.sprite);
     if (this.hp > 0) {

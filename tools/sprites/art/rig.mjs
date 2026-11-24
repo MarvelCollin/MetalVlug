@@ -46,6 +46,8 @@ export const LOOKS = {
   },
 };
 LOOKS.lobber = { ...LOOKS.grunt, vest: ["#c49a6c", "#8f6345", "#5f3f30", "#3a2528"], pants: ["#c9c98a", "#8f9457", "#5f673d", "#3c4430"] };
+LOOKS.bazooka = { ...LOOKS.grunt, coat: ["#d6d79a", "#9ea263", "#6c7343", "#475030"], vest: ["#c49a6c", "#8f6345", "#5f3f30", "#3a2528"], hair: ["#c9c98a", "#8f9457", "#5f673d", "#3c4430"] };
+LOOKS.shield = { ...LOOKS.grunt, coat: ["#a3adc2", "#6c7790", "#4a5268", "#333a4e"], vest: ["#ffad78", "#de6a3a", "#a8452d", "#6b2a28"], hair: ["#3f4658", "#2c3242", "#1f2433", "#141824"] };
 LOOKS.rusher = { ...LOOKS.grunt, pants: ["#a3adc2", "#6c7790", "#4a5268", "#333a4e"], accent: ["#ff8c78", "#d8323a", "#962632", "#5a1c28"] };
 
 const GUN = ["#c8d0dc", "#7c8496", "#4a5062", "#2c3040"];

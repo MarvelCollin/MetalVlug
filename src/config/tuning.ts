@@ -64,6 +64,8 @@ export const ENEMY = {
   grunt: { hp: 1, speed: 60, keepMin: 80, keepMax: 150, aimTime: 0.5, fireGap: [1.6, 2.6], bulletSpeed: 110, maxAngle: 0.6 },
   lobber: { hp: 1, speed: 50, keepMin: 110, keepMax: 170, windup: 0.5, throwGap: [2.4, 3.2], flightTime: 0.9 },
   rusher: { hp: 2, speed: 110, reach: 20, windup: 0.45, active: 0.12, recover: 0.5 },
+  bazooka: { hp: 1, speed: 45, keepMin: 130, keepMax: 220, aimTime: 0.75, recover: 0.55, fireGap: [2.8, 3.8], rocketSpeed: 105, rocketLift: 3 },
+  shield: { hp: 4, speed: 32, keepMin: 56, keepMax: 120, peekTime: 0.5, exposed: 0.45, fireGap: [2.2, 3.2], bulletSpeed: 115, maxAngle: 0.5, coverHeight: 33 },
 } as const;
 
 export const MULE = {

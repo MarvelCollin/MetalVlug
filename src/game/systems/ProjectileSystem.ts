@@ -11,7 +11,7 @@ import type { CameraDirector } from "./CameraDirector";
 import type { CombatSystem } from "./CombatSystem";
 import type { EffectsSystem } from "./EffectsSystem";
 
-export type ProjectileKind = "bullet" | "heavy" | "vulcan" | "enemyBullet" | "rocket" | "bomb" | "enemyBomb" | "shell" | "mortar";
+export type ProjectileKind = "bullet" | "heavy" | "vulcan" | "enemyBullet" | "rocket" | "enemyRocket" | "bomb" | "enemyBomb" | "shell" | "mortar";
 
 interface Spec {
   frame: string;
@@ -35,6 +35,7 @@ const SPECS: Record<ProjectileKind, Spec> = {
   heavy: { frame: "bullet_r", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
   vulcan: { frame: "bullet_v", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
   rocket: { frame: "rocket", faction: "player", gravity: 0, radius: 26, bounces: 0, accel: 600, maxSpeed: 380, w: 10, h: 6, kind: "blast", big: false, orient: true, life: 2 },
+  enemyRocket: { frame: "rocket", faction: "enemy", gravity: 0, radius: 16, bounces: 0, accel: 0, maxSpeed: 0, w: 10, h: 6, kind: "blast", big: false, orient: true, life: 5 },
   bomb: { frame: "bomb_0", anim: "bomb", faction: "player", gravity: PHYSICS.gravity, radius: BOMB.radius, bounces: 1, accel: 0, maxSpeed: 0, w: 7, h: 7, kind: "blast", big: true, orient: false, life: 4 },
   shell: { frame: "shell_0", faction: "player", gravity: PHYSICS.gravity * 0.5, radius: 32, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 6, kind: "blast", big: true, orient: false, life: 3 },
   enemyBullet: { frame: "bullet_e_0", anim: "bullet_e", faction: "enemy", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 5, h: 5, kind: "bullet", big: false, orient: false, life: 5 },
@@ -163,7 +164,7 @@ export class ProjectileSystem {
     const steps = 16;
     const a = Math.atan2(p.vy, p.vx);
     const i = ((Math.round((a / (Math.PI * 2)) * steps) % steps) + steps) % steps;
-    const base = p.type2 === "rocket" ? (Math.floor(p.life * 20) % 2) * steps : 0;
+    const base = p.type2 === "rocket" || p.type2 === "enemyRocket" ? (Math.floor(p.life * 20) % 2) * steps : 0;
     p.setFrame(`${s.frame}_${base + i}`);
   }
 

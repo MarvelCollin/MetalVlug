@@ -263,6 +263,18 @@
    "y": 13
   }
  },
+ "bazooka_aim_0": {
+  "muzzle": {
+   "x": 46,
+   "y": 25
+  }
+ },
+ "shield_peek_0": {
+  "muzzle": {
+   "x": 45,
+   "y": 21
+  }
+ },
  "mule_idle_0": {
   "pivot": {
    "x": 29,

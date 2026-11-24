@@ -130,6 +130,95 @@ function slashArc() {
   return a;
 }
 
+const OLIVE = ["#c9c98a", "#8f9457", "#5f673d", "#3c4430"];
+const IRON = ["#d6dce6", "#9aa3b4", "#5f6779", "#3d4456"];
+const RED = ["#ff9c8a", "#e24b3e", "#a62d36", "#64202e"];
+const SMOKE = ["#f2eee6", "#cfc8bc", "#a39b90", "#756e66"];
+
+function launcher(u, loaded, kick = 0) {
+  const tube = new Part();
+  const [cx, cy] = u.chest;
+  const y = cy - 1;
+  tube.rect(cx - 15 + kick, y - 2, 30, 5, IRON[2]);
+  tube.rect(cx - 17 + kick, y - 3, 3, 7, OLIVE[2]);
+  tube.rect(cx + 13 + kick, y - 3, 3, 7, OLIVE[2]);
+  tube.rect(cx - 2 + kick, y + 3, 3, 4, IRON[2]);
+  tube.rect(cx + 4 + kick, y - 5, 4, 3, IRON[1]);
+  tube.cel(IRON, 0.35, -0.15);
+  tube.rect(cx - 13 + kick, y - 2, 26, 1, IRON[1]);
+  tube.rect(cx - 17 + kick, y - 3, 3, 7, OLIVE[1]);
+  tube.rect(cx + 13 + kick, y - 3, 3, 7, OLIVE[1]);
+  tube.ink();
+  const parts = [tube];
+  if (loaded) {
+    const tip = new Part();
+    tip.poly([[cx + 16 + kick, y - 2], [cx + 20 + kick, y - 2], [cx + 23 + kick, y + 1], [cx + 20 + kick, y + 3], [cx + 16 + kick, y + 3]], RED[1]);
+    tip.cel(RED, 0.3, -0.2).ink();
+    parts.push(tip);
+  }
+  return { parts, muzzle: { x: cx + 18 + kick, y: y + 1 } };
+}
+
+function backblast(u) {
+  const b = new Part();
+  const [cx, cy] = u.chest;
+  b.ellipse(cx - 22, cy - 4, 5, 4, SMOKE[1]);
+  b.ellipse(cx - 28, cy - 6, 4, 3, SMOKE[2]);
+  b.cel(SMOKE, 0.3, -0.2);
+  return b.ink();
+}
+
+const SHOULDER = up(UPPER.fwd, { bh: [24, 22], be: [22, 28], fh: [31, 26], fe: [30, 31] });
+
+export function bazookaFrames() {
+  const look = LOOKS.bazooka;
+  const k = "grunt";
+  const out = {};
+  out.idle = [0, 1].map((f) => ({ pix: fullBody(look, k, STANCE.sit, SIT_UP, { behind: crate, held: (u) => mug(u, f) }) }));
+  out.run = Array.from({ length: 8 }, (_, f) => ({ pix: fullBody(look, k, runStance(f), SHOULDER, { held: (u) => launcher(u, true).parts }) }));
+  out.aim = [{ pix: fullBody(look, k, STANCE.stand, SHOULDER, { held: (u) => launcher(u, true).parts }) }];
+  out.fire = [{ pix: fullBody(look, k, STANCE.stand, SHOULDER, { held: (u) => [...launcher(u, false, -2).parts, backblast(u)], mood: "shout" }) }];
+  out.die = deathFrames(look, k);
+  return { frames: out, anchors: { aim_0: { muzzle: launcher(SHOULDER, true).muzzle } } };
+}
+
+function riotShield(u, low) {
+  const sh = new Part();
+  const x = u.fh[0] + 1;
+  const top = low ? 22 : 13;
+  sh.poly([[x, top], [x + 6, top + 1], [x + 7, 45], [x + 1, 46]], IRON[1]);
+  sh.cel(IRON, 0.35, -0.2);
+  sh.rect(x + 2, top + 5, 3, 1, "#1e1624");
+  sh.rect(x + 2, top + 6, 3, 1, "#7fd4ea");
+  sh.dots([[x + 1, top + 2], [x + 5, top + 3], [x + 1, 43], [x + 5, 43]], IRON[0]);
+  sh.rect(x + 3, top + 10, 1, 45 - top - 12, IRON[2]);
+  return sh.ink();
+}
+
+function sidearm(u) {
+  const g = new Part();
+  const [hx, hy] = u.bh;
+  g.rect(hx - 1, hy - 2, 8, 3, IRON[2]);
+  g.rect(hx, hy + 1, 3, 3, "#6c462e");
+  g.cel(IRON, 0.3, -0.2);
+  return g.ink();
+}
+
+const GUARD = up(UPPER.fwd, { fh: [34, 30], fe: [31, 33], bh: [30, 31], be: [26, 33] });
+const PEEK = up(UPPER.fwd, { fh: [33, 34], fe: [31, 33], bh: [37, 22], be: [32, 24] });
+
+export function shieldFrames() {
+  const look = LOOKS.shield;
+  const k = "grunt";
+  const out = {};
+  out.idle = [0, 1].map((f) => ({ pix: fullBody(look, k, STANCE.stand, up(GUARD, { head: [30, 16 + f] }), { front: (u) => [riotShield(u, false)] }) }));
+  out.run = Array.from({ length: 8 }, (_, f) => ({ pix: fullBody(look, k, runStance(f), GUARD, { front: (u) => [riotShield(u, false)] }) }));
+  out.peek = [{ pix: fullBody(look, k, STANCE.stand, PEEK, { held: (u) => [sidearm(u)], front: (u) => [riotShield(u, true)], mood: "angry" }) }];
+  out.fire = [{ pix: fullBody(look, k, STANCE.stand, PEEK, { held: (u) => [sidearm(u)], front: (u) => [riotShield(u, true)], mood: "shout" }) }];
+  out.die = deathFrames(look, k);
+  return { frames: out, anchors: { peek_0: { muzzle: { x: PEEK.bh[0] + 8, y: PEEK.bh[1] - 1 } } } };
+}
+
 export function tinkerFrames() {
   const look = LOOKS.tinker;
   const k = "tinker";

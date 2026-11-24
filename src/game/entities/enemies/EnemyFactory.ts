@@ -6,6 +6,8 @@ import { GruntBehaviour } from "./behaviours/GruntBehaviour";
 import { LobberBehaviour } from "./behaviours/LobberBehaviour";
 import { RusherBehaviour } from "./behaviours/RusherBehaviour";
 import { DummyBehaviour } from "./behaviours/DummyBehaviour";
+import { BazookaBehaviour } from "./behaviours/BazookaBehaviour";
+import { ShieldBehaviour } from "./behaviours/ShieldBehaviour";
 
 export class EnemyFactory {
   private readonly all: Enemy[] = [];
@@ -13,6 +15,8 @@ export class EnemyFactory {
     grunt: new GruntBehaviour(),
     lobber: new LobberBehaviour(),
     rusher: new RusherBehaviour(),
+    bazooka: new BazookaBehaviour(),
+    shield: new ShieldBehaviour(),
     dummy: new DummyBehaviour(),
   };
 

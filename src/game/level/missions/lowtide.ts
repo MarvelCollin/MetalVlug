@@ -70,9 +70,9 @@ export const LOWTIDE: LevelData = {
       { type: "grunt", entry: "para", delay: 3.6 },
       { type: "lobber", side: "right", delay: 4 },
     ] },
-    { at: 2150, spawns: [{ type: "grunt", x: 2420, idle: "read" }, { type: "grunt", x: 2470 + 40, idle: "idle" }, { type: "lobber", x: 2600, y: 130, idle: "none", hold: true }] },
+    { at: 2150, spawns: [{ type: "grunt", x: 2420, idle: "read" }, { type: "grunt", x: 2470 + 40, idle: "idle" }, { type: "lobber", x: 2600, y: 130, idle: "none", hold: true }, { type: "shield", side: "right", delay: 1.4 }] },
     { at: 2500, spawns: [{ type: "rusher", side: "right", delay: 0 }, { type: "rusher", entry: "para", delay: 0.5 }, { type: "grunt", side: "left", delay: 1.2 }, { type: "grunt", entry: "para", delay: 1.8 }] },
-    { at: 2750, spawns: [{ type: "grunt", x: 3000, y: 125, idle: "idle", hold: true }, { type: "grunt", side: "right", delay: 1 }, { type: "lobber", side: "right", delay: 1.8 }] },
+    { at: 2750, spawns: [{ type: "bazooka", x: 3000, y: 125, idle: "none", hold: true }, { type: "grunt", side: "right", delay: 1 }, { type: "shield", side: "right", delay: 2.6 }, { type: "lobber", side: "right", delay: 1.8 }] },
   ],
   boss: { lockAt: 3456, stopX: 3720 },
 };

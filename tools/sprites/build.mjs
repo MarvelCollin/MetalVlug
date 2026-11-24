@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { encodePng } from "./png.mjs";
 import { headIcon } from "./art/rig.mjs";
-import { gruntFrames, lobberFrames, playerFrames, rusherFrames, tinkerFrames } from "./art/characters.mjs";
+import { bazookaFrames, gruntFrames, lobberFrames, playerFrames, rusherFrames, shieldFrames, tinkerFrames } from "./art/characters.mjs";
 import { GUN_ANGLES, muleBody, muleGun, wardenCore, wardenHull, wardenTurret, wardenWheel } from "./art/machines.mjs";
 import { fx } from "./art/fx.mjs";
 import { BG_VARIANTS, background, hud, tiles } from "./art/world.mjs";
@@ -28,7 +28,7 @@ function add(name, list) {
 
 for (const who of ["pip", "juno"]) for (const [anim, list] of Object.entries(playerFrames(who))) add(`${who}_${anim}`, list);
 
-for (const [name, set] of [["grunt", gruntFrames()], ["lobber", lobberFrames()], ["rusher", rusherFrames()], ["tinker", tinkerFrames()]]) {
+for (const [name, set] of [["grunt", gruntFrames()], ["lobber", lobberFrames()], ["rusher", rusherFrames()], ["bazooka", bazookaFrames()], ["shield", shieldFrames()], ["tinker", tinkerFrames()]]) {
   for (const [anim, list] of Object.entries(set.frames)) add(`${name}_${anim}`, list);
   for (const [key, anchor] of Object.entries(set.anchors)) anchors[`${name}_${key}`] = anchor;
   if (set.frames.die) add(`${name}_tumble`, Array.from({ length: 8 }, (_, k) => ({ pix: set.frames.die[0].pix.rotated((k * Math.PI) / 4, 24, 30) })));

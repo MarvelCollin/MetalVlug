@@ -125,6 +125,43 @@ test("Mule point blank fire covers facing left and crouching but not behind or s
   expect(await alive(-7)).toBe(false);
 });
 
+test("bazooka rockets fly over a crouching player and hit a standing one", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(0); " + KILL_ALL + " const e = sc.enemies.spawn({ type: 'bazooka', x: sc.player.x + 160, y: 184, idle: 'none', hold: true, group: -8, facing: -1 }); e.cooldown.trigger(0);");
+  await page.keyboard.down("ArrowDown");
+  await page.waitForFunction("window.__mv.scene.ctx.projectiles.count('enemyRocket') > 0", null, { timeout: 5_000 });
+  await page.waitForFunction("window.__mv.scene.ctx.projectiles.count('enemyRocket') === 0", null, { timeout: 5_000 });
+  expect((await snap(page)).playerState).toBe("alive");
+  await page.keyboard.up("ArrowDown");
+  await page.waitForFunction("window.__mv.scene.ctx.projectiles.count('enemyRocket') > 0", null, { timeout: 6_000 });
+  await page.waitForFunction("window.__mv.snapshot().playerState !== 'alive'", null, { timeout: 5_000 });
+});
+
+test("shield soldiers block pistol fire from the front but fall to the knife and to grenades", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60); " + KILL_ALL + " const e = sc.enemies.spawn({ type: 'shield', x: sc.player.x + 70, y: 184, idle: 'none', hold: true, group: -9, facing: -1 }); e.cooldown.trigger(30);");
+  await page.waitForTimeout(300);
+  for (let i = 0; i < 12; i++) await tap(page, "KeyJ", 30), await page.waitForTimeout(90);
+  await page.waitForTimeout(400);
+  expect(await run<number>(page, "return sc.enemies.list.find((e) => e.group === -9).hp;")).toBe(4);
+  await page.keyboard.down("ArrowRight");
+  await page.waitForFunction("Math.abs(window.__mv.scene.enemies.list.find((e) => e.group === -9).x - window.__mv.scene.player.x) < 20", null, { timeout: 4_000, polling: 16 });
+  await page.keyboard.up("ArrowRight");
+  await tap(page, "KeyJ", 40);
+  await page.waitForTimeout(500);
+  expect(await run<boolean>(page, "return sc.enemies.list.find((e) => e.group === -9).alive;")).toBe(false);
+  await run(page, "const e = sc.enemies.spawn({ type: 'shield', x: sc.player.x + 90, y: 184, idle: 'none', hold: true, group: -10, facing: -1 }); e.cooldown.trigger(30);");
+  await page.keyboard.down("ArrowLeft");
+  await page.waitForTimeout(250);
+  await page.keyboard.up("ArrowLeft");
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(30);
+  await page.keyboard.up("ArrowRight");
+  await tap(page, "KeyL", 40);
+  await page.waitForTimeout(1600);
+  expect(await run<boolean>(page, "return sc.enemies.list.find((e) => e.group === -10).alive;")).toBe(false);
+});
+
 test("freeing a caged Tinker counts a rescue and drops the Rivet gun", async ({ page }) => {
   await startMission(page);
   await run(page, "mv.shield(120); mv.warp(760); sc.enemies.list.forEach((e) => e.active && e.fsm.change('gone'));");
