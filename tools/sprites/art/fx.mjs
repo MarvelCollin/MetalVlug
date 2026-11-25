@@ -84,6 +84,52 @@ fx.dust = [0, 1, 2, 3].map((f) =>
   }, false),
 );
 
+fx.flame = [0, 1, 2, 3].map((f) =>
+  one(20, 14, (p) => {
+    const r = rng(40 + f);
+    for (let k = 0; k < 9; k++) {
+      const u = k / 8;
+      const x = 3 + u * 12;
+      const rad = 1.5 + Math.sin(u * Math.PI * 0.85) * 4.5 + (r() - 0.5) * 1.2;
+      const y = 7 + Math.sin(f * 1.7 + k) * (1 - u) * 1.5;
+      p.disc(x, y, Math.max(1, rad), u < 0.35 ? C.fire4 : C.fire3);
+    }
+    for (let k = 0; k < 6; k++) {
+      const u = 0.35 + k / 10;
+      p.disc(3 + u * 12, 7 + (r() - 0.5), Math.max(1, 3 * Math.sin(u * Math.PI * 0.9)), C.fire2);
+    }
+    p.disc(13 + (f % 2), 7, 2, C.fire1);
+    for (let k = 0; k < 3; k++) p.px(1 + Math.floor(r() * 5), 3 + Math.floor(r() * 8), C.fire2);
+  }),
+);
+
+fx.flame_up = fx.flame.map((f) => ({ pix: f.pix.rotated(-Math.PI / 2, 10, 7) }));
+
+const BEAM = ["#ffffff", "#b8f6ff", "#4fd6ea", "#2a8fb0"];
+function beamRow(i, f) {
+  const band = [3, 2, 1, 0, 1, 2, 3];
+  return BEAM[Math.max(0, band[i] - (f && i > 0 && i < 6 ? 0 : 0))];
+}
+fx.beam_h = [0, 1].map((f) =>
+  one(8, 7, (p) => {
+    for (let y = 0; y < 7; y++) for (let x = 0; x < 8; x++) {
+      if ((y === 0 || y === 6) && (x + f * 3) % 4 === 0) continue;
+      p.px(x, y, beamRow(y, f));
+    }
+    if (f) for (const x of [1, 5]) p.px(x, 2, BEAM[0]);
+  }, false),
+);
+fx.beam_v = [0, 1].map((f) =>
+  one(7, 8, (p) => {
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 7; x++) {
+      if ((x === 0 || x === 6) && (y + f * 3) % 4 === 0) continue;
+      p.px(x, y, beamRow(x, f));
+    }
+    if (f) for (const y of [1, 5]) p.px(2, y, BEAM[0]);
+  }, false),
+);
+fx.ash = [0, 1, 2].map((f) => one(3, 3, (p) => { p.rect(0, 0, 3 - (f % 2), 2 + (f > 1 ? 1 : 0), ["#3a3036", "#56484e", "#2a2226"][f]); }, false));
+
 export const ANGLES = 16;
 
 function streak(size, len, thick, tail, head) {

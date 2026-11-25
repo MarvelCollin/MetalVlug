@@ -34,6 +34,8 @@ const BANK: Record<SoundId, Voice[]> = {
   alarm: [{ wave: "square", from: 880, to: 880, time: 0.12, gain: 0.08 }, { wave: "square", from: 660, to: 660, time: 0.12, gain: 0.08, delay: 0.15 }],
   go: [{ wave: "square", from: 523, to: 523, time: 0.1, gain: 0.08 }, { wave: "square", from: 784, to: 784, time: 0.14, gain: 0.08, delay: 0.1 }],
   charge: [{ wave: "square", from: 220, to: 880, time: 0.45, gain: 0.05 }],
+  flame: [{ wave: "noise", from: 0, to: 0, time: 0.28, gain: 0.22, filter: 1200 }, { wave: "sawtooth", from: 140, to: 90, time: 0.22, gain: 0.06 }],
+  laser: [{ wave: "square", from: 1760, to: 1480, time: 0.05, gain: 0.035 }, { wave: "sine", from: 880, to: 900, time: 0.05, gain: 0.04 }],
   enemyShot: [{ wave: "square", from: 500, to: 260, time: 0.07, gain: 0.06 }],
   throw: [{ wave: "triangle", from: 400, to: 700, time: 0.1, gain: 0.07 }],
   vulcan: [{ wave: "square", from: 520, to: 200, time: 0.04, gain: 0.08 }],

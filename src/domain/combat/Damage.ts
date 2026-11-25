@@ -1,4 +1,4 @@
-export type DamageKind = "bullet" | "knife" | "blast" | "fire";
+export type DamageKind = "bullet" | "knife" | "blast" | "fire" | "beam";
 export type Faction = "player" | "enemy";
 
 export interface Hit {

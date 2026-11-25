@@ -11,7 +11,7 @@ import type { CameraDirector } from "./CameraDirector";
 import type { CombatSystem } from "./CombatSystem";
 import type { EffectsSystem } from "./EffectsSystem";
 
-export type ProjectileKind = "bullet" | "heavy" | "vulcan" | "enemyBullet" | "rocket" | "enemyRocket" | "bomb" | "enemyBomb" | "shell" | "mortar";
+export type ProjectileKind = "bullet" | "heavy" | "vulcan" | "enemyBullet" | "rocket" | "enemyRocket" | "flame" | "bomb" | "enemyBomb" | "shell" | "mortar";
 
 interface Spec {
   frame: string;
@@ -28,6 +28,7 @@ interface Spec {
   big: boolean;
   orient: boolean;
   life: number;
+  pierce?: boolean;
 }
 
 const SPECS: Record<ProjectileKind, Spec> = {
@@ -35,6 +36,7 @@ const SPECS: Record<ProjectileKind, Spec> = {
   heavy: { frame: "bullet_r", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
   vulcan: { frame: "bullet_v", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 4, kind: "bullet", big: false, orient: true, life: 1.4 },
   rocket: { frame: "rocket", faction: "player", gravity: 0, radius: 26, bounces: 0, accel: 600, maxSpeed: 380, w: 10, h: 6, kind: "blast", big: false, orient: true, life: 2 },
+  flame: { frame: "flame_0", anim: "flame", faction: "player", gravity: 0, radius: 0, bounces: 0, accel: 0, maxSpeed: 0, w: 14, h: 10, kind: "fire", big: false, orient: false, life: 0.85, pierce: true },
   enemyRocket: { frame: "rocket", faction: "enemy", gravity: 0, radius: 16, bounces: 0, accel: 0, maxSpeed: 0, w: 10, h: 6, kind: "blast", big: false, orient: true, life: 5 },
   bomb: { frame: "bomb_0", anim: "bomb", faction: "player", gravity: PHYSICS.gravity, radius: BOMB.radius, bounces: 1, accel: 0, maxSpeed: 0, w: 7, h: 7, kind: "blast", big: true, orient: false, life: 4 },
   shell: { frame: "shell_0", faction: "player", gravity: PHYSICS.gravity * 0.5, radius: 32, bounces: 0, accel: 0, maxSpeed: 0, w: 8, h: 6, kind: "blast", big: true, orient: false, life: 3 },
@@ -50,6 +52,7 @@ export class Projectile extends GameObjects.Sprite {
   damage = 1;
   life = 0;
   bounces = 0;
+  readonly hits = new Set<object>();
 }
 
 export class ProjectileSystem {
@@ -85,10 +88,14 @@ export class ProjectileSystem {
     p.damage = damage;
     p.life = s.life;
     p.bounces = s.bounces;
-    p.setActive(true).setVisible(true).setPosition(x, y).setRotation(0).setFlipX(false);
+    p.hits.clear();
+    p.setActive(true).setVisible(true).setPosition(x, y).setRotation(0).setFlipX(false).setFlipY(false).setAlpha(1);
     if (s.orient) this.orient(p, s);
     else p.setFrame(s.frame);
-    if (s.anim) p.play(s.anim);
+    if (kind === "flame") {
+      const vertical = Math.abs(vy) > Math.abs(vx);
+      p.play(vertical ? "flame_up" : "flame").setFlipX(!vertical && vx < 0).setFlipY(vertical && vy > 0);
+    } else if (s.anim) p.play(s.anim);
     return p;
   }
 
@@ -141,7 +148,10 @@ export class ProjectileSystem {
         }
       }
     } else if (this.terrain.solidAt(p.x, p.y)) {
-      if (s.radius > 0) this.detonate(p);
+      if (s.pierce) {
+        this.fx.play("smoke", p.x, p.y);
+        this.pool.release(p);
+      } else if (s.radius > 0) this.detonate(p);
       else {
         this.fx.wallHit(p.x, p.y);
         this.pool.release(p);
@@ -151,6 +161,15 @@ export class ProjectileSystem {
     this.rect.setTo(p.x - s.w / 2, p.y - s.h / 2, s.w, s.h);
     if (s.radius > 0) {
       if (this.combat.firstOverlap(s.faction, this.rect)) this.detonate(p);
+      return;
+    }
+    if (s.pierce) {
+      if (p.life < 0.2) p.setAlpha(Math.floor(p.life * 30) % 2 ? 1 : 0.4);
+      this.combat.forEachOverlap(s.faction, this.rect, (t) => {
+        if (p.hits.has(t)) return;
+        p.hits.add(t);
+        t.hit({ amount: p.damage, kind: s.kind, from: s.faction, x: p.x, y: p.y });
+      });
       return;
     }
     const res = this.combat.strikeFirst(this.rect, { amount: p.damage, kind: s.kind, from: s.faction, x: p.x, y: p.y });

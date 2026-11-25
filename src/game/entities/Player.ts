@@ -17,6 +17,10 @@ export class Player implements Target, PlayerLocator {
   readonly faction = "player" as const;
   readonly legs: Physics.Arcade.Sprite;
   readonly torso: GameObjects.Sprite;
+  private readonly beam: GameObjects.TileSprite;
+  private readonly beamRect = new Geom.Rectangle();
+  private beaming = false;
+  private beamTick = 0;
   facing: 1 | -1 = 1;
   private readonly life: StateMachine<Player, Life>;
   private readonly fireCd = new Cooldown(0.1);
@@ -37,6 +41,7 @@ export class Player implements Target, PlayerLocator {
     const scene = ctx.scene;
     this.legs = scene.physics.add.sprite(x, y, TEX.atlas, `${char.id}_legs_stand_0`).setOrigin(0.5, 1).setDepth(DEPTH.player);
     this.torso = scene.add.sprite(x, y, TEX.atlas, `${char.id}_pistol_fwd_0`).setOrigin(0.5, 1).setDepth(DEPTH.player + 1);
+    this.beam = scene.add.tileSprite(0, 0, 8, 7, TEX.atlas, "beam_h_0").setDepth(DEPTH.player + 2).setVisible(false);
     this.setBody(false);
     scene.physics.add.collider(this.legs, ctx.terrain.solids);
     scene.physics.add.collider(this.legs, ctx.terrain.platforms);
@@ -154,6 +159,7 @@ export class Player implements Target, PlayerLocator {
   }
 
   tick(dt: number): void {
+    this.beaming = false;
     if (this.invuln > 0) this.invuln -= dt;
     this.fireCd.tick(dt);
     if (this.recoil > 0) this.recoil -= dt;
@@ -208,6 +214,10 @@ export class Player implements Target, PlayerLocator {
       if (this.actionTime <= 0) this.action = "none";
     }
     if (inp.pressed(Action.Fire) && this.action === "none" && this.tryKnife()) return;
+    if (weapon.mode === "beam") {
+      if (inp.held(Action.Fire) && this.action === "none") this.fireBeam(dt);
+      else this.beamTick = 0;
+    }
     if (inp.pressed(Action.Fire) && this.action === "none" && this.fireCd.ready) {
       this.fireCd.trigger(weapon.cooldown);
       this.burstLeft = weapon.burst;
@@ -283,11 +293,44 @@ export class Player implements Target, PlayerLocator {
       this.ctx.combat.strikeAll(r, { amount: w.damage, kind: "blast", from: "player", x: m.x, y: m.y });
       this.ctx.camera.shake(2, 0.08);
       this.ctx.events.emit("sound", "scatter");
-    } else {
+    } else if (w.mode === "flame") {
+      this.ctx.projectiles.fire("flame", m.x + dx * 6, m.y + dy * 6, dx * w.speed, dy * w.speed, w.damage);
+      this.ctx.events.emit("sound", "flame");
+    } else if (w.mode === "rocket") {
       this.ctx.projectiles.fire("rocket", m.x, m.y, dx * 90, dy * 90, w.damage);
       this.ctx.events.emit("sound", "rocket");
     }
     loadout.consumeShot();
+  }
+
+  private fireBeam(dt: number): void {
+    const w = this.ctx.state.loadout.weapon;
+    const aim = this.aimKey();
+    const dx = aim === "fwd" ? this.facing : 0;
+    const dy = aim === "up" ? -1 : aim === "down" ? 1 : 0;
+    const tip = this.muzzle();
+    const m = { x: tip.x - dx * 4, y: tip.y - dy * 4 };
+    let len = 4;
+    while (len < w.range && !this.ctx.terrain.solidAt(m.x + dx * len, m.y + dy * len) && this.ctx.camera.visible(m.x + dx * len, 8)) len += 4;
+    this.beaming = true;
+    this.recoil = 0.05;
+    const flicker = Math.floor(this.ctx.scene.time.now / 50) % 2;
+    if (dx !== 0) {
+      this.beam.setFrame(`beam_h_${flicker}`).setOrigin(dx > 0 ? 0 : 1, 0.5).setSize(len, 7).setPosition(Math.round(m.x), Math.round(m.y));
+      this.beam.tilePositionX += dt * 240 * dx;
+      this.beamRect.setTo(dx > 0 ? m.x : m.x - len, m.y - 3, len, 6);
+    } else {
+      this.beam.setFrame(`beam_v_${flicker}`).setOrigin(0.5, dy < 0 ? 1 : 0).setSize(7, len).setPosition(Math.round(m.x), Math.round(m.y));
+      this.beam.tilePositionY += dt * 240 * dy;
+      this.beamRect.setTo(m.x - 3, dy < 0 ? m.y - len : m.y, 6, len);
+    }
+    this.beamTick -= dt;
+    if (this.beamTick > 0) return;
+    this.beamTick = w.cooldown;
+    this.ctx.combat.forEachOverlap("player", this.beamRect, (t) => t.hit({ amount: w.damage, kind: "beam", from: "player", x: m.x, y: m.y }));
+    if (len < w.range) this.ctx.fx.spark(m.x + dx * len, m.y + dy * len, -dx);
+    this.ctx.events.emit("sound", "laser");
+    this.ctx.state.loadout.consumeShot();
   }
 
   private throwBomb(): void {
@@ -303,6 +346,7 @@ export class Player implements Target, PlayerLocator {
 
   syncVisuals(): void {
     const st = this.life.current;
+    this.beam.setVisible(this.beaming && st === "alive");
     if (st === "piloting" || st === "down") return;
     const flip = this.facing < 0;
     this.legs.setFlipX(flip);

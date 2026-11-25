@@ -292,7 +292,9 @@ export class MissionScene extends Scene {
     switch (kind) {
       case "rivet":
       case "scatter":
-      case "thumper": {
+      case "thumper":
+      case "furnace":
+      case "lance": {
         st.loadout.pickWeapon(kind);
         ev.emit("weapon", { label: st.loadout.weapon.label });
         ev.emit("sound", "weapon");

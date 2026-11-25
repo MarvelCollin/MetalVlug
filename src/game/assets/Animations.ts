@@ -49,6 +49,8 @@ const SPECS: AnimSpec[] = [
   { key: "blast_up", prefix: "blast_up_", frames: 3, rate: 24 },
   { key: "flash", prefix: "flash_", frames: 2, rate: 30 },
   { key: "dust", prefix: "dust_", frames: 4, rate: 14 },
+  { key: "flame", prefix: "flame_", frames: 4, rate: 16, repeat: -1 },
+  { key: "flame_up", prefix: "flame_up_", frames: 4, rate: 16, repeat: -1 },
   { key: "bullet_e", prefix: "bullet_e_", frames: 2, rate: 12, repeat: -1 },
   { key: "bomb", prefix: "bomb_", frames: 4, rate: 16, repeat: -1 },
   { key: "gem", prefix: "gem_", frames: 4, rate: 8, repeat: -1 },

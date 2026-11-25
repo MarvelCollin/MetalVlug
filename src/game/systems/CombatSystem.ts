@@ -29,6 +29,13 @@ export class CombatSystem {
     return null;
   }
 
+  forEachOverlap(attacker: Faction, rect: Geom.Rectangle, fn: (t: Target) => void): void {
+    for (const t of [...this.targets]) {
+      if (t.faction === attacker || !t.isHittable()) continue;
+      if (Geom.Intersects.RectangleToRectangle(rect, t.bounds(this.box))) fn(t);
+    }
+  }
+
   strikeFirst(rect: Geom.Rectangle, hit: Hit): HitResult {
     const t = this.firstOverlap(hit.from, rect);
     return t ? t.hit(hit) : MISS;

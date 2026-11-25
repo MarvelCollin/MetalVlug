@@ -24,6 +24,7 @@ const GLYPH = {
   B: ["### ", "#  #", "### ", "#  #", "### "],
   F: ["####", "#   ", "### ", "#   ", "#   "],
   A: [" ## ", "#  #", "####", "#  #", "#  #"],
+  L: ["#   ", "#   ", "#   ", "#   ", "####"],
 };
 
 function vshade(part, x0, x1, y0, y1, ramp) {
@@ -63,6 +64,7 @@ export const items = {
   pick_B: [pickupCrate("B", WOOD, "#ffffff")],
   pick_F: [pickupCrate("F", RED, "#ffffff")],
   pick_A: [pickupCrate("A", SLATE, BR[0])],
+  pick_L: [pickupCrate("L", TEAL, "#ffffff")],
 };
 
 items.gem = [0, 1, 2, 3].map((f) => {

@@ -8,6 +8,7 @@ export interface Snapshot {
   lives: number;
   tinkers: number;
   weapon: string;
+  ammo: number;
   piloting: boolean;
   boss: string;
   camLeft: number;

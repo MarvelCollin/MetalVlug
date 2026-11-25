@@ -162,6 +162,37 @@ test("shield soldiers block pistol fire from the front but fall to the knife and
   expect(await run<boolean>(page, "return sc.enemies.list.find((e) => e.group === -10).alive;")).toBe(false);
 });
 
+test("one furnace fireball burns through a line of soldiers and can be aimed up", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60); " + KILL_ALL + " sc.state.loadout.pickWeapon('furnace'); for (const dx of [60, 85, 110]) sc.enemies.spawn({ type: 'grunt', x: sc.player.x + dx, y: 184, idle: 'none', hold: true, group: -11, facing: -1 }).cooldown.trigger(30);");
+  await page.waitForTimeout(250);
+  await tap(page, "KeyJ", 40);
+  await page.waitForTimeout(900);
+  expect(await run<number>(page, "return sc.enemies.list.filter((e) => e.group === -11 && e.alive).length;")).toBe(0);
+  expect((await snap(page)).ammo).toBe(29);
+  await page.keyboard.down("ArrowUp");
+  await page.waitForTimeout(60);
+  await tap(page, "KeyJ", 40);
+  await page.waitForTimeout(60);
+  await page.keyboard.up("ArrowUp");
+  expect(await run<number>(page, "let vy = 0; sc.ctx.projectiles.pool.forEachActive((p) => { if (p.type2 === 'flame') vy = p.vy; }); return vy;")).toBeLessThan(0);
+});
+
+test("the arc lance beam pierces a riot shield, drains ammo while held and vanishes on release", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60); " + KILL_ALL + " sc.state.loadout.pickWeapon('lance'); sc.enemies.spawn({ type: 'shield', x: sc.player.x + 90, y: 184, idle: 'none', hold: true, group: -12, facing: -1 }).cooldown.trigger(30); sc.enemies.spawn({ type: 'grunt', x: sc.player.x + 140, y: 184, idle: 'none', hold: true, group: -12, facing: -1 }).cooldown.trigger(30);");
+  await page.waitForTimeout(250);
+  await page.keyboard.down("KeyJ");
+  await page.waitForTimeout(500);
+  expect(await run<boolean>(page, "return sc.player.beam.visible;")).toBe(true);
+  await page.waitForTimeout(500);
+  await page.keyboard.up("KeyJ");
+  await page.waitForTimeout(100);
+  expect(await run<number>(page, "return sc.enemies.list.filter((e) => e.group === -12 && e.alive).length;")).toBe(0);
+  expect((await snap(page)).ammo).toBeLessThan(195);
+  expect(await run<boolean>(page, "return sc.player.beam.visible;")).toBe(false);
+});
+
 test("freeing a caged Tinker counts a rescue and drops the Rivet gun", async ({ page }) => {
   await startMission(page);
   await run(page, "mv.shield(120); mv.warp(760); sc.enemies.list.forEach((e) => e.active && e.fsm.change('gone'));");

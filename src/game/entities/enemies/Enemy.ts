@@ -40,6 +40,7 @@ export class Enemy implements Target {
   active = false;
   fired = false;
   private blastSpin = 0;
+  private burnt = false;
   private spinAngle = 0;
 
   constructor(readonly ctx: GameContext, private readonly behaviours: Record<EnemyType, EnemyBehaviour>) {
@@ -101,6 +102,14 @@ export class Enemy implements Target {
             const k = ((Math.round(e.spinAngle / (Math.PI / 4)) % 8) + 8) % 8;
             e.sprite.setFrame(`${e.def.type}_tumble_${k}`);
           }
+          if (e.burnt) {
+            e.sprite.setTint(0x3a2c30);
+            if (t < 0.8 && Math.floor(t * 14) % 3 === 0) e.ctx.fx.play("smoke", e.x + e.ctx.rng.range(-6, 6), e.y - e.ctx.rng.range(10, 30));
+            if (t > 0.8 && e.sprite.visible) {
+              e.ctx.fx.debris(e.x, e.y - 14, 8, ["ash_0", "ash_1", "ash_2"]);
+              e.sprite.setVisible(false);
+            }
+          }
           if (t > 1.2) e.sprite.setAlpha(Math.max(0, 1 - (t - 1.2) * 3));
           return t > 1.55 ? "gone" : undefined;
         },
@@ -142,6 +151,8 @@ export class Enemy implements Target {
     this.facing = s.facing;
     this.active = true;
     this.blastSpin = 0;
+    this.burnt = false;
+    this.sprite.clearTint();
     this.cooldown.trigger(this.ctx.rng.range(0.4, 1.2));
     this.sprite.enableBody(true, s.x, s.y, true, true).setAlpha(1).setRotation(0).setFlipX(this.facing < 0).setDepth(DEPTH.enemies);
     this.body.checkCollision.none = false;
@@ -168,7 +179,7 @@ export class Enemy implements Target {
       return ABSORBED;
     }
     this.hp -= hit.amount;
-    this.ctx.fx.flash(this.sprite);
+    if (hit.kind !== "beam" || Math.floor(this.ctx.scene.time.now / 90) % 2 === 0) this.ctx.fx.flash(this.sprite);
     if (this.hp > 0) {
       this.ctx.events.emit("sound", this.def.type === "dummy" ? "clank" : "hit");
       if (this.def.type === "dummy") this.sprite.play("dummy_hit");
@@ -187,6 +198,11 @@ export class Enemy implements Target {
     if (this.def.type === "dummy") {
       this.sprite.setFrame("dummy_broken_0");
       this.ctx.fx.debris(this.x, this.y - 24, 6, ["debris_1"]);
+    } else if ((hit.kind === "fire" || hit.kind === "beam") && !this.burnt) {
+      this.burnt = true;
+      this.body.setVelocityX(0);
+      this.sprite.play(this.def.dieAnim);
+      this.sprite.setTint(0x3a2c30);
     } else if (hit.kind === "blast") {
       const away = Math.sign(this.x - hit.x) || 1;
       this.spinAngle = 0;

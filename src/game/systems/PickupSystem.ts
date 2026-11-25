@@ -4,12 +4,14 @@ import { DEPTH } from "../../config/display";
 import { TEX } from "../assets/keys";
 import type { Terrain } from "../level/Terrain";
 
-export type PickupType = "rivet" | "scatter" | "thumper" | "bombs" | "ammo" | "fuel" | "gem" | "ration";
+export type PickupType = "rivet" | "scatter" | "thumper" | "furnace" | "lance" | "bombs" | "ammo" | "fuel" | "gem" | "ration";
 
 const FRAME: Record<PickupType, { frame: string; anim?: string }> = {
   rivet: { frame: "pick_R_0" },
   scatter: { frame: "pick_S_0" },
   thumper: { frame: "pick_T_0" },
+  furnace: { frame: "pick_F_0" },
+  lance: { frame: "pick_L_0" },
   bombs: { frame: "pick_B_0" },
   ammo: { frame: "pick_A_0" },
   fuel: { frame: "fuel_0" },
