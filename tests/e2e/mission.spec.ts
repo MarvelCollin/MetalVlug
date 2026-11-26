@@ -193,6 +193,27 @@ test("the arc lance beam pierces a riot shield, drains ammo while held and vanis
   expect(await run<boolean>(page, "return sc.player.beam.visible;")).toBe(false);
 });
 
+test("the announcer calls out a weapon pickup and stays quiet when switched off", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60); " + KILL_ALL + " window.__game.registry.get('settings').set('voice', true); sc.ctx.pickups.spawn('furnace', sc.player.x, sc.player.y - 20, 0);");
+  await page.waitForFunction("window.__game.registry.get('audio').lastSaid === 'furnace!'", null, { timeout: 4_000 });
+  await run(page, "window.__game.registry.get('settings').set('voice', false); sc.ctx.pickups.spawn('lance', sc.player.x, sc.player.y - 20, 0);");
+  await page.waitForFunction("window.__mv.snapshot().weapon === 'lance'", null, { timeout: 4_000 });
+  expect(await run<string>(page, "return window.__game.registry.get('audio').lastSaid;")).toBe("furnace!");
+  await run(page, "window.__game.registry.get('settings').set('voice', true);");
+});
+
+test("a knife kill freezes the action for a moment", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60); " + KILL_ALL + " sc.enemies.spawn({ type: 'grunt', x: sc.player.x + 14, y: 184, idle: 'none', hold: true, group: -13, facing: -1 }).cooldown.trigger(30);");
+  await page.waitForTimeout(200);
+  const before = await run<number>(page, "return sc.hitStops;");
+  await tap(page, "KeyJ", 40);
+  await page.waitForTimeout(300);
+  expect(await run<number>(page, "return sc.hitStops;")).toBe(before + 1);
+  expect(await run<boolean>(page, "return sc.enemies.list.find((e) => e.group === -13).alive;")).toBe(false);
+});
+
 test("freeing a caged Tinker counts a rescue and drops the Rivet gun", async ({ page }) => {
   await startMission(page);
   await run(page, "mv.shield(120); mv.warp(760); sc.enemies.list.forEach((e) => e.active && e.fsm.change('gone'));");

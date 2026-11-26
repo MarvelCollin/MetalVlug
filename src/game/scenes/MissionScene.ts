@@ -58,6 +58,8 @@ export class MissionScene extends Scene {
   private respawnIn = -1;
   private continueTimer = 0;
   private nextTip = 0;
+  hitStop = 0;
+  hitStops = 0;
 
   constructor() {
     super("mission");
@@ -72,6 +74,8 @@ export class MissionScene extends Scene {
     this.hostages = [];
     this.respawnIn = -1;
     this.nextTip = 0;
+    this.hitStop = 0;
+    this.hitStops = 0;
     const settings = settingsOf(this.game.registry);
     const builder = new LevelBuilder(this, this.level);
     this.parallax = builder.backdrop();
@@ -115,6 +119,7 @@ export class MissionScene extends Scene {
           if (t - dt <= 0.05 && t > 0.05) {
             s.events2.emit("banner", { text: s.level.label, sub: `${s.level.title}  START!`, seconds: 2.2 });
             s.events2.emit("sound", "mission");
+            s.events2.emit("announce", { text: `${s.level.label.toLowerCase()}, start!` });
             s.audio.music(s.level.music);
           }
           s.simulate(dt);
@@ -131,6 +136,7 @@ export class MissionScene extends Scene {
           s.continueTimer = 0;
           s.state.continueCount = MISSION.continueCount;
           s.audio.music("gameover");
+          s.audio.say("game over");
         },
         update: (s, dt) => s.tickContinue(dt),
       },
@@ -139,6 +145,7 @@ export class MissionScene extends Scene {
           s.state.phase = "complete";
           s.state.clock.pause();
           s.events2.emit("banner", { text: s.level.goalX ? "TRAINING COMPLETE!" : "MISSION COMPLETE!", seconds: 3 });
+          s.audio.say(s.level.goalX ? "training complete!" : "mission complete!");
           s.audio.music("complete");
         },
         update: (s, dt, t) => {
@@ -160,10 +167,16 @@ export class MissionScene extends Scene {
     const ev = this.events2;
     const ctx = this.ctx;
     ev.on("sound", (id) => this.audio.request(id));
+    ev.on("announce", (a) => this.audio.say(a.text));
+    ev.on("hitStop", (h) => {
+      this.hitStop = Math.max(this.hitStop, h.seconds);
+      this.hitStops++;
+    });
     ev.on("explode", (e) => {
       ctx.fx.explosion(e.x, e.y, e.big);
       ctx.combat.strikeArea(e.x, e.y, e.radius, { amount: e.damage, kind: "blast", from: e.from, x: e.x, y: e.y });
       ctx.camera.shake(e.big ? 4 : 2, e.big ? 0.25 : 0.12);
+      if (e.big && e.from === "player") ev.emit("hitStop", { seconds: 0.05 });
       this.audio.request(e.big ? "bigboom" : "boom");
     });
     ev.on("score", (s) => {
@@ -174,6 +187,7 @@ export class MissionScene extends Scene {
     ev.on("rescued", (r) => {
       this.state.score.rescue();
       ctx.fx.popup("THANKS!", r.x, r.y - 30);
+      this.audio.say("thank you!");
     });
     ev.on("waveCleared", () => { this.state.clock.reset(); this.audio.request("go"); });
     ev.on("playerDied", () => {
@@ -185,6 +199,11 @@ export class MissionScene extends Scene {
 
   update(_time: number, deltaMs: number): void {
     const dt = Math.min(deltaMs / 1000, 1 / 20);
+    if (this.hitStop > 0) {
+      this.hitStop -= dt;
+      this.audio.flush();
+      return;
+    }
     const input = this.inputSys.poll();
     if (input.pressed(Action.Pause) && (this.state.phase === "play" || this.state.phase === "intro")) {
       this.inputSys.frame.clear();
@@ -297,6 +316,7 @@ export class MissionScene extends Scene {
       case "lance": {
         st.loadout.pickWeapon(kind);
         ev.emit("weapon", { label: st.loadout.weapon.label });
+        ev.emit("announce", { text: `${st.loadout.weapon.label.toLowerCase()}!` });
         ev.emit("sound", "weapon");
         return;
       }

@@ -4,10 +4,11 @@ export interface SettingsData {
   shake: boolean;
   flashes: boolean;
   easy: boolean;
+  voice: boolean;
 }
 
 const KEY = "metalvlug.settings.v1";
-const DEFAULTS: SettingsData = { music: 0.7, sfx: 0.8, shake: true, flashes: true, easy: false };
+const DEFAULTS: SettingsData = { music: 0.7, sfx: 0.8, shake: true, flashes: true, easy: false, voice: true };
 
 export class Settings {
   private data: SettingsData = { ...DEFAULTS };

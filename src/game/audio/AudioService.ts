@@ -58,6 +58,7 @@ export class AudioService {
   private musicGain: GainNode | null = null;
   private player: MusicPlayer | null = null;
   private wanted: TrackId | null = null;
+  private said = "";
 
   constructor(private readonly settings: Settings) {
     settings.onChange(() => this.applyVolumes());
@@ -81,6 +82,29 @@ export class AudioService {
     if (!this.player) return;
     if (id === null) this.player.stop();
     else this.player.play(id);
+  }
+
+  say(text: string): void {
+    if (!this.settings.values.voice) return;
+    this.said = text;
+    try {
+      const synth = window.speechSynthesis;
+      if (!synth) return;
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      const voice = synth.getVoices().find((v) => /^en(-|_)/i.test(v.lang));
+      if (voice) u.voice = voice;
+      u.rate = 1.12;
+      u.pitch = 0.55;
+      u.volume = Math.min(1, this.settings.values.sfx * 1.1);
+      synth.speak(u);
+    } catch {
+      this.said = text;
+    }
+  }
+
+  get lastSaid(): string {
+    return this.said;
   }
 
   get track(): TrackId | null {

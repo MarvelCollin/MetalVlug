@@ -109,6 +109,7 @@ export class Warden {
         enter: (w) => {
           w.core.view.stop();
           w.core.view.setFrame("warden_core_broken_0");
+          w.ctx.events.emit("hitStop", { seconds: 0.15 });
           w.hull.setFrame("warden_hull_2");
           w.ctx.events.emit("score", { points: SCORE.core, x: w.core.view.x, y: w.core.view.y });
         },
@@ -257,6 +258,7 @@ export class Warden {
     this.ctx.events.emit("sound", "boom");
     this.ctx.events.emit("score", { points: SCORE.turret, x: part.view.x, y: part.view.y });
     this.ctx.camera.shake(3, 0.25);
+    this.ctx.events.emit("hitStop", { seconds: 0.1 });
     const broken = this.turrets.filter((t) => t.broken).length;
     this.hull.setFrame(`warden_hull_${Math.min(2, broken)}`);
   }

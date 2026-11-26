@@ -243,7 +243,7 @@ export class Player implements Target, PlayerLocator {
     if (!this.ctx.combat.anyInRect("player", r, melee)) return false;
     this.action = "knife";
     this.actionTime = PLAYER.knifeTime;
-    this.ctx.combat.strikeAll(r, { amount: 4, kind: "knife", from: "player", x: this.legs.x + this.facing * 14, y: this.legs.y - 18 }, melee);
+    if (this.ctx.combat.strikeAll(r, { amount: 4, kind: "knife", from: "player", x: this.legs.x + this.facing * 14, y: this.legs.y - 18 }, melee) > 0) this.ctx.events.emit("hitStop", { seconds: 0.06 });
     this.ctx.fx.thud(this.legs.x + this.facing * 16, this.legs.y - 14);
     this.ctx.events.emit("sound", "knife");
     return true;

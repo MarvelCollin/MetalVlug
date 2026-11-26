@@ -20,4 +20,6 @@ export interface GameEvents {
   waveCleared: void;
   bossDefeated: void;
   timer: { units: number };
+  announce: { text: string };
+  hitStop: { seconds: number };
 }

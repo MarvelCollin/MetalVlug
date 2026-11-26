@@ -104,7 +104,7 @@ export class TitleScene extends Scene {
     const level = (v: number) => `${Math.round(v * 10)}`.padStart(2, " ");
     const step = (key: "music" | "sfx") => (d: -1 | 1) =>
       this.settings.set(key, Math.min(1, Math.max(0, Math.round((this.settings.values[key] + d * 0.1) * 10) / 10)));
-    const flip = (key: "shake" | "flashes" | "easy") => () => this.settings.set(key, !this.settings.values[key]);
+    const flip = (key: "shake" | "flashes" | "easy" | "voice") => () => this.settings.set(key, !this.settings.values[key]);
     const onOff = (v: boolean) => (v ? "ON" : "OFF");
     const items: MenuItem[] = [
       { label: () => `MUSIC  < ${level(this.settings.values.music)} >`, adjust: step("music") },
@@ -112,6 +112,7 @@ export class TitleScene extends Scene {
       { label: () => `SCREEN SHAKE  ${onOff(this.settings.values.shake)}`, select: flip("shake"), adjust: flip("shake") },
       { label: () => `FLASHES  ${onOff(this.settings.values.flashes)}`, select: flip("flashes"), adjust: flip("flashes") },
       { label: () => `EASY MODE  ${onOff(this.settings.values.easy)}`, select: flip("easy"), adjust: flip("easy") },
+      { label: () => `ANNOUNCER  ${onOff(this.settings.values.voice)}`, select: flip("voice"), adjust: flip("voice") },
       { label: () => "BACK", select: () => this.setMode("main") },
     ];
     this.options = new Menu(this, items, VIEW_W / 2, 78, 13, tick);
