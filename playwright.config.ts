@@ -7,14 +7,14 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: "http://127.0.0.1:5180",
     ...devices["Desktop Chrome"],
     viewport: { width: 1152, height: 648 },
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "npx vite --host 127.0.0.1",
-    url: "http://127.0.0.1:5173",
+    command: "npx vite --host 127.0.0.1 --port 5180 --strictPort",
+    url: "http://127.0.0.1:5180",
     reuseExistingServer: true,
     timeout: 60_000,
   },
