@@ -1,4 +1,4 @@
-export type TrackId = "title" | "lowtide" | "boss" | "training" | "complete" | "gameover";
+export type TrackId = "title" | "lowtide" | "railyard" | "boss" | "training" | "complete" | "gameover";
 
 export interface TrackDef {
   bpm: number;
@@ -44,6 +44,20 @@ export const TRACKS: Record<TrackId, TrackDef> = {
     drums: `
       k h s h k k s h | k h s h k h s h | k h s h k k s h | k h s h k h s s |
       k h s h k k s h | k h s h k h s h | k h s h k k s h | k . s . s s s s |`,
+  },
+  railyard: {
+    bpm: 144,
+    stepsPerBeat: 2,
+    loop: true,
+    lead: `
+      D5 - D5 . F5 - D5 . | C5 - A4 - C5 - D5 - | A#4 - - . A4 - G4 . | A4 - - - - . . . |
+      D5 - D5 . F5 - G5 . | A5 - G5 - F5 - D5 - | C5 - - . D5 - E5 . | D5 - - - - . . . |`,
+    bass: `
+      D2 D3 D2 D3 D2 D3 D2 D3 | F2 F3 F2 F3 C2 C3 C2 C3 | A#1 A#2 A#1 A#2 G1 G2 G1 G2 | A1 A2 A1 A2 A1 A2 C#2 C#3 |
+      D2 D3 D2 D3 D2 D3 D2 D3 | F2 F3 F2 F3 F2 F3 F2 F3 | A#1 A#2 A#1 A#2 C2 C3 C2 C3 | D2 D3 D2 D3 A1 A2 D2 D3 |`,
+    drums: `
+      k h s h k k s h | k h s h k h s h | k h s h k k s h | k h s h k h s s |
+      k h s h k k s h | k h s h k h s h | k h s h k k s h | k k s s k s s s |`,
   },
   boss: {
     bpm: 168,
