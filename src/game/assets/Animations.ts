@@ -40,6 +40,8 @@ const SPECS: AnimSpec[] = [
   { key: "tinker_run", prefix: "tinker_run_", frames: 8, rate: 16, repeat: -1 },
   { key: "mule_walk", prefix: "mule_walk_", frames: 6, rate: 12, repeat: -1 },
   { key: "warden_wheel", prefix: "warden_wheel_", frames: 4, rate: 12, repeat: -1 },
+  { key: "crawler_tread", prefix: "crawler_tread_", frames: 4, rate: 14, repeat: -1 },
+  { key: "crawler_engine_open", prefix: "crawler_engine_open_", frames: 2, rate: 8, repeat: -1 },
   { key: "warden_core_open", prefix: "warden_core_open_", frames: 2, rate: 8, repeat: -1 },
   { key: "boom", prefix: "boom_", frames: 8, rate: 20 },
   { key: "boom_s", prefix: "boom_s_", frames: 6, rate: 22 },

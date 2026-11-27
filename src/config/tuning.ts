@@ -104,3 +104,24 @@ export const WARDEN = {
   shellSpeed: 95,
   mortarRadius: 24,
 } as const;
+
+export const CRAWLER = {
+  turretHp: 40,
+  engineHp: 50,
+  rollInSpeed: 70,
+  patrol: 28,
+  cannonGap: 3.4,
+  cannonWindup: 0.7,
+  shellFlight: 1.3,
+  mgGap: 2.6,
+  mgShots: 4,
+  mgSpacing: 0.14,
+  mgSpeed: 125,
+  ramGap: 4.6,
+  ramWindup: 0.9,
+  ramSpeed: 150,
+  ramHold: 0.45,
+  retreatSpeed: 70,
+  ramClearance: 96,
+  troopGap: 5.5,
+} as const;

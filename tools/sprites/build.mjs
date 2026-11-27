@@ -10,6 +10,8 @@ import { BG_VARIANTS, background, hud, tiles } from "./art/world.mjs";
 import { cageFrames, dummyFrames, flagFrames, items, sandbag } from "./art/props.mjs";
 import { buildFont } from "./art/font.mjs";
 import { campBackground, campTiles } from "./art/camp.mjs";
+import { yardBackground, yardTiles } from "./art/yard.mjs";
+import { crawlerEngine, crawlerHull, crawlerTread, crawlerTurret } from "./art/crawler.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const out = join(root, "public", "assets");
@@ -45,12 +47,20 @@ add("warden_turret", [wardenTurret(false), wardenTurret(true)]);
 add("warden_core_closed", [wardenCore("closed")]);
 add("warden_core_open", [wardenCore("open", 0), wardenCore("open", 1)]);
 add("warden_core_broken", [wardenCore("broken")]);
+add("crawler_hull", [0, 1, 2].map(crawlerHull));
+add("crawler_tread", [0, 1, 2, 3].map(crawlerTread));
+add("crawler_turret", [0, 1, 2].map((a) => crawlerTurret(a)));
+add("crawler_turret_broken", [crawlerTurret(0, true)]);
+add("crawler_engine_closed", [crawlerEngine("closed")]);
+add("crawler_engine_open", [crawlerEngine("open", 0), crawlerEngine("open", 1)]);
+add("crawler_engine_broken", [crawlerEngine("broken")]);
 
 for (const [name, list] of Object.entries(fx)) add(name, list);
 for (const [name, list] of Object.entries(items)) add(name, list);
 for (const [name, list] of Object.entries(tiles)) add(name, list);
 for (const [name, list] of Object.entries(hud)) add(name, list);
 for (const [name, list] of Object.entries(campTiles)) add(name, list);
+for (const [name, list] of Object.entries(yardTiles)) add(name, list);
 add("sandbag", sandbag);
 for (const kind of ["pip", "juno"]) add(`life_${kind}`, [{ pix: headIcon(kind) }]);
 add("tinkericon", [{ pix: headIcon("tinker") }]);
@@ -93,11 +103,28 @@ for (const f of frames) {
   };
 }
 writeFileSync(join(out, "atlas.png"), encodePng(WIDTH, height, atlas));
+
+function iconPng(size, crop, scale, bg) {
+  const head = headIcon("pip");
+  const data = new Uint8ClampedArray(size * size * 4);
+  if (bg) for (let i = 0; i < size * size; i++) data.set(bg, i * 4);
+  const offset = Math.floor((size - crop.w * scale) / 2);
+  for (let y = 0; y < crop.h; y++)
+    for (let x = 0; x < crop.w; x++) {
+      const s = ((crop.y + y) * head.w + crop.x + x) * 4;
+      if (!head.data[s + 3]) continue;
+      for (let dy = 0; dy < scale; dy++)
+        for (let dx = 0; dx < scale; dx++) data.set(head.data.subarray(s, s + 4), ((offset + y * scale + dy) * size + offset + x * scale + dx) * 4);
+    }
+  return encodePng(size, size, data);
+}
+writeFileSync(join(root, "public", "favicon.png"), iconPng(32, { x: 1, y: 1, w: 16, h: 16 }, 2, null));
+writeFileSync(join(root, "public", "apple-touch-icon.png"), iconPng(180, { x: 0, y: 0, w: 18, h: 18 }, 9, [27, 22, 38, 255]));
 writeFileSync(join(out, "atlas.json"), JSON.stringify(json));
 writeFileSync(join(out, "anchors.json"), JSON.stringify(anchors, null, 1));
 
 for (const kind of ["sky", "far", "mid"]) {
-  for (const [theme, make] of [["harbour", background], ["camp", campBackground]]) {
+  for (const [theme, make] of [["harbour", background], ["camp", campBackground], ["yard", yardBackground]]) {
     for (let v = 0; v < BG_VARIANTS; v++) {
       const p = make(kind, v);
       writeFileSync(join(out, `bg_${kind}_${theme}_${v}.png`), encodePng(p.w, p.h, p.data));

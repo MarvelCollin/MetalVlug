@@ -420,5 +420,115 @@
    "x": 0,
    "y": 11
   }
+ },
+ "crawler_hull_0": {
+  "turret": {
+   "x": 76,
+   "y": 24
+  },
+  "engine": {
+   "x": 132,
+   "y": 16
+  },
+  "exhaust": {
+   "x": 153,
+   "y": 6
+  },
+  "hatch": {
+   "x": 98,
+   "y": 20
+  }
+ },
+ "crawler_hull_1": {
+  "turret": {
+   "x": 76,
+   "y": 24
+  },
+  "engine": {
+   "x": 132,
+   "y": 16
+  },
+  "exhaust": {
+   "x": 153,
+   "y": 6
+  },
+  "hatch": {
+   "x": 98,
+   "y": 20
+  }
+ },
+ "crawler_hull_2": {
+  "turret": {
+   "x": 76,
+   "y": 24
+  },
+  "engine": {
+   "x": 132,
+   "y": 16
+  },
+  "exhaust": {
+   "x": 153,
+   "y": 6
+  },
+  "hatch": {
+   "x": 98,
+   "y": 20
+  }
+ },
+ "crawler_turret_0": {
+  "muzzle": {
+   "x": -11,
+   "y": 24
+  },
+  "mg": {
+   "x": 15,
+   "y": 33
+  },
+  "pivot": {
+   "x": 40,
+   "y": 40
+  }
+ },
+ "crawler_turret_1": {
+  "muzzle": {
+   "x": -10,
+   "y": 15
+  },
+  "mg": {
+   "x": 15,
+   "y": 33
+  },
+  "pivot": {
+   "x": 40,
+   "y": 40
+  }
+ },
+ "crawler_turret_2": {
+  "muzzle": {
+   "x": -8,
+   "y": 7
+  },
+  "mg": {
+   "x": 15,
+   "y": 33
+  },
+  "pivot": {
+   "x": 40,
+   "y": 40
+  }
+ },
+ "crawler_turret_broken_0": {
+  "muzzle": {
+   "x": 0,
+   "y": 0
+  },
+  "mg": {
+   "x": 15,
+   "y": 33
+  },
+  "pivot": {
+   "x": 40,
+   "y": 40
+  }
  }
 }
