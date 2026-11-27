@@ -1,7 +1,8 @@
 import { Geom, type GameObjects } from "phaser";
 import { StateMachine } from "../../../core/fsm/StateMachine";
 import { KILLED, MISS, type Hit, type HitResult } from "../../../domain/combat/Damage";
-import { DEPTH } from "../../../config/display";
+import { DEPTH, VIEW_H } from "../../../config/display";
+import { PHYSICS } from "../../../config/tuning";
 import { TEX } from "../../assets/keys";
 import type { GameContext } from "../../context/GameContext";
 import type { Target } from "../../systems/CombatSystem";
@@ -16,6 +17,7 @@ export class Hostage implements Target {
   private readonly man: GameObjects.Sprite;
   private readonly fsm: StateMachine<Hostage, HostageState>;
   private readonly touch = new Geom.Rectangle();
+  private vy = 0;
 
   constructor(private readonly ctx: GameContext, x: number, y: number, private readonly drop: PickupType) {
     this.man = ctx.scene.add.sprite(x, y, TEX.atlas, "tinker_sit_0").setOrigin(0.5, 1).setDepth(DEPTH.hostages).play("tinker_sit");
@@ -41,10 +43,23 @@ export class Hostage implements Target {
         update: (_h, _dt, t) => (t > 0.5 ? "run" : undefined),
       },
       run: {
-        enter: (h) => h.man.setFlipX(true).play("tinker_run"),
+        enter: (h) => {
+          h.vy = 0;
+          h.man.setFlipX(true).play("tinker_run");
+        },
         update: (h, dt) => {
           h.man.x -= 110 * dt;
-          return h.man.x < h.ctx.camera.left - 30 ? "gone" : undefined;
+          const floor = h.ctx.terrain.groundBelow(h.man.x, h.man.y);
+          if (h.man.y < floor) {
+            h.vy = Math.min(420, h.vy + PHYSICS.gravity * dt);
+            h.man.y = Math.min(floor, h.man.y + h.vy * dt);
+            if (h.man.anims.isPlaying) h.man.stop();
+            h.man.setFrame("tinker_cheer_1");
+          } else if (!h.man.anims.isPlaying) {
+            h.vy = 0;
+            h.man.play("tinker_run");
+          }
+          return h.man.x < h.ctx.camera.left - 30 || h.man.y > VIEW_H + 40 ? "gone" : undefined;
         },
       },
       gone: { enter: (h) => h.man.setVisible(false) },
