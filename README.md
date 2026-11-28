@@ -34,6 +34,8 @@ Add `?skip` to the URL to jump straight into a mission, `?skip&level=railyard` f
 | Launch the Mule | Up + Jump + Fire | |
 | Pause | Esc or P | Start |
 
+On phones the game shows an on-screen D pad with FIRE, JUMP and BOMB buttons. Play in landscape. Add `?touch` to the URL to force the overlay on a desktop.
+
 ## What is in it
 
 - Mission 1, Lowtide Docks, ending with the Iron Warden.

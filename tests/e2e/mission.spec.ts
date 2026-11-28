@@ -448,6 +448,56 @@ test("mission select from the title menu starts the railyard", async ({ page }) 
   await page.waitForFunction("window.__mv && window.__mv.snapshot().level === 'railyard' && window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
 });
 
+test("touch controls on a phone drive the menus, movement, jump, fire and pause", async ({ browser }) => {
+  test.setTimeout(90_000);
+  const ctx = await browser.newContext({ hasTouch: true, isMobile: true, viewport: { width: 844, height: 390 } });
+  const page = await ctx.newPage();
+  await page.goto("/?bg=0");
+  await page.waitForSelector(".mv-fire", { timeout: 10_000 });
+  await page.waitForTimeout(1000);
+  const center = async (sel: string) => page.evaluate((q) => { const r = document.querySelector(q)!.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; }, sel);
+  const fire = await center(".mv-fire");
+  const tapFire = async () => { await page.touchscreen.tap(fire.x, fire.y); await page.waitForTimeout(250); };
+  await tapFire();
+  expect(await page.evaluate("window.__game.scene.getScene('title').mode")).toBe("main");
+  await tapFire();
+  await tapFire();
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().phase === 'play'", null, { timeout: 15_000 });
+  await page.evaluate("window.__mv.shield(60)");
+  const x0 = (await snap(page)).x;
+  const pad = await center(".mv-pad");
+  await page.mouse.move(pad.x + pad.w * 0.35, pad.y);
+  await page.mouse.down();
+  await page.waitForTimeout(700);
+  await page.mouse.up();
+  expect((await snap(page)).x).toBeGreaterThan(x0 + 30);
+  const jump = await center(".mv-jump");
+  const y0 = (await snap(page)).y;
+  await page.touchscreen.tap(jump.x, jump.y);
+  await page.waitForTimeout(120);
+  expect((await snap(page)).y).toBeLessThan(y0 - 5);
+  await page.waitForTimeout(800);
+  await page.touchscreen.tap(fire.x, fire.y);
+  await page.waitForTimeout(40);
+  expect(await page.evaluate("window.__mv.scene.ctx.projectiles.count('bullet')")).toBeGreaterThan(0);
+  const pause = await center(".mv-pause");
+  await page.touchscreen.tap(pause.x, pause.y);
+  await page.waitForFunction("window.__game.scene.isActive('pause')", null, { timeout: 3_000 });
+  await ctx.close();
+  const portrait = await browser.newContext({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+  const p2 = await portrait.newPage();
+  await p2.goto("/");
+  await p2.waitForSelector(".mv-rotate", { state: "attached", timeout: 10_000 });
+  expect(await p2.evaluate("getComputedStyle(document.querySelector('.mv-rotate')).display")).toBe("flex");
+  await portrait.close();
+});
+
+test("desktop browsers get no touch overlay", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForTimeout(800);
+  expect(await page.locator(".mv-touch").count()).toBe(0);
+});
+
 test("options change and persist the music volume", async ({ page }) => {
   await page.goto("/");
   await page.evaluate("localStorage.clear()");

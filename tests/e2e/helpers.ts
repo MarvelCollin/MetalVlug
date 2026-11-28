@@ -3,6 +3,7 @@ import type { Page } from "@playwright/test";
 export interface Snapshot {
   phase: string;
   x: number;
+  y: number;
   score: number;
   bombs: number;
   lives: number;

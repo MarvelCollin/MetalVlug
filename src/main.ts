@@ -6,6 +6,7 @@ import { TitleScene } from "./game/scenes/TitleScene";
 import { MissionScene } from "./game/scenes/MissionScene";
 import { HudScene } from "./game/scenes/HudScene";
 import { PauseScene } from "./game/scenes/PauseScene";
+import { TouchControls, wantsTouchControls } from "./game/input/TouchControls";
 
 export const game = new Game({
   type: AUTO,
@@ -23,5 +24,7 @@ export const game = new Game({
   },
   scene: [BootScene, TitleScene, MissionScene, HudScene, PauseScene],
 });
+
+if (wantsTouchControls()) new TouchControls();
 
 if (import.meta.env.DEV) (window as unknown as { __game: Game }).__game = game;

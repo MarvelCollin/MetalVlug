@@ -1,5 +1,6 @@
 import { Input, type Scene } from "phaser";
 import { Action, InputFrame } from "../../domain/input/Actions";
+import { touchInput } from "./TouchControls";
 
 const K = Input.Keyboard.KeyCodes;
 
@@ -33,8 +34,9 @@ export class InputSystem {
   }
 
   poll(): InputFrame {
-    let mask = this.forced | this.latched;
+    let mask = this.forced | this.latched | touchInput.held | touchInput.latched;
     this.latched = 0;
+    touchInput.latched = 0;
     for (const [key, bit] of this.keys) if (key.isDown) mask |= bit;
     const pad = this.scene.input.gamepad?.getPad(0);
     if (pad) {
