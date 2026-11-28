@@ -1,5 +1,9 @@
 # MetalVlug
 
+![MetalVlug gameplay: clearing Lowtide Docks and destroying the Railbreaker tank](media/preview.gif)
+
+Play it at [marvelcollin.com/metalvlug](https://marvelcollin.com/metalvlug/).
+
 A 2D run and gun for the browser. Pip and Juno of the Lantern Brigade fight through Lowtide Docks and the Rustbelt Railyard to free the captured Tinkers and wreck the Rustcoats' war machines.
 
 ## Run it
