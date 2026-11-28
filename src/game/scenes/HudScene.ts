@@ -28,12 +28,27 @@ export class HudScene extends Scene {
   private go!: GameObjects.Sprite;
   private bannerTime = 0;
   private goTime = 0;
+  private tallyTime = -1;
+  private tallyParts: GameObjects.GameObject[] = [];
+  private tallyIcons: GameObjects.Image[] = [];
+  private tallyBonus!: RetroText;
+  private tallyTotal!: RetroText;
+  private tallyPrompt!: RetroText;
+  private tallyShown = 0;
+  private tallyTick = 0;
 
   constructor() {
     super("hud");
   }
 
   create(): void {
+    this.tallyTime = -1;
+    this.tallyShown = 0;
+    this.tallyIcons = [];
+    this.tallyParts = [];
+    this.bannerTime = 0;
+    this.goTime = 0;
+    this.tipTime = 0;
     this.mission = this.scene.get("mission") as MissionScene;
     new RetroText(this, 6, 3, "1UP");
     this.score = new RetroText(this, 104, 3, "0", [1, 0]);
@@ -82,6 +97,52 @@ export class HudScene extends Scene {
     });
   }
 
+  private updateTally(dt: number): void {
+    const s = this.mission.state;
+    const t = s.tally;
+    if (!t) return;
+    const cx = VIEW_W / 2;
+    if (this.tallyTime < 0) {
+      this.tallyTime = 0;
+      this.tallyShown = 0;
+      this.tallyParts = [this.add.rectangle(cx, 140, 300, 78, 0x1b1626, 0.8).setStrokeStyle(1, 0x5c4a7a)];
+      const head = new RetroText(this, cx, 110, `TINKERS RESCUED  ${t.tinkers}`, [0.5, 0.5]);
+      head.view.setTint(0xc9b8e0);
+      this.tallyBonus = new RetroText(this, cx, 144, "", [0.5, 0.5]);
+      this.tallyTotal = new RetroText(this, cx, 156, "", [0.5, 0.5]);
+      this.tallyTotal.view.setTint(0xffe08a);
+      this.tallyPrompt = new RetroText(this, cx, 170, "PRESS ENTER", [0.5, 0.5]);
+      this.tallyPrompt.view.setVisible(false);
+      this.tallyParts.push(head.view, this.tallyBonus.view, this.tallyTotal.view, this.tallyPrompt.view);
+      const shown = Math.min(t.tinkers, 16);
+      const step = 15;
+      this.tallyIcons = Array.from({ length: shown }, (_, i) => this.add.image(cx - ((shown - 1) * step) / 2 + i * step, 127, TEX.atlas, "tinkericon_0").setVisible(false));
+    }
+    this.tallyTime += dt;
+    const iconStart = 1;
+    const iconGap = 0.3;
+    while (this.tallyShown < this.tallyIcons.length && this.tallyTime >= iconStart + this.tallyShown * iconGap) {
+      this.tallyIcons[this.tallyShown]!.setVisible(true);
+      this.tallyShown++;
+      this.mission.events2.emit("sound", "clank");
+    }
+    const countStart = iconStart + this.tallyIcons.length * iconGap + 0.3;
+    const k = Math.max(0, Math.min(1, (this.tallyTime - countStart) / 1));
+    if (this.tallyTime >= countStart) {
+      this.tallyBonus.set(`BONUS  ${t.tinkers} X ${t.perTinker} = ${Math.round(t.bonus * k)}`);
+      this.tallyTick -= dt;
+      if (k < 1 && t.bonus > 0 && this.tallyTick <= 0) {
+        this.tallyTick = 0.08;
+        this.mission.events2.emit("sound", "pickup");
+      }
+    }
+    if (k >= 1) {
+      this.tallyTotal.set(`SCORE  ${t.total}`);
+      this.tallyPrompt.view.setVisible(Math.floor(this.tallyTime * 2) % 2 === 0);
+      s.tallyDone = true;
+    }
+  }
+
   update(_t: number, dms: number): void {
     const dt = dms / 1000;
     const s = this.mission.state;
@@ -127,8 +188,8 @@ export class HudScene extends Scene {
       this.center.set(`CONTINUE? ${Math.max(0, s.continueCount)}  PRESS ENTER`);
       this.bannerTime = 0.1;
     } else if (s.phase === "complete") {
-      const t = s.score.tally();
-      this.center.set(`TINKERS ${t.tinkers} X ${t.perTinker} = ${t.bonus}`);
+      this.center.set("");
+      this.updateTally(dt);
     } else this.center.set("");
   }
 }

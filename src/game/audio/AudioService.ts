@@ -1,7 +1,10 @@
 import type { Scene } from "phaser";
 import type { SoundId } from "../context/GameEvents";
 import type { Settings } from "../settings/Settings";
+import { FilePlayer } from "./FilePlayer";
 import { MusicPlayer } from "./MusicPlayer";
+import { MUSIC_FILES } from "./musicFiles";
+import { SFX, VOICES, VOICE_GAIN, type VoiceId } from "./sfxFiles";
 import type { TrackId } from "./tracks";
 
 interface Voice {
@@ -57,8 +60,12 @@ export class AudioService {
   private master: GainNode | null = null;
   private musicGain: GainNode | null = null;
   private player: MusicPlayer | null = null;
+  private files: FilePlayer | null = null;
   private wanted: TrackId | null = null;
+  private playing: TrackId | null = null;
   private said = "";
+  private readonly samples = new Map<string, AudioBuffer | null>();
+  private samplesLoading = false;
 
   constructor(private readonly settings: Settings) {
     settings.onChange(() => this.applyVolumes());
@@ -79,28 +86,85 @@ export class AudioService {
   music(id: TrackId | null): void {
     this.wanted = id;
     this.ensure();
-    if (!this.player) return;
-    if (id === null) this.player.stop();
-    else this.player.play(id);
+    this.start(id);
   }
 
-  say(text: string): void {
-    if (!this.settings.values.voice) return;
-    this.said = text;
-    try {
-      const synth = window.speechSynthesis;
-      if (!synth) return;
-      synth.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      const voice = synth.getVoices().find((v) => /^en(-|_)/i.test(v.lang));
-      if (voice) u.voice = voice;
-      u.rate = 1.12;
-      u.pitch = 0.55;
-      u.volume = Math.min(1, this.settings.values.sfx * 1.1);
-      synth.speak(u);
-    } catch {
-      this.said = text;
+  preload(ids: TrackId[]): void {
+    this.ensure();
+    for (const id of ids) {
+      const f = MUSIC_FILES[id];
+      if (f && this.files) this.files.preload(f);
     }
+  }
+
+  private start(id: TrackId | null): void {
+    if (!this.player || !this.files) return;
+    if (id === this.playing) return;
+    this.playing = id;
+    const file = id ? MUSIC_FILES[id] : undefined;
+    if (id === null) {
+      this.player.stop();
+      this.files.stop();
+    } else if (file) {
+      this.player.stop();
+      void this.files.play(file).then((ok) => {
+        if (!ok && this.playing === id) this.player?.play(id);
+      });
+    } else {
+      this.files.stop();
+      this.player.play(id);
+    }
+  }
+
+  say(voice: VoiceId, delay = 0): void {
+    if (!this.settings.values.voice) return;
+    this.said = voice;
+    const ctx = this.ensure();
+    const buffer = this.samples.get(VOICES[voice]);
+    if (ctx && buffer) this.sample(ctx, buffer, VOICE_GAIN, 0, delay);
+  }
+
+  get samplesReady(): number {
+    let n = 0;
+    for (const b of this.samples.values()) if (b) n++;
+    return n;
+  }
+
+  private loadSamples(ctx: AudioContext): void {
+    if (this.samplesLoading) return;
+    this.samplesLoading = true;
+    const files = new Set<string>(Object.values(VOICES));
+    for (const spec of Object.values(SFX)) for (const f of spec?.files ?? []) files.add(f);
+    for (const f of files) {
+      fetch(`assets/sfx/${f}`)
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+        .then((data) => ctx.decodeAudioData(data))
+        .then((b) => this.samples.set(f, b))
+        .catch(() => this.samples.set(f, null));
+    }
+  }
+
+  private sample(ctx: AudioContext, buffer: AudioBuffer, gain: number, jitter: number, delay = 0): void {
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    if (jitter) src.playbackRate.value = 1 + (Math.random() * 2 - 1) * jitter;
+    const g = ctx.createGain();
+    g.gain.value = gain;
+    src.connect(g).connect(this.master!);
+    src.start(ctx.currentTime + delay);
+  }
+
+  private playSound(ctx: AudioContext, id: SoundId): void {
+    const spec = SFX[id];
+    if (spec) {
+      const pick = spec.files[Math.floor(Math.random() * spec.files.length)]!;
+      const buffer = this.samples.get(pick);
+      if (buffer) {
+        this.sample(ctx, buffer, spec.gain, spec.jitter ?? 0);
+        return;
+      }
+    }
+    this.play(ctx, BANK[id]);
   }
 
   get lastSaid(): string {
@@ -108,7 +172,7 @@ export class AudioService {
   }
 
   get track(): TrackId | null {
-    return this.player?.current ?? null;
+    return this.playing;
   }
 
   private applyVolumes(): void {
@@ -120,7 +184,7 @@ export class AudioService {
   flush(): void {
     if (this.queue.size === 0) return;
     const ctx = this.ensure();
-    if (ctx) for (const id of this.queue) this.play(ctx, BANK[id]);
+    if (ctx) for (const id of this.queue) this.playSound(ctx, id);
     this.queue.clear();
   }
 
@@ -137,8 +201,10 @@ export class AudioService {
         const d = this.noise.getChannelData(0);
         for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
         this.player = new MusicPlayer(this.ctx, this.musicGain, this.noise);
+        this.files = new FilePlayer(this.ctx, this.musicGain, "assets/music/");
+        this.loadSamples(this.ctx);
         this.applyVolumes();
-        if (this.wanted) this.player.play(this.wanted);
+        if (this.wanted) this.start(this.wanted);
       } catch {
         return null;
       }

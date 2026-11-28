@@ -19,6 +19,10 @@ export class Lives {
     return this.left >= 0 ? "respawn" : "gameover";
   }
 
+  restore(n: number): void {
+    this.left = Math.max(0, Math.min(this.perCredit, n));
+  }
+
   continueGame(): void {
     this.left = this.perCredit;
     this.continues += 1;

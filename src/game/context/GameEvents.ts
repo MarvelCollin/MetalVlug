@@ -1,4 +1,5 @@
 import type { Faction } from "../../domain/combat/Damage";
+import type { VoiceId } from "../audio/sfxFiles";
 
 export type SoundId =
   | "shot" | "rivet" | "scatter" | "rocket" | "boom" | "bigboom" | "knife" | "hit" | "clank"
@@ -20,6 +21,6 @@ export interface GameEvents {
   waveCleared: void;
   bossDefeated: void;
   timer: { units: number };
-  announce: { text: string };
+  announce: { voice: VoiceId; delay?: number };
   hitStop: { seconds: number };
 }

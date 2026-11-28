@@ -1,5 +1,6 @@
 import { GameObjects, Scene } from "phaser";
 import { DATA, FONT, FONT_BIG, TEX, THEMES, bgKey } from "../assets/keys";
+import { LEVELS, type LevelId } from "../level/missions";
 import { registerAnimations } from "../assets/Animations";
 import { AudioService } from "../audio/AudioService";
 import { Settings } from "../settings/Settings";
@@ -46,6 +47,9 @@ export class BootScene extends Scene {
       this.game.registry.set("settings", settings);
       new AudioService(settings).register(this);
     }
-    this.scene.start(new URLSearchParams(location.search).has("skip") ? "mission" : "title");
+    const params = new URLSearchParams(location.search);
+    const level = params.get("level");
+    if (params.has("skip")) this.scene.start("mission", level && level in LEVELS ? { level: level as LevelId } : {});
+    else this.scene.start("title");
   }
 }

@@ -75,4 +75,5 @@ export const LOWTIDE: LevelData = {
     { at: 2750, spawns: [{ type: "bazooka", x: 3000, y: 125, idle: "none", hold: true }, { type: "grunt", side: "right", delay: 1 }, { type: "shield", side: "right", delay: 2.6 }, { type: "lobber", side: "right", delay: 1.8 }] },
   ],
   boss: { lockAt: 3456, stopX: 3720 },
+  next: "railyard",
 };

@@ -10,7 +10,7 @@ import type { Target } from "../../systems/CombatSystem";
 import { ENEMIES, type EnemyDef, type EnemyType, type IdlePose } from "./EnemyDefs";
 import type { EnemyBehaviour } from "./behaviours/EnemyBehaviour";
 
-export type EnemyState = "para" | "idle" | "alert" | "engage" | "attack" | "dying" | "gone";
+export type EnemyState = "para" | "idle" | "alert" | "engage" | "attack" | "flee" | "dying" | "gone";
 
 export interface EnemySpawn {
   type: EnemyType;
@@ -91,6 +91,22 @@ export class Enemy implements Target {
         exit: (e) => e.mark.setVisible(false),
       },
       engage: { update: (e, dt) => e.behaviour.engage(e, dt) },
+      flee: {
+        enter: (e) => {
+          e.body.setAllowGravity(true);
+          e.chute.setVisible(false);
+          e.mark.setVisible(true);
+          e.facing = e.x >= e.ctx.player.x ? 1 : -1;
+          e.sprite.setFlipX(e.facing < 0).play(e.def.runAnim);
+        },
+        update: (e, _dt, t) => {
+          e.mark.setPosition(e.sprite.x, e.sprite.y - 50 - Math.min(4, t * 20));
+          if (t > 0.35) e.mark.setVisible(false);
+          e.body.setVelocityX(e.facing * Math.max(90, e.def.speed * 1.8));
+          const cam = e.ctx.camera;
+          return e.x < cam.left - 40 || e.x > cam.right + 40 ? "gone" : undefined;
+        },
+      },
       attack: {
         enter: (e) => { e.fired = false; e.body.setVelocityX(0); },
         update: (e, dt, t) => e.behaviour.attack(e, dt, t),
@@ -214,6 +230,11 @@ export class Enemy implements Target {
       this.body.setVelocityX(0);
       this.sprite.play(this.def.dieAnim);
     }
+  }
+
+  flee(): void {
+    if (!this.alive || this.isDummy) return;
+    this.fsm.change("flee");
   }
 
   faceTarget(): void {

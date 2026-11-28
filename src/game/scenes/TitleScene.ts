@@ -8,6 +8,7 @@ import { settingsOf, type Settings } from "../settings/Settings";
 import { Menu, type MenuItem } from "../ui/Menu";
 import { RetroText } from "../ui/RetroText";
 import { CHARACTERS, CHARACTER_ORDER, type CharacterId } from "../../domain/characters/Characters";
+import { LEVELS, type LevelId } from "../level/missions";
 
 interface Card {
   id: CharacterId;
@@ -19,25 +20,38 @@ interface Card {
   perk2: RetroText;
 }
 
-type Mode = "press" | "main" | "options" | "credits" | "select";
+type Mode = "press" | "main" | "missions" | "options" | "credits" | "select";
 
 const HEAD = 0xf8d25a;
 const LABEL = 0xc9b8e0;
 const LINK = 0x8fe0cc;
 const BODY = 0xffffff;
 
-const CREDITS: readonly [string, number, number][] = [
-  ["CREDITS", 72, HEAD],
-  ["DESIGN, CODE AND PIXELS", 86, LABEL],
-  ["MARVEL COLLIN", 97, BODY],
-  ["MARVELCOLLIN.COM", 109, LINK],
-  ["GITHUB.COM/MARVELCOLLIN/METALVLUG", 120, LINK],
-  ["BUILT WITH", 133, LABEL],
-  ["PHASER 4", 143, BODY],
-  ["EFFECTS FROM PIXELFX (MIT)", 153, BODY],
-  ["SPRITE FUSION VFX BY HUGO DUPREZ (MIT)", 163, BODY],
-  ["MUSIC AND SOUND SYNTHESIZED IN CODE", 173, BODY],
-  ["PRESS FIRE TO GO BACK", 186, LABEL],
+const CREDITS: readonly (readonly [string, number, number])[][] = [
+  [
+    ["CREDITS  1/2", 72, HEAD],
+    ["DESIGN, CODE AND PIXELS", 86, LABEL],
+    ["MARVEL COLLIN", 97, BODY],
+    ["MARVELCOLLIN.COM", 109, LINK],
+    ["GITHUB.COM/MARVELCOLLIN/METALVLUG", 120, LINK],
+    ["BUILT WITH", 135, LABEL],
+    ["PHASER 4", 146, BODY],
+    ["EFFECTS FROM PIXELFX (MIT)", 157, BODY],
+    ["SPRITE FUSION VFX BY HUGO DUPREZ (MIT)", 168, BODY],
+    ["FIRE: NEXT PAGE", 186, LABEL],
+  ],
+  [
+    ["CREDITS  2/2", 72, HEAD],
+    ["MUSIC FROM OPENGAMEART.ORG", 86, LABEL],
+    ["MEGA PIXEL MUSIC LAB (CC-BY 4.0)", 98, BODY],
+    ["GREGOIRE LOURME (CC-BY-SA 3.0)", 109, BODY],
+    ["VILLE NOUSIAINEN (CC0)", 120, BODY],
+    ["LUSHOGAMES (CC0)", 131, BODY],
+    ["CENTURION OF WAR (CC0)", 142, BODY],
+    ["SOUND EFFECTS SYNTHESIZED IN CODE", 157, LABEL],
+    ["FULL LIST IN CREDITS.MD", 168, LINK],
+    ["FIRE: BACK", 186, LABEL],
+  ],
 ];
 
 export class TitleScene extends Scene {
@@ -47,11 +61,13 @@ export class TitleScene extends Scene {
   private prompt!: RetroText;
   private main!: Menu;
   private options!: Menu;
-  private credits: RetroText[] = [];
+  private credits: RetroText[][] = [];
+  private creditPage = 0;
   private mode: Mode = "press";
   private cards: Card[] = [];
   private pick = 0;
-  private pendingLevel: "lowtide" | "camp" = "lowtide";
+  private pendingLevel: LevelId = "lowtide";
+  private missions!: Menu;
   private selectTitle!: RetroText;
   private selectCursor!: GameObjects.Image;
   private attract: GameObjects.GameObject[] = [];
@@ -91,15 +107,21 @@ export class TitleScene extends Scene {
     new RetroText(this, VIEW_W / 2, 206, "ARROWS MOVE  J FIRE  K JUMP  L BOMB  ESC PAUSE", [0.5, 0.5]).view.setAlpha(0.85);
     this.input2 = new InputSystem(this);
     const tick = () => this.audio.request("clank");
-    const start = (level: "lowtide" | "camp") => {
+    const start = (level: LevelId) => {
       this.pendingLevel = level;
       this.setMode("select");
     };
     this.main = new Menu(this, [
       { label: () => "START MISSION", select: () => start("lowtide") },
+      { label: () => "MISSION SELECT", select: () => this.setMode("missions") },
       { label: () => "TRAINING CAMP", select: () => start("camp") },
       { label: () => "OPTIONS", select: () => this.setMode("options") },
       { label: () => "CREDITS", select: () => this.setMode("credits") },
+    ], VIEW_W / 2, 88, 13, tick);
+    this.missions = new Menu(this, [
+      { label: () => `1  ${LEVELS.lowtide.title}`, select: () => start("lowtide") },
+      { label: () => `2  ${LEVELS.railyard.title}`, select: () => start("railyard") },
+      { label: () => "BACK", select: () => this.setMode("main") },
     ], VIEW_W / 2, 92, 14, tick);
     const level = (v: number) => `${Math.round(v * 10)}`.padStart(2, " ");
     const step = (key: "music" | "sfx") => (d: -1 | 1) =>
@@ -117,11 +139,11 @@ export class TitleScene extends Scene {
     ];
     this.options = new Menu(this, items, VIEW_W / 2, 78, 13, tick);
     this.creditPanel = this.add.rectangle(VIEW_W / 2, 129, 300, 130, 0x1b1626, 0.78).setStrokeStyle(1, 0x5c4a7a);
-    this.credits = CREDITS.map(([line, y, tint]) => {
+    this.credits = CREDITS.map((page) => page.map(([line, y, tint]) => {
       const t = new RetroText(this, VIEW_W / 2, y, line, [0.5, 0.5]);
       t.view.setTint(tint);
       return t;
-    });
+    }));
     this.selectPanel = this.add.rectangle(VIEW_W / 2, 132, 300, 112, 0x1b1626, 0.55);
     this.selectTitle = new RetroText(this, VIEW_W / 2, 70, "CHOOSE YOUR SOLDIER", [0.5, 0.5]);
     this.selectCursor = this.add.image(0, 0, TEX.atlas, "hud_cursor_0").setAngle(0);
@@ -142,15 +164,18 @@ export class TitleScene extends Scene {
     });
     this.setMode("press");
     this.audio.music("title");
+    this.audio.preload(["lowtide"]);
   }
 
   private setMode(mode: Mode): void {
     this.mode = mode;
     this.prompt.view.setVisible(mode === "press");
     this.main.setVisible(mode === "main");
+    this.missions.setVisible(mode === "missions");
     this.options.setVisible(mode === "options");
     this.creditPanel.setVisible(mode === "credits");
-    for (const c of this.credits) c.view.setVisible(mode === "credits");
+    if (mode === "credits") this.creditPage = 0;
+    this.showCreditPage(mode === "credits");
     const sel = mode === "select";
     this.selectTitle.view.setVisible(sel);
     this.selectCursor.setVisible(sel);
@@ -203,10 +228,25 @@ export class TitleScene extends Scene {
         this.scene.start("mission", { level: this.pendingLevel, character: id });
       }
     } else if (this.mode === "main") this.main.update(input, dt);
+    else if (this.mode === "missions") {
+      this.missions.update(input, dt);
+      if (input.pressed(Action.Pause)) this.setMode("main");
+    }
     else if (this.mode === "options") {
       this.options.update(input, dt);
       if (input.pressed(Action.Pause)) this.setMode("main");
-    } else if (input.pressed(Action.Fire) || input.pressed(Action.Start) || input.pressed(Action.Pause)) this.setMode("main");
+    } else if (input.pressed(Action.Pause)) this.setMode("main");
+    else if (input.pressed(Action.Fire) || input.pressed(Action.Start)) {
+      if (this.creditPage < this.credits.length - 1) {
+        this.creditPage++;
+        this.audio.request("clank");
+        this.showCreditPage(true);
+      } else this.setMode("main");
+    }
     this.audio.flush();
+  }
+
+  private showCreditPage(on: boolean): void {
+    this.credits.forEach((page, i) => page.forEach((t) => t.view.setVisible(on && i === this.creditPage)));
   }
 }

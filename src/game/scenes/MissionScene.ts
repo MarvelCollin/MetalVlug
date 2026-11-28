@@ -19,6 +19,8 @@ import { Hostage } from "../entities/props/Hostage";
 import { Prop } from "../entities/props/Prop";
 import { Mule } from "../entities/vehicles/Mule";
 import { Warden } from "../entities/bosses/Warden";
+import { Crawler } from "../entities/bosses/Crawler";
+import type { Boss } from "../entities/bosses/Boss";
 import { audioOf, type AudioService } from "../audio/AudioService";
 import { settingsOf } from "../settings/Settings";
 import { CameraDirector } from "../systems/CameraDirector";
@@ -36,6 +38,7 @@ type Flow = "intro" | "play" | "gameover" | "complete";
 export interface MissionData {
   level?: LevelId;
   character?: CharacterId;
+  carry?: { score: number; lives: number };
 }
 
 export class MissionScene extends Scene {
@@ -45,7 +48,7 @@ export class MissionScene extends Scene {
   player!: Player;
   enemies!: EnemyFactory;
   mule: Mule | null = null;
-  warden: Warden | null = null;
+  boss: Boss | null = null;
   spawner!: SpawnDirector;
   inputSys!: InputSystem;
   level: LevelData = LEVELS.lowtide;
@@ -58,6 +61,7 @@ export class MissionScene extends Scene {
   private respawnIn = -1;
   private continueTimer = 0;
   private nextTip = 0;
+  private carry: MissionData["carry"];
   hitStop = 0;
   hitStops = 0;
 
@@ -65,8 +69,13 @@ export class MissionScene extends Scene {
     super("mission");
   }
 
+  get warden(): Boss | null {
+    return this.boss;
+  }
+
   init(data: MissionData): void {
     this.level = LEVELS[data.level ?? "lowtide"];
+    this.carry = data.carry;
     this.character = CHARACTERS[data.character ?? ((this.game.registry.get("character") as CharacterId | undefined) ?? "pip")];
   }
 
@@ -82,7 +91,7 @@ export class MissionScene extends Scene {
     const terrain = builder.terrain();
     const events = new EventBus<GameEvents>();
     const rng = new Rng(0x5eed);
-    const state = new MissionState({ character: this.character, lives: this.level.lives, clock: this.level.clock, easy: settings.values.easy });
+    const state = new MissionState({ character: this.character, lives: this.level.lives, clock: this.level.clock, easy: settings.values.easy, carry: this.carry });
     const camera = new CameraDirector(this.cameras.main, this.level.length, () => settings.values.shake);
     const combat = new CombatSystem();
     const fx = new EffectsSystem(this, terrain, rng, () => settings.values.flashes);
@@ -100,6 +109,7 @@ export class MissionScene extends Scene {
     this.events2 = events;
     this.state = state;
     this.audio = audioOf(this);
+    this.audio.preload([this.level.music, "boss"]);
     this.player = new Player(ctx, this.level.playerStart, this.level.groundY - 40, this.character);
     (ctx as { player: GameContext["player"] }).player = this.player;
     combat.add(this.player);
@@ -107,7 +117,8 @@ export class MissionScene extends Scene {
     for (const p of this.level.props) new Prop(ctx, p.type, p.x, p.y ?? this.level.groundY, p.drop);
     for (const h of this.level.hostages) this.hostages.push(new Hostage(ctx, h.x, h.y ?? this.level.groundY, h.drop));
     this.mule = this.level.mule ? new Mule(ctx, this.player, this.level.mule.x, this.level.groundY - 4) : null;
-    this.warden = this.level.boss ? new Warden(ctx, this.enemies, this.level.boss.stopX, this.level.groundY) : null;
+    const b = this.level.boss;
+    this.boss = !b ? null : b.type === "crawler" ? new Crawler(ctx, this.enemies, b.stopX, this.level.groundY) : new Warden(ctx, this.enemies, b.stopX, this.level.groundY);
     if (this.level.goalX) this.add.sprite(this.level.goalX, this.level.groundY, TEX.atlas, "flag_0").setOrigin(0.5, 1).setDepth(DEPTH.props).play("flag");
     this.spawner = new SpawnDirector(ctx, this.level, this.enemies);
     this.spawner.update(0);
@@ -119,7 +130,8 @@ export class MissionScene extends Scene {
           if (t - dt <= 0.05 && t > 0.05) {
             s.events2.emit("banner", { text: s.level.label, sub: `${s.level.title}  START!`, seconds: 2.2 });
             s.events2.emit("sound", "mission");
-            s.events2.emit("announce", { text: `${s.level.label.toLowerCase()}, start!` });
+            s.events2.emit("announce", { voice: "ready" });
+            s.events2.emit("announce", { voice: "go", delay: 0.9 });
             s.audio.music(s.level.music);
           }
           s.simulate(dt);
@@ -136,7 +148,7 @@ export class MissionScene extends Scene {
           s.continueTimer = 0;
           s.state.continueCount = MISSION.continueCount;
           s.audio.music("gameover");
-          s.audio.say("game over");
+          s.audio.say("gameOver", 1.4);
         },
         update: (s, dt) => s.tickContinue(dt),
       },
@@ -144,16 +156,18 @@ export class MissionScene extends Scene {
         enter: (s) => {
           s.state.phase = "complete";
           s.state.clock.pause();
+          s.state.tally = s.state.score.tally();
+          s.state.tallyDone = false;
+          for (const e of s.enemies.list) e.flee();
+          s.ctx.projectiles.clear();
+          s.player.guard(60);
           s.events2.emit("banner", { text: s.level.goalX ? "TRAINING COMPLETE!" : "MISSION COMPLETE!", seconds: 3 });
-          s.audio.say(s.level.goalX ? "training complete!" : "mission complete!");
+          s.audio.say(s.level.goalX ? "objectiveAchieved" : "missionCompleted", 0.9);
           s.audio.music("complete");
         },
         update: (s, dt, t) => {
           s.simulate(dt);
-          if (t > 9 || (t > 4 && s.ctx.input.pressed(Action.Start))) {
-            s.scene.stop("hud");
-            s.scene.start("title");
-          }
+          if (s.state.tallyDone && (t > 12 || s.ctx.input.pressed(Action.Start) || s.ctx.input.pressed(Action.Fire))) s.leaveMission();
         },
       },
     }, "intro");
@@ -163,11 +177,19 @@ export class MissionScene extends Scene {
     installDebugBridge(this);
   }
 
+  private leaveMission(): void {
+    const next = this.level.next as LevelId | undefined;
+    this.scene.stop("hud");
+    if (next && LEVELS[next]) {
+      this.scene.start("mission", { level: next, character: this.character.id, carry: { score: this.state.tally?.total ?? this.state.score.score, lives: this.state.lives.remaining } });
+    } else this.scene.start("title");
+  }
+
   private wireEvents(): void {
     const ev = this.events2;
     const ctx = this.ctx;
     ev.on("sound", (id) => this.audio.request(id));
-    ev.on("announce", (a) => this.audio.say(a.text));
+    ev.on("announce", (a) => this.audio.say(a.voice, a.delay ?? 0));
     ev.on("hitStop", (h) => {
       this.hitStop = Math.max(this.hitStop, h.seconds);
       this.hitStops++;
@@ -187,7 +209,6 @@ export class MissionScene extends Scene {
     ev.on("rescued", (r) => {
       this.state.score.rescue();
       ctx.fx.popup("THANKS!", r.x, r.y - 30);
-      this.audio.say("thank you!");
     });
     ev.on("waveCleared", () => { this.state.clock.reset(); this.audio.request("go"); });
     ev.on("playerDied", () => {
@@ -227,12 +248,12 @@ export class MissionScene extends Scene {
     const pbox = this.piloting ? this.mule!.bounds(this.box) : this.player.bounds(this.box);
     if (this.player.alive) for (const h of this.hostages) h.tick(dt, pbox);
     else for (const h of this.hostages) h.tick(dt, this.box.setTo(-999, -999, 0, 0));
-    this.warden?.tick(dt);
+    this.boss?.tick(dt);
     ctx.projectiles.update(dt);
     ctx.fx.update(dt);
     if (this.player.alive) ctx.pickups.collect(this.piloting ? this.mule!.bounds(this.box) : this.player.bounds(this.box), (k, x, y) => this.applyPickup(k, x, y));
     ctx.pickups.cull(ctx.camera.left);
-    const w = this.warden;
+    const w = this.boss;
     if (w?.present && this.player.onFoot && this.player.x > w.left - 8) this.player.legs.x = w.left - 8;
     if (w?.present && this.piloting && this.mule!.x > w.left - 20) this.mule!.sprite.x = w.left - 20;
     const followX = this.piloting ? this.mule!.x : this.player.x;
@@ -246,11 +267,12 @@ export class MissionScene extends Scene {
     this.spawner.update(dt);
     const cam = this.ctx.camera;
     const boss = this.level.boss;
-    if (boss && this.warden && this.warden.state === "waiting" && cam.left >= boss.lockAt - 2) {
+    if (boss && this.boss && this.boss.state === "waiting" && cam.left >= boss.lockAt - 2) {
       cam.lock(boss.lockAt);
-      this.warden.start();
+      this.boss.start();
       this.audio.music("boss");
-      this.events2.emit("banner", { text: "WARNING!", sub: "IRON WARDEN APPROACHING", seconds: 2 });
+      this.events2.emit("banner", { text: "WARNING!", sub: `${this.boss.name} APPROACHING`, seconds: 2 });
+      this.events2.emit("announce", { voice: "lookOut", delay: 0.4 });
     }
     const tips = this.level.tips;
     if (this.nextTip < tips.length && this.player.x >= tips[this.nextTip]!.x) {
@@ -300,7 +322,7 @@ export class MissionScene extends Scene {
       this.state.score.continueGame();
       this.state.continueCount = -1;
       this.respawn("rivet");
-      this.audio.music(this.warden?.present ? "boss" : this.level.music);
+      this.audio.music(this.boss?.present ? "boss" : this.level.music);
       return "play";
     }
   }
@@ -316,7 +338,7 @@ export class MissionScene extends Scene {
       case "lance": {
         st.loadout.pickWeapon(kind);
         ev.emit("weapon", { label: st.loadout.weapon.label });
-        ev.emit("announce", { text: `${st.loadout.weapon.label.toLowerCase()}!` });
+        ev.emit("announce", { voice: "powerUp" });
         ev.emit("sound", "weapon");
         return;
       }

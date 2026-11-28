@@ -4,7 +4,7 @@ import { TEX, bgKey } from "../assets/keys";
 import type { BlockDef, LevelData, TileKey } from "./LevelData";
 import { Terrain } from "./Terrain";
 
-const TILE_H: Record<TileKey, number> = { dock: 16, fill: 16, brick: 16, plank: 7, roof: 9, rail: 16, crate: 24, grass: 16, dirt: 16, sandbag: 12 };
+const TILE_H: Record<TileKey, number> = { dock: 16, fill: 16, brick: 16, plank: 7, roof: 9, rail: 16, crate: 24, grass: 16, dirt: 16, sandbag: 12, track: 16, gravel: 16, boxcar: 24, carroof: 9, bogie: 8 };
 
 export interface Parallax {
   far: GameObjects.TileSprite;

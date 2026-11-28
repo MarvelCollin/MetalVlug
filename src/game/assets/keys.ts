@@ -5,8 +5,8 @@ export const TEX = {
   fontBig: "font_big",
 } as const;
 
-export type Theme = "harbour" | "camp";
-export const THEMES: readonly Theme[] = ["harbour", "camp"];
+export type Theme = "harbour" | "camp" | "yard";
+export const THEMES: readonly Theme[] = ["harbour", "camp", "yard"];
 export const BG_VARIANTS = 3;
 
 function pickVariant(): number {

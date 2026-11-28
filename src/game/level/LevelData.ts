@@ -6,7 +6,7 @@ import type { PropType } from "../entities/props/Prop";
 import type { Theme } from "../assets/keys";
 import type { TrackId } from "../audio/tracks";
 
-export type TileKey = "dock" | "fill" | "brick" | "plank" | "roof" | "rail" | "crate" | "grass" | "dirt" | "sandbag";
+export type TileKey = "dock" | "fill" | "brick" | "plank" | "roof" | "rail" | "crate" | "grass" | "dirt" | "sandbag" | "track" | "gravel" | "boxcar" | "carroof" | "bogie";
 
 export interface BlockDef {
   x: number;
@@ -71,5 +71,6 @@ export interface LevelData {
   hostages: HostageDef[];
   mule?: { x: number };
   triggers: TriggerDef[];
-  boss?: { lockAt: number; stopX: number };
+  boss?: { lockAt: number; stopX: number; type?: "warden" | "crawler" };
+  next?: string;
 }

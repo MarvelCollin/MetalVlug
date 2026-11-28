@@ -1,7 +1,7 @@
 import { MISSION, SCORE } from "../../config/tuning";
 import type { CharacterDef } from "../../domain/characters/Characters";
 import { Loadout } from "../../domain/weapons/Loadout";
-import { ScoreKeeper } from "../../domain/scoring/ScoreKeeper";
+import { ScoreKeeper, type Tally } from "../../domain/scoring/ScoreKeeper";
 import { Lives } from "../../domain/mission/Lives";
 import { MissionClock } from "../../domain/mission/MissionClock";
 
@@ -10,6 +10,7 @@ export interface MissionRules {
   lives: number;
   clock: boolean;
   easy: boolean;
+  carry?: { score: number; lives: number };
 }
 
 export class MissionState {
@@ -24,6 +25,8 @@ export class MissionState {
   piloting = false;
   continueCount = -1;
   phase: "intro" | "play" | "gameover" | "complete" = "intro";
+  tally: Tally | null = null;
+  tallyDone = false;
 
   constructor(rules: MissionRules) {
     this.loadout = new Loadout(rules.character.startBombs);
@@ -31,5 +34,9 @@ export class MissionState {
     this.clockEnabled = rules.clock;
     this.easy = rules.easy;
     if (!rules.clock) this.clock.pause();
+    if (rules.carry) {
+      this.score.add(rules.carry.score);
+      this.lives.restore(rules.carry.lives);
+    }
   }
 }

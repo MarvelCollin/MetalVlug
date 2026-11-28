@@ -196,10 +196,10 @@ test("the arc lance beam pierces a riot shield, drains ammo while held and vanis
 test("the announcer calls out a weapon pickup and stays quiet when switched off", async ({ page }) => {
   await startMission(page);
   await run(page, "mv.shield(60); " + KILL_ALL + " window.__game.registry.get('settings').set('voice', true); sc.ctx.pickups.spawn('furnace', sc.player.x, sc.player.y - 20, 0);");
-  await page.waitForFunction("window.__game.registry.get('audio').lastSaid === 'furnace!'", null, { timeout: 4_000 });
+  await page.waitForFunction("window.__game.registry.get('audio').lastSaid === 'powerUp'", null, { timeout: 4_000 });
   await run(page, "window.__game.registry.get('settings').set('voice', false); sc.ctx.pickups.spawn('lance', sc.player.x, sc.player.y - 20, 0);");
   await page.waitForFunction("window.__mv.snapshot().weapon === 'lance'", null, { timeout: 4_000 });
-  expect(await run<string>(page, "return window.__game.registry.get('audio').lastSaid;")).toBe("furnace!");
+  expect(await run<string>(page, "return window.__game.registry.get('audio').lastSaid;")).toBe("powerUp");
   await run(page, "window.__game.registry.get('settings').set('voice', true);");
 });
 
@@ -302,6 +302,76 @@ test("the Warden core volleys can be dodged by standing still and jumping the sk
   expect((await snap(page)).lives).toBe(livesBefore);
 });
 
+test("licensed music files load and play: buffered title loop and streamed stage track", async ({ page }) => {
+  await page.goto("/?bg=0");
+  await page.waitForTimeout(800);
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("(() => { const f = window.__game.registry.get('audio').files; return f && f.sources.length > 0; })()", null, { timeout: 15_000 });
+  await page.waitForFunction("(() => { const a = window.__game.registry.get('audio'); return a.samplesReady > 0 && a.samplesReady === a.samples.size; })()", null, { timeout: 15_000 });
+  expect(await page.evaluate("window.__game.registry.get('audio').samplesReady")).toBeGreaterThanOrEqual(60);
+  await page.goto("/?skip");
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().phase === 'play'", null, { timeout: 20_000 });
+  await page.keyboard.press("ArrowRight");
+  await page.waitForFunction("(() => { const f = window.__game.registry.get('audio').files; return f && f.media && !f.media.el.paused && f.media.el.currentTime > 0; })()", null, { timeout: 15_000 });
+  expect(await page.evaluate("window.__game.registry.get('audio').files.media.el.src")).toContain("pounding-the-enemy-base.mp3");
+});
+
+test("the Railbreaker can be beaten with the pistol by jump shooting", async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.goto("/?skip&level=railyard");
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().phase === 'play'", null, { timeout: 20_000 });
+  await run(page, "mv.shield(900); mv.warp(4080);");
+  await hold(page, "ArrowRight", 1500);
+  await page.waitForFunction("window.__mv.snapshot().boss === 'phase1'", null, { timeout: 20_000 });
+  for (let i = 0; i < 260; i++) {
+    await run(page, "mv.shield(900);");
+    await tap(page, "KeyK", 160);
+    await page.waitForTimeout(110);
+    await tap(page, "KeyJ", 30);
+    await page.waitForTimeout(60);
+    await tap(page, "KeyJ", 30);
+    await page.waitForTimeout(230);
+    if (["dying", "dead"].includes((await snap(page)).boss)) break;
+  }
+  await page.waitForFunction("window.__mv.snapshot().phase === 'complete'", null, { timeout: 20_000 });
+});
+
+test("the Railbreaker ram crushes a player in its path and stops short of the far left", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.goto("/?skip&level=railyard");
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().phase === 'play'", null, { timeout: 20_000 });
+  await run(page, "mv.shield(900); mv.warp(4080);");
+  await hold(page, "ArrowRight", 1500);
+  await page.waitForFunction("window.__mv.snapshot().boss === 'phase1'", null, { timeout: 20_000 });
+  await run(page, "sc.boss.turret.hit({ amount: 999, kind: 'bullet', from: 'player', x: 0, y: 0 }); sc.boss.troopCd.trigger(999); sc.boss.cannonCd.trigger(999);");
+  await page.waitForFunction("window.__mv.snapshot().boss === 'phase2'", null, { timeout: 5_000 });
+  await run(page, KILL_ALL + " sc.player.legs.x = sc.ctx.camera.left + 30; mv.shield(0);");
+  await page.waitForFunction("window.__mv.scene.boss.ramming === 'hold'", null, { timeout: 12_000 });
+  expect((await snap(page)).playerState).toBe("alive");
+  expect(await run<number>(page, "return sc.boss.left - sc.ctx.camera.left;")).toBeGreaterThan(60);
+  await page.waitForFunction("window.__mv.scene.boss.ramming === 'idle'", null, { timeout: 12_000 });
+  await run(page, KILL_ALL + " sc.player.legs.x = sc.boss.left - 30; mv.shield(0);");
+  await page.waitForFunction("window.__mv.snapshot().playerState !== 'alive'", null, { timeout: 12_000 });
+});
+
+test("clearing mission 1 shows the tinker tally and carries score and lives into mission 2", async ({ page }) => {
+  test.setTimeout(60_000);
+  await startMission(page);
+  await run(page, "mv.shield(60); sc.state.score.add(1234); sc.state.score.rescue(); sc.state.score.rescue(); sc.events2.emit('bossDefeated', undefined);");
+  await page.waitForFunction("window.__mv.snapshot().phase === 'complete'", null, { timeout: 5_000 });
+  await page.waitForFunction("window.__mv.scene.state.tallyDone === true", null, { timeout: 10_000 });
+  expect(await page.evaluate("window.__game.scene.getScene('hud').tallyIcons.filter((i) => i.visible).length")).toBe(2);
+  expect(await run<number>(page, "return sc.enemies.list.filter((e) => e.alive && !e.fsm.is('flee')).length;")).toBe(0);
+  expect((await snap(page)).playerState).toBe("alive");
+  const lives = (await snap(page)).lives;
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().level === 'railyard' && window.__mv.snapshot().phase !== 'complete'", null, { timeout: 10_000 });
+  const s = await snap(page);
+  expect(s.score).toBe(1234 + 2 * 10000);
+  expect(s.lives).toBe(lives);
+  expect(s.tinkers).toBe(0);
+});
+
 test("leaving the Mule does not instantly board it again", async ({ page }) => {
   await startMission(page);
   await run(page, "mv.shield(120); mv.warp(1560);");
@@ -340,6 +410,8 @@ test("training camp from the menu teaches with tips and ends at the flag", async
   await page.waitForTimeout(150);
   await page.keyboard.press("ArrowDown");
   await page.waitForTimeout(150);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(150);
   await page.keyboard.press("Enter");
   await page.waitForTimeout(200);
   await page.keyboard.press("Enter");
@@ -359,6 +431,23 @@ test("training camp from the menu teaches with tips and ends at the flag", async
   await page.waitForFunction("window.__mv.snapshot().phase === 'complete'", null, { timeout: 10_000 });
 });
 
+test("mission select from the title menu starts the railyard", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForTimeout(1000);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("Enter");
+  await page.waitForFunction("window.__mv && window.__mv.snapshot().level === 'railyard' && window.__mv.snapshot().phase === 'play'", null, { timeout: 10_000 });
+});
+
 test("options change and persist the music volume", async ({ page }) => {
   await page.goto("/");
   await page.evaluate("localStorage.clear()");
@@ -366,10 +455,10 @@ test("options change and persist the music volume", async ({ page }) => {
   await page.waitForTimeout(1000);
   await page.keyboard.press("Enter");
   await page.waitForTimeout(150);
-  await page.keyboard.press("ArrowDown");
-  await page.waitForTimeout(80);
-  await page.keyboard.press("ArrowDown");
-  await page.waitForTimeout(80);
+  for (let i = 0; i < 3; i++) {
+    await page.keyboard.press("ArrowDown");
+    await page.waitForTimeout(80);
+  }
   await page.keyboard.press("Enter");
   await page.waitForTimeout(150);
   await page.keyboard.press("ArrowLeft");

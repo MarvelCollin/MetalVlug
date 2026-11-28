@@ -21,6 +21,7 @@ export class Player implements Target, PlayerLocator {
   private readonly beamRect = new Geom.Rectangle();
   private beaming = false;
   private beamTick = 0;
+  private beamSound = 0;
   facing: 1 | -1 = 1;
   private readonly life: StateMachine<Player, Life>;
   private readonly fireCd = new Cooldown(0.1);
@@ -143,6 +144,10 @@ export class Player implements Target, PlayerLocator {
 
   debugShield(seconds: number): void {
     this.invuln = seconds;
+  }
+
+  guard(seconds: number): void {
+    this.invuln = Math.max(this.invuln, seconds);
   }
 
   enterVehicle(): void {
@@ -329,7 +334,7 @@ export class Player implements Target, PlayerLocator {
     this.beamTick = w.cooldown;
     this.ctx.combat.forEachOverlap("player", this.beamRect, (t) => t.hit({ amount: w.damage, kind: "beam", from: "player", x: m.x, y: m.y }));
     if (len < w.range) this.ctx.fx.spark(m.x + dx * len, m.y + dy * len, -dx);
-    this.ctx.events.emit("sound", "laser");
+    if (this.beamSound++ % 3 === 0) this.ctx.events.emit("sound", "laser");
     this.ctx.state.loadout.consumeShot();
   }
 
