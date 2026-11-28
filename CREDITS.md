@@ -2,7 +2,7 @@
 
 MetalVlug is a non-commercial portfolio project by Marvel Collin ([marvelcollin.com](https://marvelcollin.com), [github.com/MarvelCollin/MetalVlug](https://github.com/MarvelCollin/MetalVlug)).
 
-Game design, code and pixel art are original. The game is inspired by the run and gun genre; it uses no sprites, music, sound or levels from any existing game.
+Game design, code and pixel art are original. The game is inspired by the run and gun genre; it uses no sprites, music, sound or levels from any existing game. Music and sound come from the free licensed packs below.
 
 ## Music
 
@@ -16,7 +16,23 @@ All tracks come from [OpenGameArt.org](https://opengameart.org) and are used und
 | Boss | Fast Fight Battle Music | Ville Nousiainen (Xythe, [soundcloud.com/mutkanto](https://soundcloud.com/mutkanto)) | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [opengameart.org/content/fast-fight-battle-music](https://opengameart.org/content/fast-fight-battle-music) |
 | Training camp | Chipped Urgency | Centurion_of_war | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [opengameart.org/content/chipped-urgency](https://opengameart.org/content/chipped-urgency) |
 
-The short jingles (mission start, mission complete, game over) and all sound effects are synthesized in code by `src/game/audio`. If a music file fails to load, the game falls back to its own synthesized version of that track.
+If a music file fails to load, the game falls back to a small chiptune version of that track played by `src/game/audio`.
+
+## Sound effects and voice
+
+Clips were trimmed, mixed to mono and loudness matched.
+
+| Used for | Pack | Author | Licence | Source |
+| --- | --- | --- | --- | --- |
+| Announcer lines (ready, go, mission completed, game over, power up, look out) | Voiceover Pack | Kenney | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [kenney.nl/assets/voiceover-pack](https://kenney.nl/assets/voiceover-pack) |
+| Jingles (mission start, complete, game over, rescue, pickups, death) | Music Jingles | Kenney | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [kenney.nl/assets/music-jingles](https://kenney.nl/assets/music-jingles) |
+| Explosions, rocket, flamer, laser, charge | Sci-fi Sounds | Kenney | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [kenney.nl/assets/sci-fi-sounds](https://kenney.nl/assets/sci-fi-sounds) |
+| Bullet hits, metal clanks | Impact Sounds | Kenney | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [kenney.nl/assets/impact-sounds](https://kenney.nl/assets/impact-sounds) |
+| Knife, jump and throw cloth | RPG Audio | Kenney | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [kenney.nl/assets/rpg-audio](https://kenney.nl/assets/rpg-audio) |
+| Alarm | Digital Audio | Kenney | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [kenney.nl/assets/digital-audio](https://kenney.nl/assets/digital-audio) |
+| Pistol, rifle, shotgun and cannon shots | Gunshot sounds | Tabasco (archive credits Vincent Sevedge) | Listed CC0; the archive's notice says [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/), so it is credited here | [opengameart.org/content/gunshot-sounds](https://opengameart.org/content/gunshot-sounds) |
+| Enemy death screams | Aargh! (male screams), compiled by congusbongus: Helmut Scream by creativeheroes (CC-BY 3.0), Male_Thijs_loud_scream by thanvannispen (CC-BY 3.0), human male scream multi by JohnsonBrandEditing (CC0) | see left | [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [opengameart.org/content/aargh-male-screams](https://opengameart.org/content/aargh-male-screams) |
+| Enemy alert shouts | Male Grunt/Yelling sounds | HaelDB | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [opengameart.org/content/male-gruntyelling-sounds](https://opengameart.org/content/male-gruntyelling-sounds) |
 
 ## Everything else
 
