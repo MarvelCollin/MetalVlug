@@ -1,7 +1,7 @@
 import { type GameObjects, Scene } from "phaser";
 import { VIEW_H, VIEW_W } from "../../config/display";
 import { Action } from "../../domain/input/Actions";
-import { TEX, bgKey } from "../assets/keys";
+import { DATA, TEX, bgKey, type AnchorTable } from "../assets/keys";
 import { audioOf, type AudioService } from "../audio/AudioService";
 import { InputSystem } from "../input/InputSystem";
 import { settingsOf, type Settings } from "../settings/Settings";
@@ -21,6 +21,9 @@ interface Card {
 }
 
 type Mode = "press" | "main" | "missions" | "options" | "credits" | "select";
+
+const PIP_START = -24;
+const PIP_STOP = 110;
 
 const HEAD = 0xf8d25a;
 const LABEL = 0xc9b8e0;
@@ -71,6 +74,12 @@ export class TitleScene extends Scene {
   private selectTitle!: RetroText;
   private selectCursor!: GameObjects.Image;
   private attract: GameObjects.GameObject[] = [];
+  private pipLegs!: GameObjects.Sprite;
+  private pipTorso!: GameObjects.Sprite;
+  private pipX = 0;
+  private pipIdle = 0;
+  private pipFlashAt = -1;
+  private anchors: AnchorTable = {};
   private selectPanel!: GameObjects.Rectangle;
   private creditPanel!: GameObjects.Rectangle;
   private t = 0;
@@ -94,9 +103,13 @@ export class TitleScene extends Scene {
     this.add.tileSprite(0, VIEW_H - 8, VIEW_W, 8, TEX.atlas, "fill_0").setOrigin(0);
     new RetroText(this, VIEW_W / 2, 34, "METALVLUG", [0.5, 0.5], true);
     new RetroText(this, VIEW_W / 2, 52, "THE LANTERN BRIGADE", [0.5, 0.5]);
-    const pipLegs = this.add.sprite(70, VIEW_H - 24, TEX.atlas, "pip_legs_run_0").setOrigin(0.5, 1).play("pip_legs_run");
-    const pipTorso = this.add.sprite(70, VIEW_H - 24, TEX.atlas, "pip_heavy_fwd_0").setOrigin(0.5, 1);
-    this.tweens.add({ targets: [pipLegs, pipTorso], x: 110, duration: 2600, yoyo: true, repeat: -1, ease: "Sine.inOut", onYoyo: () => { pipLegs.setFlipX(true); pipTorso.setFlipX(true); }, onRepeat: () => { pipLegs.setFlipX(false); pipTorso.setFlipX(false); } });
+    const pipLegs = this.add.sprite(PIP_START, VIEW_H - 24, TEX.atlas, "pip_legs_run_0").setOrigin(0.5, 1).play("pip_legs_run");
+    const pipTorso = this.add.sprite(PIP_START, VIEW_H - 24, TEX.atlas, "pip_heavy_fwd_0").setOrigin(0.5, 1);
+    this.pipLegs = pipLegs;
+    this.pipTorso = pipTorso;
+    this.pipX = PIP_START;
+    this.pipIdle = 0;
+    this.anchors = this.cache.json.get(DATA.anchors) as AnchorTable;
     this.attract = [
       pipLegs,
       pipTorso,
@@ -201,8 +214,38 @@ export class TitleScene extends Scene {
     this.selectCursor.setPosition(chosen.legs.x - 30, 114);
   }
 
+  private tickPip(dt: number): void {
+    const legs = this.pipLegs;
+    const torso = this.pipTorso;
+    if (this.pipX < PIP_STOP) {
+      this.pipX = Math.min(PIP_STOP, this.pipX + CHARACTERS.pip.runSpeed * dt);
+      if (!legs.anims.isPlaying) legs.play("pip_legs_run");
+      const drop = Number(this.anchors[legs.frame.name]?.drop) || 0;
+      legs.x = Math.round(this.pipX);
+      torso.setPosition(legs.x, legs.y + drop).setFrame("pip_heavy_fwd_0");
+      return;
+    }
+    if (legs.anims.isPlaying) {
+      legs.stop();
+      legs.setFrame("pip_legs_stand_0");
+      this.pipIdle = 0;
+    }
+    this.pipIdle += dt;
+    const cycle = this.pipIdle % 4;
+    const firing = this.pipIdle > 1.5 && cycle > 2.6 && cycle < 3.1;
+    const recoil = firing && Math.floor(cycle * 14) % 2 === 0;
+    torso.setFrame(recoil ? "pip_heavy_fwd_1" : "pip_heavy_fwd_0");
+    torso.y = legs.y + (firing ? 0 : Math.floor(this.time.now / 500) % 2);
+    if (recoil && this.pipFlashAt !== Math.floor(cycle * 14)) {
+      this.pipFlashAt = Math.floor(cycle * 14);
+      const m = this.anchors["pip_heavy_fwd_0"]?.muzzle as { x: number; y: number } | undefined;
+      if (m) this.add.sprite(legs.x + m.x - 24, legs.y - 48 + m.y, TEX.atlas, "flash_0").play("flash").once("animationcomplete", (_a: unknown, _f: unknown, sp: GameObjects.Sprite) => sp.destroy());
+    }
+  }
+
   update(_t: number, dms: number): void {
     const dt = dms / 1000;
+    this.tickPip(dt);
     this.t += dt;
     this.far.tilePositionX += dt * 4;
     this.mid.tilePositionX += dt * 10;
