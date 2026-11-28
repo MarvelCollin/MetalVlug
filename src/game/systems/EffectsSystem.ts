@@ -11,6 +11,8 @@ class Particle extends GameObjects.Sprite {
   life = 0;
   spin = 0;
   bounces = 0;
+  grav = 700;
+  fade = 0.3;
 }
 
 export class EffectsSystem {
@@ -19,6 +21,9 @@ export class EffectsSystem {
   private readonly flashing = new Map<GameObjects.Sprite, number>();
   private readonly fxMeta: FxMetaTable;
   private readonly popups: Array<{ text: GameObjects.BitmapText; life: number }> = [];
+  private readonly queued: Array<{ at: number; x: number; y: number }> = [];
+  private readonly scorches: Array<{ img: GameObjects.Image; life: number }> = [];
+  private clock = 0;
 
   constructor(
     private readonly scene: Scene,
@@ -100,7 +105,9 @@ export class EffectsSystem {
     for (let i = 0; i < count; i++) {
       const p = this.bits.acquire();
       if (!p) return;
-      p.setActive(true).setVisible(true).setPosition(x, y).setFrame(this.rng.pick(frames)).setAlpha(1).setRotation(0).setFlipX(this.rng.chance(0.5));
+      p.setActive(true).setVisible(true).setPosition(x, y).setFrame(this.rng.pick(frames)).setAlpha(1).setRotation(0).setFlipX(this.rng.chance(0.5)).setDepth(DEPTH.fx);
+      p.grav = 700;
+      p.fade = 0.3;
       p.vx = this.rng.range(-110, 110);
       p.vy = this.rng.range(-260, -120);
       p.life = this.rng.range(0.8, 1.4);
@@ -109,10 +116,83 @@ export class EffectsSystem {
     }
   }
 
+  footDust(x: number, y: number, dir: number): void {
+    this.play("dust_step", x - dir * 4, y, { flipX: dir < 0, originY: 1, depth: DEPTH.player - 1 });
+  }
+
+  wisp(x: number, y: number): void {
+    this.play("smoke_wisp", x, y, { originY: 1, depth: DEPTH.player + 3 });
+  }
+
+  sparkles(x: number, y: number, count: number, spread = 10): void {
+    for (let i = 0; i < count; i++) this.queued.push({ at: this.clock + i * 0.07, x: x + this.rng.range(-spread, spread), y: y + this.rng.range(-spread, spread * 0.6) });
+  }
+
+  embers(x: number, y: number, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const p = this.particle(x + this.rng.range(-8, 8), y + this.rng.range(-6, 4), this.rng.chance(0.5) ? "ember_0" : "ember_1");
+      if (!p) return;
+      p.vx = this.rng.range(-55, 55);
+      p.vy = this.rng.range(-170, -70);
+      p.grav = 140;
+      p.life = this.rng.range(0.6, 1.2);
+      p.bounces = 0;
+      p.fade = 0.5;
+    }
+  }
+
+  drops(x: number, y: number): void {
+    for (let i = 0; i < 2; i++) {
+      const p = this.particle(x + i, y, "drop_0");
+      if (!p) return;
+      p.vx = this.rng.range(-10, 18);
+      p.vy = this.rng.range(-40, -10);
+      p.grav = 520;
+      p.life = 0.55;
+      p.bounces = 0;
+    }
+  }
+
+  helmet(x: number, y: number, frame: string, dir: number): void {
+    const p = this.particle(x, y, frame);
+    if (!p) return;
+    p.vx = dir * this.rng.range(45, 95);
+    p.vy = this.rng.range(-260, -190);
+    p.spin = 14;
+    p.bounces = 2;
+    p.life = 2.2;
+    p.setDepth(DEPTH.enemies + 2);
+  }
+
+  scorch(x: number, floor: number): void {
+    let slot = this.scorches.find((s) => s.life <= 0);
+    if (!slot) {
+      if (this.scorches.length >= 10) slot = this.scorches.reduce((a, b) => (a.life < b.life ? a : b));
+      else {
+        slot = { img: this.scene.add.image(0, 0, TEX.atlas, "scorch_0").setDepth(DEPTH.terrain + 1).setOrigin(0.5, 0.5), life: 0 };
+        this.scorches.push(slot);
+      }
+    }
+    slot.img.setPosition(Math.round(x), Math.round(floor + 1)).setVisible(true).setAlpha(0.9).setFlipX(this.rng.chance(0.5));
+    slot.life = 6;
+  }
+
+  private particle(x: number, y: number, frame: string): Particle | null {
+    const p = this.bits.acquire();
+    if (!p) return null;
+    p.setActive(true).setVisible(true).setPosition(x, y).setFrame(frame).setAlpha(1).setRotation(0).setFlipX(false).setDepth(DEPTH.fx);
+    p.spin = 0;
+    p.grav = 700;
+    p.fade = 0.3;
+    return p;
+  }
+
   casing(x: number, y: number, dir: number): void {
     const p = this.bits.acquire();
     if (!p) return;
-    p.setActive(true).setVisible(true).setPosition(x, y).setFrame("casing_0").setAlpha(1);
+    p.setActive(true).setVisible(true).setPosition(x, y).setFrame("casing_0").setAlpha(1).setDepth(DEPTH.fx);
+    p.grav = 700;
+    p.fade = 0.3;
     p.vx = -dir * this.rng.range(30, 70);
     p.vy = this.rng.range(-130, -80);
     p.life = 0.7;
@@ -127,6 +207,19 @@ export class EffectsSystem {
   }
 
   update(dt: number): void {
+    this.clock += dt;
+    for (let i = this.queued.length - 1; i >= 0; i--) {
+      const q = this.queued[i]!;
+      if (q.at > this.clock) continue;
+      this.queued.splice(i, 1);
+      this.play("sparkle", q.x, q.y, { depth: DEPTH.fx + 2 });
+    }
+    for (const s of this.scorches) {
+      if (s.life <= 0) continue;
+      s.life -= dt;
+      s.img.setAlpha(Math.max(0, Math.min(0.9, s.life / 2)));
+      if (s.life <= 0) s.img.setVisible(false);
+    }
     for (const p of this.popups) {
       if (p.life <= 0) continue;
       p.life -= dt;
@@ -144,7 +237,7 @@ export class EffectsSystem {
     }
     this.bits.forEachActive((p) => {
       const prevY = p.y;
-      p.vy += 700 * dt;
+      p.vy += p.grav * dt;
       p.x += p.vx * dt;
       p.y += p.vy * dt;
       if (p.spin && Math.floor(p.life * 12) !== Math.floor((p.life + dt) * 12)) p.flipX = !p.flipX;
@@ -162,7 +255,7 @@ export class EffectsSystem {
           p.spin = 0;
         }
       }
-      if (p.life < 0.3) p.setAlpha(Math.max(0, p.life / 0.3));
+      if (p.life < p.fade) p.setAlpha(Math.max(0, p.life / p.fade));
       if (p.life <= 0) this.bits.release(p);
     });
   }

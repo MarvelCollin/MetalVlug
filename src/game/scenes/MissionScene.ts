@@ -196,6 +196,9 @@ export class MissionScene extends Scene {
     });
     ev.on("explode", (e) => {
       ctx.fx.explosion(e.x, e.y, e.big);
+      const floor = ctx.terrain.groundBelow(e.x, e.y - 2);
+      if (floor - e.y < 20) ctx.fx.scorch(e.x, floor);
+      ctx.fx.embers(e.x, e.y - 6, e.big ? 8 : 4);
       ctx.combat.strikeArea(e.x, e.y, e.radius, { amount: e.damage, kind: "blast", from: e.from, x: e.x, y: e.y });
       ctx.camera.shake(e.big ? 4 : 2, e.big ? 0.25 : 0.12);
       if (e.big && e.from === "player") ev.emit("hitStop", { seconds: 0.05 });
@@ -337,6 +340,8 @@ export class MissionScene extends Scene {
       case "furnace":
       case "lance": {
         st.loadout.pickWeapon(kind);
+        this.ctx.fx.baked("fx_collect", x, y - 4);
+        this.ctx.fx.sparkles(x, y - 10, 4, 12);
         ev.emit("weapon", { label: st.loadout.weapon.label });
         ev.emit("announce", { voice: "powerUp" });
         ev.emit("sound", "weapon");
@@ -363,6 +368,7 @@ export class MissionScene extends Scene {
         ev.emit("score", { points: SCORE.ration, x, y });
         break;
     }
+    this.ctx.fx.sparkles(x, y - 8, 3, 8);
     ev.emit("sound", "pickup");
   }
 }

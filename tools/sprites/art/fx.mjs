@@ -1,4 +1,6 @@
 import { C, Pix, R, rng, tone } from "../pix.mjs";
+import { Part, compose } from "./ink.mjs";
+import { LOOKS } from "./rig.mjs";
 
 const one = (w, h, draw, outline = true) => {
   const p = new Pix(w, h);
@@ -129,6 +131,56 @@ fx.beam_v = [0, 1].map((f) =>
   }, false),
 );
 fx.ash = [0, 1, 2].map((f) => one(3, 3, (p) => { p.rect(0, 0, 3 - (f % 2), 2 + (f > 1 ? 1 : 0), ["#3a3036", "#56484e", "#2a2226"][f]); }, false));
+
+fx.dust_step = [0, 1, 2].map((f) =>
+  one(10, 6, (p) => {
+    const ramp = ["#f2e6d0", "#d9c8ad", "#b8a487", "#8f7e68"];
+    p.blob(4 - f * 0.5, 4 - f * 0.4, 1.6 + f * 0.7, 1.2 + f * 0.4, ramp, 0.3);
+    p.blob(6 + f * 0.6, 4 - f * 0.6, 1.2 + f * 0.5, 1 + f * 0.3, ramp, 0.3);
+    const a = 220 - f * 60;
+    for (let i = 0; i < p.data.length; i += 4) if (p.data[i + 3]) p.data[i + 3] = a;
+  }, false),
+);
+fx.smoke_wisp = [0, 1, 2, 3].map((f) =>
+  one(9, 12, (p) => {
+    const ramp = ["#e6e1ea", "#c6bfcc", "#9e96a6", "#7a7282"];
+    p.blob(4 + Math.round(Math.sin(f) * 1), 9 - f * 2, 1.4 + f * 0.5, 1.4 + f * 0.5, ramp, 0.3);
+    if (f > 0) p.blob(5 - Math.round(Math.sin(f) * 1), 10 - f, 1 + f * 0.3, 1 + f * 0.3, ramp, 0.3);
+    const a = 210 - f * 45;
+    for (let i = 0; i < p.data.length; i += 4) if (p.data[i + 3]) p.data[i + 3] = a;
+  }, false),
+);
+fx.sparkle = [0, 1, 2, 3].map((f) =>
+  one(9, 9, (p) => {
+    const arm = [1, 2, 4, 2][f];
+    const col = f === 2 ? "#fff4c2" : "#ffd166";
+    for (let k = 1; k <= arm; k++) {
+      p.px(4 + k, 4, col).px(4 - k, 4, col).px(4, 4 + k, col).px(4, 4 - k, col);
+    }
+    if (f === 2) for (const [dx, dy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]]) p.px(4 + dx, 4 + dy, "#ffd166");
+    p.px(4, 4, "#ffffff");
+  }, false),
+);
+fx.ember = [["#fff4c2", "#ffd166"], ["#f4873b", "#c8452e"]].map(([a, b]) => one(2, 2, (p) => { p.px(0, 0, a).px(1, 0, b).px(0, 1, b).px(1, 1, b); }, false));
+fx.drop = [0, 1].map((f) => one(2, 3, (p) => { p.px(0, 0, "#e8fbff").px(1, 0, "#8fd8ea").px(0, 1, "#8fd8ea").px(1, 1, "#4d9ab8"); if (!f) p.px(0, 2, "#4d9ab8"); }, false));
+fx.scorch = [one(34, 7, (p) => {
+  const r = rng(51);
+  for (let x = 0; x < 34; x++) {
+    const h = Math.round((1 - Math.abs(x - 16.5) / 17) * 3.4 + (r() - 0.5) * 1.2);
+    for (let y = 0; y < h; y++) p.px(x, 6 - y, y === h - 1 ? "#4a3a36" : y > 1 ? "#3a2c2e" : "#2a2026");
+  }
+}, false)];
+for (const type of ["grunt", "shield", "bazooka"]) {
+  const look = LOOKS[type];
+  const helmet = new Part(13, 9);
+  helmet.ellipse(6, 5, 5.5, 4, look.hair[1]);
+  helmet.rect(0, 6, 13, 2, look.hair[1]);
+  helmet.cel(look.hair, 0.3, -0.25);
+  helmet.rect(0, 7, 13, 1, look.hair[3]);
+  helmet.rect(7, 6, 4, 1, look.accent[1]);
+  helmet.ink();
+  fx[`helmet_${type}`] = [{ pix: compose([helmet], 13, 9) }];
+}
 
 export const ANGLES = 16;
 

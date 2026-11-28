@@ -1,7 +1,7 @@
 import { Pix } from "../pix.mjs";
 import {
   LOOKS, Part, STANCE, UPPER, bladeHeld, crawlStance, fullBody, grenade, playerKnife, playerLegs, playerThrow,
-  playerTorso, rifle, runStance, satchel,
+  playerDrink, playerTorso, rifle, runStance, satchel,
 } from "./rig.mjs";
 
 const CREAM = ["#fff8e4", "#efe0b9", "#c9b38a", "#8f7a60"];
@@ -36,6 +36,7 @@ export function playerFrames(kind) {
     for (const aim of ["fwd", "up", "down"]) out[`${weapon}_${aim}`] = [playerTorso(look, kind, aim, weapon, false), playerTorso(look, kind, aim, weapon, true)];
   out.knife = [0, 1, 2].map((f) => playerKnife(look, kind, f));
   out.throw = [0, 1, 2].map((f) => playerThrow(look, kind, f));
+  out.drink = [0, 1, 2, 3, 4, 5].map((f) => playerDrink(look, kind, f));
   out.die = deathFrames(look, kind);
   return out;
 }

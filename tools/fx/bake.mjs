@@ -13,6 +13,7 @@ const FX = [
   { key: "fx_spark", id: "impacts/hit-spark", opts: { height: 0 }, fps: 30, cap: 0.45 },
   { key: "fx_wall", id: "impacts/bullet-impact", opts: { height: 0 }, fps: 24, cap: 0.6 },
   { key: "fx_thud", id: "impacts/blunt-hit", opts: { height: 0 }, fps: 24, cap: 0.55 },
+  { key: "fx_collect", id: "pickups/collect-burst", opts: { seed: 7, palette: ["#4a2a20", "#b4542a", "#f4a23b", "#ffd166", "#fff4c2"] }, fps: 20, cap: 0.95 },
 ];
 
 const FADE = 0.35;

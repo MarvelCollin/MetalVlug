@@ -498,6 +498,16 @@ test("desktop browsers get no touch overlay", async ({ page }) => {
   expect(await page.locator(".mv-touch").count()).toBe(0);
 });
 
+test("standing still makes the soldier drink from the canteen and moving cancels it", async ({ page }) => {
+  await startMission(page);
+  await run(page, "mv.shield(60); " + KILL_ALL + " sc.spawner.skipTo(99999);");
+  await page.waitForFunction("window.__mv.scene.player.torso.frame.name.includes('_drink_')", null, { timeout: 9_000 });
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(120);
+  expect(await run<string>(page, "return sc.player.torso.frame.name;")).not.toContain("_drink_");
+  await page.keyboard.up("ArrowRight");
+});
+
 test("options change and persist the music volume", async ({ page }) => {
   await page.goto("/");
   await page.evaluate("localStorage.clear()");

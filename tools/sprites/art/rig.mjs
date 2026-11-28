@@ -419,6 +419,37 @@ export function playerThrow(look, kind, frame) {
   return { pix: compose(parts) };
 }
 
+const FLASK = ["#d8d79a", "#9ea263", "#6c7343", "#475030"];
+
+export function playerDrink(look, kind, frame) {
+  const u = UPPER.fwd;
+  const tilt = [0, 0, 1, 1, 1, 0][frame];
+  const pose = { ...u, hip: [23, 34] };
+  const headPose = { ...pose, head: [u.head[0] - tilt, u.head[1] - tilt] };
+  const torso = torsoPart(look, pose, kind);
+  const heads = head(look, headPose, kind, "calm");
+  const mouth = [headPose.head[0] + 4, headPose.head[1] + 5];
+  const ends = [
+    [[32, 22], [32, 31]],
+    [[34, 20], [37, 28]],
+    [mouth, [mouth[0] + 7, mouth[1] - 4]],
+    [mouth, [mouth[0] + 7, mouth[1] - 6]],
+    [mouth, [mouth[0] + 8, mouth[1] - 2]],
+    [[32, 22], [32, 31]],
+  ][frame];
+  const [top, bottom] = ends;
+  const hand = [Math.round((top[0] + bottom[0]) / 2) + 1, Math.round((top[1] + bottom[1]) / 2) + 1];
+  const elbow = [[29, 33], [31, 31], [32, 27], [32, 26], [32, 28], [29, 33]][frame];
+  const flask = new Part();
+  flask.limb(top[0], top[1], bottom[0], bottom[1], 4, 6, FLASK[1]);
+  flask.cel(FLASK, 0.35, -0.2);
+  flask.limb(top[0], top[1], top[0] + (top[0] - bottom[0]) * 0.12, top[1] + (top[1] - bottom[1]) * 0.12, 3, 3, BRASS[1]);
+  flask.ink();
+  const back = arm(look, u.bs, [26, 35], [27, 38], true);
+  const front = arm(look, u.fs, elbow, hand, false);
+  return { pix: compose([back, torso, ...heads, flask, front]), anchor: { mouth: { x: top[0], y: top[1] } } };
+}
+
 export function fullBody(look, kind, stance, upper, extra = {}) {
   const dy = stance.hip[1] - 34;
   const u = shift(upper, dy);

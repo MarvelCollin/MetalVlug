@@ -211,6 +211,8 @@ export class Enemy implements Target {
     this.fsm.change("dying");
     this.ctx.events.emit("enemyKilled", { x: this.x, y: this.y, knife: hit.kind === "knife" });
     this.ctx.events.emit("sound", "enemyDie");
+    const helmeted = this.def.type === "grunt" || this.def.type === "shield" || this.def.type === "bazooka";
+    if (helmeted && hit.kind !== "fire" && hit.kind !== "beam") this.ctx.fx.helmet(this.x, this.y - 40, `helmet_${this.def.type}_0`, Math.sign(this.x - hit.x) || -this.facing);
     if (this.def.type === "dummy") {
       this.sprite.setFrame("dummy_broken_0");
       this.ctx.fx.debris(this.x, this.y - 24, 6, ["debris_1"]);

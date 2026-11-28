@@ -11,6 +11,9 @@ import type { Target } from "../systems/CombatSystem";
 import type { CharacterDef } from "../../domain/characters/Characters";
 
 type Life = "alive" | "dying" | "down" | "piloting";
+
+const DRINK = [0.18, 0.14, 0.16, 0.7, 0.16, 0.22];
+const DRINK_TOTAL = DRINK.reduce((a, b) => a + b, 0);
 type Aim = "fwd" | "up" | "down";
 
 export class Player implements Target, PlayerLocator {
@@ -37,6 +40,11 @@ export class Player implements Target, PlayerLocator {
   private burstTimer = 0;
   private onGround = false;
   private fallSpeed = 0;
+  private idleTime = 0;
+  private drinkTime = -1;
+  private drinkFrame = -1;
+  private stepFrame = -1;
+  private shotCount = 0;
 
   constructor(private readonly ctx: GameContext, x: number, y: number, readonly char: CharacterDef) {
     const scene = ctx.scene;
@@ -190,6 +198,7 @@ export class Player implements Target, PlayerLocator {
     }
     const axis = inp.axisX;
     if (axis !== 0 && this.action !== "knife") this.facing = axis;
+    this.tickIdle(dt, inp.mask !== 0 || !this.onGround || this.crouching || this.action !== "none" || Math.abs(body.velocity.x) > 1);
     const speed = this.crouching ? PLAYER.crawlSpeed : this.char.runSpeed;
     body.setVelocityX(this.action === "knife" ? 0 : axis * speed);
     const minX = this.ctx.camera.left + 8;
@@ -198,6 +207,7 @@ export class Player implements Target, PlayerLocator {
     if (this.legs.x > maxX) { this.legs.x = maxX; if (body.velocity.x > 0) body.setVelocityX(0); }
     if (inp.pressed(Action.Jump) && this.onGround) {
       body.setVelocityY(-PLAYER.jumpSpeed);
+      this.ctx.fx.footDust(this.legs.x, this.legs.y, this.facing);
       this.jumpCut = false;
       this.onGround = false;
       this.ctx.events.emit("sound", "jump");
@@ -237,6 +247,31 @@ export class Player implements Target, PlayerLocator {
       }
     }
     if (inp.pressed(Action.Bomb) && this.action === "none") this.throwBomb();
+  }
+
+  private tickIdle(dt: number, busy: boolean): void {
+    if (busy) {
+      this.idleTime = 0;
+      this.drinkTime = -1;
+      return;
+    }
+    this.idleTime += dt;
+    if (this.drinkTime >= 0) {
+      this.drinkTime += dt;
+      if (this.drinkTime >= DRINK_TOTAL) {
+        this.drinkTime = -1;
+        this.idleTime = -4;
+      }
+    } else if (this.idleTime > 4) this.drinkTime = 0;
+  }
+
+  private drinkIndex(): number {
+    let t = this.drinkTime;
+    for (let i = 0; i < DRINK.length; i++) {
+      t -= DRINK[i]!;
+      if (t < 0) return i;
+    }
+    return DRINK.length - 1;
   }
 
   private tryKnife(): boolean {
@@ -288,6 +323,8 @@ export class Player implements Target, PlayerLocator {
       this.ctx.projectiles.fire("heavy", m.x, m.y + this.ctx.rng.range(-1.5, 1.5), Math.cos(this.aimAngle + j) * this.facing * w.speed, Math.sin(this.aimAngle + j) * w.speed, w.damage);
       fx.casing(this.legs.x, this.legs.y - 24, this.facing);
       this.ctx.events.emit("sound", "rivet");
+      this.shotCount++;
+      if (this.shotCount % 5 === 0) fx.wisp(m.x, m.y);
     } else if (w.mode === "blast") {
       const aim = this.aimKey();
       if (aim === "fwd") fx.play("blast", m.x, m.y, { flipX: this.facing < 0, originY: 0.5 });
@@ -298,12 +335,14 @@ export class Player implements Target, PlayerLocator {
       this.ctx.combat.strikeAll(r, { amount: w.damage, kind: "blast", from: "player", x: m.x, y: m.y });
       this.ctx.camera.shake(2, 0.08);
       this.ctx.events.emit("sound", "scatter");
+      fx.wisp(m.x + this.facing * 4, m.y);
     } else if (w.mode === "flame") {
       this.ctx.projectiles.fire("flame", m.x + dx * 6, m.y + dy * 6, dx * w.speed, dy * w.speed, w.damage);
       this.ctx.events.emit("sound", "flame");
     } else if (w.mode === "rocket") {
       this.ctx.projectiles.fire("rocket", m.x, m.y, dx * 90, dy * 90, w.damage);
       this.ctx.events.emit("sound", "rocket");
+      fx.wisp(m.x - this.facing * 6, m.y);
     }
     loadout.consumeShot();
   }
@@ -366,6 +405,9 @@ export class Player implements Target, PlayerLocator {
     if (legKey === "run" || legKey === "crawl") {
       const anim = `${this.char.id}_legs_${legKey}`;
       if (this.legs.anims.currentAnim?.key !== anim || !this.legs.anims.isPlaying) this.legs.play(anim, true);
+      const step = legKey === "run" ? Number(this.legs.frame.name.split("_").pop()) : -1;
+      if (step !== this.stepFrame && (step === 1 || step === 5)) this.ctx.fx.footDust(this.legs.x, this.legs.y, this.facing);
+      this.stepFrame = step;
     } else {
       this.legs.stop();
       this.legs.setFrame(legKey);
@@ -374,8 +416,16 @@ export class Player implements Target, PlayerLocator {
     let frame: string;
     if (this.action === "knife") frame = `${this.char.id}_knife_${Math.min(2, Math.floor((1 - this.actionTime / PLAYER.knifeTime) * 3))}`;
     else if (this.action === "throw") frame = `${this.char.id}_throw_${Math.min(2, Math.floor((1 - this.actionTime / PLAYER.throwTime) * 3))}`;
-    else frame = this.torsoFrame(this.recoil > 0);
-    const idleBob = !moving && this.onGround && !this.crouching ? Math.floor(this.ctx.scene.time.now / 500) % 2 : 0;
+    else if (this.drinkTime >= 0) {
+      const i = this.drinkIndex();
+      frame = `${this.char.id}_drink_${i}`;
+      if (i === 3 && this.drinkFrame !== 3) {
+        const m = this.ctx.anchor(frame, "mouth");
+        this.ctx.fx.drops(this.legs.x + (m.x - 24) * this.facing, this.legs.y - 48 + m.y + 1);
+      }
+      this.drinkFrame = i;
+    } else frame = this.torsoFrame(this.recoil > 0);
+    const idleBob = !moving && this.onGround && !this.crouching && this.drinkTime < 0 ? Math.floor(this.ctx.scene.time.now / 500) % 2 : 0;
     this.torso.setFrame(frame).setFlipX(flip).setPosition(this.legs.x, this.legs.y + drop + idleBob).setVisible(true);
     const blink = this.invuln > 0 && Math.floor(this.invuln * 20) % 2 === 0;
     this.legs.setAlpha(blink ? 0.3 : 1);

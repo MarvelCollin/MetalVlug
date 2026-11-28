@@ -93,6 +93,7 @@ export class Hostage implements Target {
     if (!this.fsm.is("caged")) return;
     this.ctx.fx.debris(this.cage.x, this.cage.y - 24, 7, ["bar_0", "bar_1", "bar_1", "debris_0"]);
     this.ctx.fx.spark(this.cage.x, this.cage.y - 22);
+    this.ctx.fx.sparkles(this.cage.x, this.cage.y - 26, 6, 14);
     this.ctx.events.emit("sound", "clank");
     this.fsm.change("cheer");
   }
